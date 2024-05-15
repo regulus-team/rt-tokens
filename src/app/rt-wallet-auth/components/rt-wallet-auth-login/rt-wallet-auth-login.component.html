@@ -1,0 +1,20 @@
+@if ({
+  connectWalletStatus: connectWalletStatus$ | async,
+  connectWalletError: connectWalletError$ | async,
+}; as extracted) {
+
+
+  Login page
+
+  <button (click)="loginWithPhantom()">Login with Phantom</button>
+
+  @if (extracted.connectWalletStatus === progressStatuses.interrupted) {
+    @if (extracted.connectWalletError?.name === 'WalletNotReadyError') {
+      The Phantom Wallet is not available on the current page. Please open the Phantom Wallet and try again.
+    } @else {
+      {{ extracted.connectWalletError }}
+    }
+  }
+}
+
+

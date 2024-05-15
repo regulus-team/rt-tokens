@@ -1,0 +1,27 @@
+.rt-tokens {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.app-header {
+  width: 100%;
+  background-color: var(--text-primary-light);
+  padding-top: 0;
+  padding-bottom: 0;
+  z-index: 11;
+  border-bottom: 1px solid var(--text-border-light);
+}
+
+.app-content {
+  flex: 1;
+}
+
+.app-footer {
+  background-color: var(--text-primary-light);
+  border-top: 1px solid var(--text-border-light);
+  padding-top: 0;
+  padding-bottom: 0;
+  z-index: 9;
+}
+
