@@ -4,6 +4,7 @@ import {DashboardRootComponent} from './components/dashboard-root/dashboard-root
 import {DashboardRoutingModule} from './dashboard-routing.module';
 import {DashboardDetailsComponent} from './components/dashboard-details/dashboard-details.component';
 import {RtWalletModule} from '../rt-wallet/rt-wallet.module';
+import {HttpClientModule} from '@angular/common/http';
 
 @NgModule({
   declarations: [
@@ -14,6 +15,7 @@ import {RtWalletModule} from '../rt-wallet/rt-wallet.module';
     CommonModule,
     DashboardRoutingModule,
     RtWalletModule,
+    HttpClientModule,
   ],
 })
 export class DashboardModule {

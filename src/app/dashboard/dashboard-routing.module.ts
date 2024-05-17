@@ -15,6 +15,12 @@ const routes: Routes = [
         canActivate: [rtWalletConnectedGuard],
         title: 'Details | Dashboard | Solana',
       },
+      {
+        path: 'tokens',
+        loadChildren: () => import('../dashboard-token/dashboard-token.module').then(m => m.DashboardTokenModule),
+        canActivate: [rtWalletConnectedGuard],
+        title: 'Tokens | Dashboard | Solana',
+      },
     ],
   },
 ];

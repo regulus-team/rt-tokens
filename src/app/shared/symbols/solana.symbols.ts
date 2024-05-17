@@ -40,3 +40,7 @@ export const currentNetCluster: NetCluster = clusterApiUrl('devnet') as NetClust
  */
 export const phantomWalletAdapter = new PhantomWalletAdapter();
 
+// Todo: move to environment variables.
+export const mainNetBetaRPCApi = 'http://api.mainnet-beta.solana.com/';
+export const devNetRPCApi = 'http://api.devnet.solana.com/';
+
