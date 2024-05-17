@@ -1,6 +1,5 @@
 import {Routes} from '@angular/router';
 import {GeneralNotFoundComponent} from './general/components/general-not-found/general-not-found.component';
-import {RtWalletConnectedGuard} from './rt-wallet/guards/rt-wallet-connected.guard';
 
 export const routes: Routes = [
   {

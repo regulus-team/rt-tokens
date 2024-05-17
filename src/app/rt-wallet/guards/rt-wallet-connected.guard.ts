@@ -1,6 +1,6 @@
 import {catchError, from, map, Observable} from 'rxjs';
-import {Injectable} from '@angular/core';
-import {ActivatedRouteSnapshot, Router, RouterStateSnapshot} from '@angular/router';
+import {inject, Injectable} from '@angular/core';
+import {CanActivateFn, Router} from '@angular/router';
 import {WalletReadyState} from '@solana/wallet-adapter-base';
 import {phantomWalletAdapter} from '../../shared/symbols/solana.symbols';
 
@@ -8,7 +8,7 @@ import {phantomWalletAdapter} from '../../shared/symbols/solana.symbols';
  * The guard allows access to the route if the Phantom wallet is connected.
  */
 @Injectable()
-export class RtWalletConnectedGuard {
+export class RtWalletPermissionsService {
   /**
    * Phantom wallet adapter.
    * Used for working with the Phantom wallet.
@@ -18,7 +18,7 @@ export class RtWalletConnectedGuard {
   constructor(private router: Router) {
   }
 
-  canActivate(next: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> | Promise<boolean> | boolean {
+  canActivate(): Observable<boolean> | Promise<boolean> | boolean {
     // Allow access to the route if the Phantom wallet is connected.
     if (this.phantomWalletAdapter.connected) {
       return true;
@@ -37,3 +37,9 @@ export class RtWalletConnectedGuard {
 
   }
 }
+
+/**
+ * The guard allows access to the route if the Phantom wallet is connected.
+ */
+export const rtWalletConnectedGuard: CanActivateFn = (): boolean | Observable<boolean> | Promise<boolean> =>
+  inject(RtWalletPermissionsService).canActivate();

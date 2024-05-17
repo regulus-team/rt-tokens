@@ -29,7 +29,7 @@ export class RtWalletAuthLoginComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     // Navigate to the dashboard on the successful wallet connection.
     this.subscription.add(
-      this.connectWalletStatus$.pipe(filter(status => status === progressStatuses.succeed)).subscribe((status) => {
+      this.connectWalletStatus$.pipe(filter(status => status === progressStatuses.succeed)).subscribe(() => {
         this.router.navigate(['/dashboard']);
       }),
     );

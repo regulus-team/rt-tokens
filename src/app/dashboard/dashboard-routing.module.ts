@@ -2,7 +2,7 @@ import {NgModule} from '@angular/core';
 import {RouterModule, Routes} from '@angular/router';
 import {DashboardRootComponent} from './components/dashboard-root/dashboard-root.component';
 import {DashboardDetailsComponent} from './components/dashboard-details/dashboard-details.component';
-import {RtWalletConnectedGuard} from '../rt-wallet/guards/rt-wallet-connected.guard';
+import {rtWalletConnectedGuard} from '../rt-wallet/guards/rt-wallet-connected.guard';
 
 const routes: Routes = [
   {
@@ -12,7 +12,7 @@ const routes: Routes = [
       {
         path: '',
         component: DashboardDetailsComponent,
-        canActivate: [RtWalletConnectedGuard],
+        canActivate: [rtWalletConnectedGuard],
         title: 'Details | Dashboard | Solana',
       },
     ],
