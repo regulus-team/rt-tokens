@@ -1,7 +1,7 @@
 <div class="general-header">
   <div class="general-header__links">
-    <a class="general-header__link" routerLink="/">Home</a>
-    <a class="general-header__link" routerLink="/dashboard">Dashboard</a>
-    <a class="general-header__link" routerLink="/dashboard/tokens">Tokens</a>
+    <a mat-button routerLink="/" routerLinkActive="mat-primary" [routerLinkActiveOptions]="{exact: true}">Home</a>
+    <a mat-button routerLink="/dashboard" routerLinkActive="mat-primary" [routerLinkActiveOptions]="{exact: true}">Dashboard</a>
+    <a mat-button routerLink="/dashboard/tokens" routerLinkActive="mat-primary" [routerLinkActiveOptions]="{exact: true}">Tokens</a>
   </div>
 </div>

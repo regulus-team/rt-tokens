@@ -3,6 +3,7 @@ import {CommonModule} from '@angular/common';
 import {PublicRootComponent} from './components/public-root/public-root.component';
 import {PublicDetailsComponent} from './components/public-details/public-details.component';
 import {PublicRoutingModule} from './public-routing.module';
+import {MatCardModule} from '@angular/material/card';
 
 @NgModule({
   declarations: [
@@ -12,6 +13,7 @@ import {PublicRoutingModule} from './public-routing.module';
   imports: [
     CommonModule,
     PublicRoutingModule,
+    MatCardModule,
   ],
   providers: [],
 })

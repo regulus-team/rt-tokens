@@ -6,11 +6,11 @@
 
 .app-header {
   width: 100%;
-  background-color: var(--text-primary-light);
+  background-color: var(--mdc-elevated-card-container-color);
   padding-top: 0;
   padding-bottom: 0;
   z-index: 11;
-  border-bottom: 1px solid var(--text-border-light);
+  border-bottom: 1px solid var(--mdc-elevated-card-container-color);
 }
 
 .app-content {
@@ -18,8 +18,8 @@
 }
 
 .app-footer {
-  background-color: var(--text-primary-light);
-  border-top: 1px solid var(--text-border-light);
+  background-color: var(--mdc-elevated-card-container-color);
+  border-top: 1px solid var(--mdc-elevated-card-container-color);
   padding-top: 0;
   padding-bottom: 0;
   z-index: 9;

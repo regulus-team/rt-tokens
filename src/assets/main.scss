@@ -1,0 +1,41 @@
+.h1, .h2, .h3, .h4, .h5, .h6, h1, h2, h3, h4, h5, h6 {
+  margin-top: 0;
+  margin-bottom: 1.125rem;
+  font-weight: 500;
+  line-height: 1.1;
+}
+
+.h4, .h5, .h6, h4, h5, h6 {
+  margin-bottom: .5625rem;
+}
+
+h2, h6 {
+  letter-spacing: -.02em;
+}
+
+.h2, h2 {
+  font-size: 1.25rem;
+}
+
+h6 {
+  font-size: .625rem;
+  margin-bottom: .5625rem;
+}
+
+.p-4 {
+  padding: 1.5rem;
+}
+
+.py-4 {
+  padding-top: 1.5rem;
+  padding-bottom: 1.5rem;
+}
+
+.px-4 {
+  padding-right: 1.5rem;
+  padding-left: 1.5rem;
+}
+
+.mb-4 {
+  margin-bottom: 1.5rem;
+}
