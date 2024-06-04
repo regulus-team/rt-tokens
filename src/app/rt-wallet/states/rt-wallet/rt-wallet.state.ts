@@ -4,9 +4,9 @@ import {
   AirdropFail,
   AirdropSuccess,
   ConfirmAirdrop,
-  ConnectPhantomWallet,
-  ConnectPhantomWalletFail,
-  ConnectPhantomWalletSuccess,
+  ConnectWallet,
+  ConnectWalletFail,
+  ConnectWalletSuccess,
   GetWalletBalance,
   GetWalletBalanceFail,
   GetWalletBalanceSuccess,
@@ -14,7 +14,7 @@ import {
 } from './rt-wallet.actions';
 import {defaultRtWalletState, uniqueStateIdentifier, RtWalletStateModel} from './rt-wallet.model';
 import {RtWalletService} from '../../services/rt-wallet/rt-wallet.service';
-import {phantomWalletAdapter} from '../../../shared/symbols/solana.symbols';
+import {currentWalletAdapter} from '../../../shared/symbols/solana.symbols';
 import {progressStatuses} from '../../../shared/symbols/statuses.symbols';
 
 @State<RtWalletStateModel>({
@@ -23,12 +23,6 @@ import {progressStatuses} from '../../../shared/symbols/statuses.symbols';
 })
 @Injectable()
 export class RtWalletState {
-  /**
-   * Phantom wallet adapter.
-   * Used for working with the Phantom wallet.
-   */
-  private readonly phantomWalletAdapter = phantomWalletAdapter;
-
   constructor(private walletService: RtWalletService) {
   }
 
@@ -67,27 +61,27 @@ export class RtWalletState {
     return state.updateBalanceError;
   }
 
-  @Action(ConnectPhantomWallet)
-  connectPhantomWallet(ctx: StateContext<RtWalletStateModel>): void {
+  @Action(ConnectWallet)
+  connectWallet(ctx: StateContext<RtWalletStateModel>): void {
     ctx.patchState({
       connectWalletStatus: progressStatuses.inProgress,
       connectWalletError: null,
     });
 
-    this.phantomWalletAdapter.connect()
-      .then(() => ctx.dispatch(new ConnectPhantomWalletSuccess()))
-      .catch(error => ctx.dispatch(new ConnectPhantomWalletFail(error)));
+    currentWalletAdapter.connect()
+      .then(() => ctx.dispatch(new ConnectWalletSuccess()))
+      .catch(error => ctx.dispatch(new ConnectWalletFail(error)));
   }
 
-  @Action(ConnectPhantomWalletSuccess)
-  connectPhantomWalletSuccess(ctx: StateContext<RtWalletStateModel>): void {
+  @Action(ConnectWalletSuccess)
+  connectWalletSuccess(ctx: StateContext<RtWalletStateModel>): void {
     ctx.patchState({
       connectWalletStatus: progressStatuses.succeed,
     });
   }
 
-  @Action(ConnectPhantomWalletFail)
-  connectPhantomWalletFail(ctx: StateContext<RtWalletStateModel>, {unknownError}: ConnectPhantomWalletFail): void {
+  @Action(ConnectWalletFail)
+  connectWalletFail(ctx: StateContext<RtWalletStateModel>, {unknownError}: ConnectWalletFail): void {
     ctx.patchState({
       connectWalletStatus: progressStatuses.interrupted,
       connectWalletError: unknownError,
@@ -144,7 +138,6 @@ export class RtWalletState {
   @Action(AirdropSuccess)
   airdropSuccess(ctx: StateContext<RtWalletStateModel>, {lamportsAmount}: AirdropSuccess): void {
     const state = ctx.getState();
-
     ctx.patchState({
       updateBalanceStatus: progressStatuses.succeed,
       currentBalance: state.currentBalance + lamportsAmount,

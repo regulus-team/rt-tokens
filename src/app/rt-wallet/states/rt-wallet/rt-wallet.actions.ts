@@ -5,16 +5,16 @@ import {UnknownError} from '../../../shared/symbols/errors.symbols';
 import {Lamports, TransactionSignature} from '../../../shared/symbols/solana.symbols';
 
 
-export class ConnectPhantomWallet {
-  static type = `${uniqueStateIdentifier} ${ConnectPhantomWallet.name}`;
+export class ConnectWallet {
+  static type = `${uniqueStateIdentifier} ${ConnectWallet.name}`;
 }
 
-export class ConnectPhantomWalletSuccess {
-  static type = `${uniqueStateIdentifier} ${ConnectPhantomWalletSuccess.name}`;
+export class ConnectWalletSuccess {
+  static type = `${uniqueStateIdentifier} ${ConnectWalletSuccess.name}`;
 }
 
-export class ConnectPhantomWalletFail {
-  static type = `${uniqueStateIdentifier} ${ConnectPhantomWalletFail.name}`;
+export class ConnectWalletFail {
+  static type = `${uniqueStateIdentifier} ${ConnectWalletFail.name}`;
 
   constructor(public unknownError: UnknownError) {
   }

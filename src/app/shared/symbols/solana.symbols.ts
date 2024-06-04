@@ -1,4 +1,4 @@
-import {clusterApiUrl} from '@solana/web3.js';
+import {clusterApiUrl, Connection} from '@solana/web3.js';
 import {PhantomWalletAdapter} from '@solana/wallet-adapter-wallets';
 
 /**
@@ -35,10 +35,15 @@ export const currentNetCluster: NetCluster = clusterApiUrl('devnet') as NetClust
 
 
 /**
- * Phantom wallet adapter.
- * Used for working with the Phantom wallet.
+ * Current wallet adapter.
+ * Used for working with the wallet.
  */
-export const phantomWalletAdapter = new PhantomWalletAdapter();
+export const currentWalletAdapter = new PhantomWalletAdapter();
+
+/**
+ * Connection to the Solana network cluster.
+ */
+export const connectionToCluster = new Connection(currentNetCluster, 'confirmed');
 
 // Todo: move to environment variables.
 export const mainNetBetaRPCApi = 'http://api.mainnet-beta.solana.com/';

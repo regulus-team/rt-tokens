@@ -11,7 +11,7 @@ const nodePolyfills: Plugin = {
       http: 'stream-http',
       https: 'https-browserify',
       zlib: 'browserify-zlib',
-      'node_modules/@ledgerhq/errors/lib-es/index.js': 'node_modules/@ledgerhq/errors/lib/index.js',
+      buffer: 'buffer',
     };
   },
 };

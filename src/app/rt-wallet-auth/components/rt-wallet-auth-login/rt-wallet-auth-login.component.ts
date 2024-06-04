@@ -2,7 +2,7 @@ import {filter, Observable, Subscription} from 'rxjs';
 import {ChangeDetectionStrategy, Component, OnDestroy, OnInit} from '@angular/core';
 import {Router} from '@angular/router';
 import {Select, Store} from '@ngxs/store';
-import {ConnectPhantomWallet} from '../../../rt-wallet/states/rt-wallet/rt-wallet.actions';
+import {ConnectWallet} from '../../../rt-wallet/states/rt-wallet/rt-wallet.actions';
 import {RtWalletState} from '../../../rt-wallet/states/rt-wallet/rt-wallet.state';
 import {RtWalletStateModel} from '../../../rt-wallet/states/rt-wallet/rt-wallet.model';
 import {progressStatuses} from '../../../shared/symbols/statuses.symbols';
@@ -40,10 +40,10 @@ export class RtWalletAuthLoginComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Login with the Phantom wallet.
+   * Login with the wallet.
    */
-  public loginWithPhantom(): void {
-    this.store.dispatch(new ConnectPhantomWallet());
+  public loginWithWallet(): void {
+    this.store.dispatch(new ConnectWallet());
   }
 
 }

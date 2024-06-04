@@ -18,6 +18,8 @@
           Retrieve result:
           <pre>{{extracted.tokenList | json}}</pre>
         </div>
+
+        <button mat-button color="primary" (click)="openAddTokenDialog()">+ Add New Token</button>
       }
 
       @if (extracted.lastLoadTokenListError) {
