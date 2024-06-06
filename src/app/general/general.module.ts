@@ -5,6 +5,9 @@ import {GeneralHeaderComponent} from './components/general-header/general-header
 import {RouterLink, RouterModule} from '@angular/router';
 import {GeneralNotFoundComponent} from './components/general-not-found/general-not-found.component';
 import {MatButtonModule} from '@angular/material/button';
+import {RtSvgSpriteModule} from '../rt-svg-sprite/rt-svg-sprite.module';
+import {RtPlatformModule} from '../rt-platform/rt-platform.module';
+import {Settings} from '../../conf/settings';
 
 @NgModule({
   declarations: [
@@ -16,9 +19,11 @@ import {MatButtonModule} from '@angular/material/button';
     CommonModule,
     RouterLink,
     MatButtonModule,
-    RouterModule
+    RouterModule,
+    RtSvgSpriteModule,
+    RtPlatformModule,
   ],
-  providers: [],
+  providers: [Settings],
   exports: [
     GeneralFooterComponent,
     GeneralHeaderComponent,

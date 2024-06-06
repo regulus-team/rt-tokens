@@ -10,21 +10,31 @@
     </div>
     <mat-divider></mat-divider>
   </div>
-  <mat-card>
-    <mat-card-content>
 
-      @if (extracted.loadTokenListProcess === progressStatuses.succeed) {
-        <div>
-          Retrieve result:
-          <pre>{{extracted.tokenList | json}}</pre>
-        </div>
+  @if (extracted.loadTokenListProcess === progressStatuses.succeed) {
+    @for (token of extracted.tokenList; track token?.pubkey) {
+      <mat-card class="token-list__item">
+        <mat-card-content>
+          <div class="token-list__item-content">
+            <div class="token-list__item-data">
+              <div class="token-list__item-pubkey">Token address: {{ token?.pubkey }}</div>
+              <div class="token-list__item-amount">Token amount: {{ token?.account?.data?.parsed?.info?.tokenAmount?.uiAmountString }}</div>
+            </div>
 
-        <button mat-button color="primary" (click)="openAddTokenDialog()">+ Add New Token</button>
-      }
+            <a class="token-list__item-nav">
+              <svg class="token-list__nav-icon mat-mdc-button mat-primary" height="25" width="25" [routerLink]="token?.pubkey?.toString()">
+                <use xlink:href="#right-arrow"></use>
+              </svg>
+            </a>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    }
 
-      @if (extracted.lastLoadTokenListError) {
-        <p>Error occurred: {{ extracted.lastLoadTokenListError }}</p>
-      }
-    </mat-card-content>
-  </mat-card>
+    <button mat-button color="primary" (click)="openAddTokenDialog()">+ Add New Token</button>
+  }
+
+  @if (extracted.lastLoadTokenListError) {
+    <p>Error occurred: {{ extracted.lastLoadTokenListError }}</p>
+  }
 }

@@ -1,5 +1,6 @@
 import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
 import {Store} from '@ngxs/store';
+import {PublicKey} from '@solana/web3.js';
 import {LoadTokenList} from '../../states/dashboard-token/dashboard-token.actions';
 import {currentWalletAdapter} from '../../../shared/symbols/solana.symbols';
 
@@ -16,7 +17,7 @@ export class DashboardTokenRootComponent implements OnInit {
   ngOnInit(): void {
     // Extract the public key from the wallet adapter.
     // It can be null as the page is protected by the router guard.
-    const currentAccount: PublicKeyString = currentWalletAdapter.publicKey?.toString() as PublicKeyString;
+    const currentAccount: PublicKey = currentWalletAdapter.publicKey as PublicKey;
 
     // Initialize the token list loading process.
     this.store.dispatch(new LoadTokenList(currentAccount));

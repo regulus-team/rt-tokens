@@ -1,41 +1,19 @@
-import {Observable} from 'rxjs';
 import {Injectable} from '@angular/core';
-import {HttpClient} from '@angular/common/http';
-import {TokenListRPCResponse} from '../../symbols';
-import {devNetRPCApi} from '../../../shared/symbols/solana.symbols';
+import {TOKEN_PROGRAM_ID} from '@solana/spl-token';
+import {PublicKey, RpcResponseAndContext} from '@solana/web3.js';
+import {RpcResponseTokenData} from '../../symbols';
+import {connectionToCluster} from '../../../shared/symbols/solana.symbols';
 
 @Injectable()
 export class DashboardTokenService {
 
-  constructor(private http: HttpClient) {
-  }
-
   /**
-   * Load all associated tokens for a given account.
-   * @param publicKeyString - a string representation of the public key.
+   * Load all associated token accounts for a given owner account.
+   * @param publicKey - The public key of the owner account.
    */
-  public loadAllAccountTokens(publicKeyString: PublicKeyString): Observable<TokenListRPCResponse> {
-    return this.http.post(devNetRPCApi, {
-      jsonrpc: '2.0',
-      id: 1,
-      method: 'getProgramAccounts',
-      params: [
-        'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',
-        {
-          encoding: 'jsonParsed',
-          filters: [
-            {
-              dataSize: 165,
-            },
-            {
-              memcmp: {
-                offset: 32,
-                bytes: publicKeyString,
-              },
-            },
-          ],
-        },
-      ],
+  public loadAllAccountTokens(publicKey: PublicKey): Promise<RpcResponseAndContext<RpcResponseTokenData[]>> {
+    return connectionToCluster.getParsedTokenAccountsByOwner(publicKey, {
+      programId: TOKEN_PROGRAM_ID,
     });
   }
 }

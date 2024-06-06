@@ -1,19 +1,20 @@
 import {dashboardTokenStateId} from './dashboard-token.model';
-import {TokenListRPCResponse} from '../../symbols';
+import {RpcResponseTokenData} from '../../symbols';
 import {UnknownError} from '../../../shared/symbols/errors.symbols';
+import {PublicKey, RpcResponseAndContext} from '@solana/web3.js';
 
 
 export class LoadTokenList {
   static type = `${dashboardTokenStateId} ${LoadTokenList.name}`;
 
-  constructor(public publicKeyString: PublicKeyString) {
+  constructor(public publicKey: PublicKey) {
   }
 }
 
 export class LoadTokenListSuccess {
   static type = `${dashboardTokenStateId} ${LoadTokenListSuccess.name}`;
 
-  constructor(public tokenList: TokenListRPCResponse) {
+  constructor(public tokenListContext: RpcResponseAndContext<RpcResponseTokenData[]>) {
   }
 }
 

@@ -30,23 +30,22 @@ export class DashboardTokenState {
   }
 
   @Action(LoadTokenList)
-  loadTokenList(ctx: StateContext<DashboardTokenStateModel>, {publicKeyString}: LoadTokenList): void {
+  loadTokenList(ctx: StateContext<DashboardTokenStateModel>, {publicKey}: LoadTokenList): void {
     ctx.patchState({
       loadTokenListProcess: progressStatuses.inProgress,
       lastLoadTokenListError: null,
     });
 
-    this.dashboardToken.loadAllAccountTokens(publicKeyString).subscribe({
-      next: (data) => ctx.dispatch(new LoadTokenListSuccess(data)),
-      error: (error) => ctx.dispatch(new LoadTokenListFail(error)),
-    });
+    this.dashboardToken.loadAllAccountTokens(publicKey)
+      .then(data => ctx.dispatch(new LoadTokenListSuccess(data)))
+      .catch(error => ctx.dispatch(new LoadTokenListFail(error)));
   }
 
   @Action(LoadTokenListSuccess)
-  loadTokenListSuccess(ctx: StateContext<DashboardTokenStateModel>, {tokenList}: LoadTokenListSuccess): void {
+  loadTokenListSuccess(ctx: StateContext<DashboardTokenStateModel>, {tokenListContext}: LoadTokenListSuccess): void {
     ctx.patchState({
       loadTokenListProcess: progressStatuses.succeed,
-      tokenList,
+      tokenList: tokenListContext.value,
     });
   }
 

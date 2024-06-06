@@ -1,4 +1,4 @@
-import {TokenListRPCResponse} from '../../symbols';
+import {RpcResponseTokenData} from '../../symbols';
 import {progressStatuses} from '../../../shared/symbols/statuses.symbols';
 import {UnknownError} from '../../../shared/symbols/errors.symbols';
 
@@ -11,7 +11,7 @@ export interface DashboardTokenStateModel {
   loadTokenListProcess: progressStatuses;
 
   /** Contain a list of all tokens for the requested account. */
-  tokenList: TokenListRPCResponse;
+  tokenList: RpcResponseTokenData[];
 
   /** Contain last error that occurred during the token list loading. */
   lastLoadTokenListError: Nullable<UnknownError>;

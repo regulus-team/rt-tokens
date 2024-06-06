@@ -1,10 +1,14 @@
 import {ChangeDetectionStrategy, Component, Inject} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
-import {Keypair, LAMPORTS_PER_SOL, PublicKey, SystemProgram, Transaction} from '@solana/web3.js';
-import {createInitializeMintInstruction, MINT_SIZE, TOKEN_PROGRAM_ID} from '@solana/spl-token';
-import {Store} from '@ngxs/store';
+import {Keypair, PublicKey, SystemProgram, Transaction} from '@solana/web3.js';
+import {
+  createAssociatedTokenAccountInstruction,
+  createInitializeMintInstruction,
+  getAssociatedTokenAddress,
+  MINT_SIZE,
+  TOKEN_PROGRAM_ID,
+} from '@solana/spl-token';
 import {connectionToCluster, currentWalletAdapter} from '../../../shared/symbols/solana.symbols';
-import {RequestAirdrop} from '../../../rt-wallet/states/rt-wallet/rt-wallet.actions';
 
 @Component({
   selector: 'app-dashboard-token-dialog-add-new',
@@ -14,16 +18,18 @@ import {RequestAirdrop} from '../../../rt-wallet/states/rt-wallet/rt-wallet.acti
 })
 export class DashboardTokenDialogAddNewComponent {
   constructor(
-    private store: Store,
     private dialog: MatDialogRef<DashboardTokenDialogAddNewComponent>,
     @Inject(MAT_DIALOG_DATA) public data: {avatar: string},
   ) {
   }
 
+  // Todo: add a form to the dialog window for setting the token metadata.
+
   /**
    * Create a new mint account and link it to the current wallet.
    */
   public async createMintAccount(decimals: number): Promise<void> {
+    // Todo: move to the state.
     // Extract the current user's public key.
     const currentUserPubkey = currentWalletAdapter.publicKey as PublicKey;
 
@@ -32,6 +38,9 @@ export class DashboardTokenDialogAddNewComponent {
 
     // Create a new account which will be used as a mint.
     const mintAccountKeypair = Keypair.generate();
+
+    // Get the associated token account address.
+    const associatedTokenAddress = await getAssociatedTokenAddress(mintAccountKeypair.publicKey, currentUserPubkey, false);
 
     // Create a transaction with the instructions to create a new mint account.
     const transaction = new Transaction().add(
@@ -44,13 +53,21 @@ export class DashboardTokenDialogAddNewComponent {
         programId: TOKEN_PROGRAM_ID,
       }),
 
-      // And make the created account a mint.
+      // Make the created account a mint (used for minting new tokens).
       createInitializeMintInstruction(
         mintAccountKeypair.publicKey,
         decimals,
         currentUserPubkey,
         currentUserPubkey,
         TOKEN_PROGRAM_ID,
+      ),
+
+      // Create an associated token account (used for storing tokens).
+      createAssociatedTokenAccountInstruction(
+        currentUserPubkey,
+        associatedTokenAddress,
+        currentUserPubkey,
+        mintAccountKeypair.publicKey,
       ),
     );
 
@@ -59,12 +76,5 @@ export class DashboardTokenDialogAddNewComponent {
 
     // Close the dialog and return the signed transaction.
     this.dialog.close(signedTransaction);
-  }
-
-  /**
-   * Request airdrop to the current wallet.
-   */
-  public airdropToCurrent(): void {
-    this.store.dispatch(new RequestAirdrop(currentWalletAdapter.publicKey as PublicKey, 2 * LAMPORTS_PER_SOL));
   }
 }

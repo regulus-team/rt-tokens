@@ -11,12 +11,14 @@ import {DashboardTokenState} from './states/dashboard-token/dashboard-token.stat
 import {DashboardTokenDialogAddNewComponent} from './components/dashboard-token-dialog-add-new/dashboard-token-dialog-add-new.component';
 import {RtWalletModule} from '../rt-wallet/rt-wallet.module';
 import {MatButton} from '@angular/material/button';
+import {DashboardTokenDetailsComponent} from './components/dashboard-token-details/dashboard-token-details.component';
 
 
 @NgModule({
   declarations: [
     DashboardTokenRootComponent,
     DashboardTokenListComponent,
+    DashboardTokenDetailsComponent,
     DashboardTokenDialogAddNewComponent,
   ],
   imports: [

@@ -1,11 +1,11 @@
 import {filter, Observable, take} from 'rxjs';
 import {ChangeDetectionStrategy, Component} from '@angular/core';
+import {MatDialog} from '@angular/material/dialog';
 import {Select} from '@ngxs/store';
+import {DashboardTokenDialogAddNewComponent} from '../dashboard-token-dialog-add-new/dashboard-token-dialog-add-new.component';
 import {DashboardTokenState} from '../../states/dashboard-token/dashboard-token.state';
 import {DashboardTokenStateModel} from '../../states/dashboard-token/dashboard-token.model';
 import {progressStatuses} from '../../../shared/symbols/statuses.symbols';
-import {MatDialog} from '@angular/material/dialog';
-import {DashboardTokenDialogAddNewComponent} from '../dashboard-token-dialog-add-new/dashboard-token-dialog-add-new.component';
 
 @Component({
   selector: 'app-dashboard-token-list',
@@ -25,6 +25,9 @@ export class DashboardTokenListComponent {
   constructor(private dialog: MatDialog) {
   }
 
+  /**
+   * Open a dialog window to add a new token.
+   */
   public openAddTokenDialog(): void {
     this.dialog.open<DashboardTokenDialogAddNewComponent>(DashboardTokenDialogAddNewComponent, {
       data: {some: 'data'},
