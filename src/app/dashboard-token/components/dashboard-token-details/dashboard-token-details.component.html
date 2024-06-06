@@ -1,3 +1,46 @@
-<div class="token-details">
-  Token Details
-</div>
+@if ({
+  loadTokenDetailsProcess: loadTokenDetailsProcess$ | async,
+  tokenAccount: tokenAccount$ | async,
+  associatedTokenAccount: associatedTokenAccount$ | async,
+  tokenAmount: tokenAmount$ | async,
+  supply: supply$ | async,
+  mintAuthority: mintAuthority$ | async,
+  freezeAuthority: freezeAuthority$ | async,
+  lastLoadTokenDetailsError: lastLoadTokenDetailsError$ | async,
+}; as extracted) {
+  <div class="mb-4">
+    <div class="py-4">
+      <h6 class="pretitle">Token: {{ extracted.tokenAccount }}</h6>
+      <h2 class="title">Retrieve status: {{ extracted.loadTokenDetailsProcess }}</h2>
+    </div>
+    <mat-divider></mat-divider>
+  </div>
+
+  @if (extracted.loadTokenDetailsProcess === tokenDetailsProgressStatuses.succeed) {
+    <mat-card class="token-details">
+      <mat-card-content>
+        <div class="token-details__content">
+          <div class="token-details__associatedTokenAccount">
+            Associated token account: {{ extracted.associatedTokenAccount }}
+          </div>
+          <div class="token-details__token-amount">
+            Token amount: {{ extracted.tokenAmount?.uiAmountString }}
+          </div>
+          <div class="token-details__supply">
+            Supply: {{ extracted.supply }}
+          </div>
+          <div class="token-details__mint-authority">
+            Mint authority: {{ extracted.mintAuthority }}
+          </div>
+          <div class="token-details__freeze-authority">
+            Freeze authority: {{ extracted.freezeAuthority }}
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  }
+
+  @if (extracted.lastLoadTokenDetailsError) {
+    <p>Error occurred: {{ extracted.lastLoadTokenDetailsError }}</p>
+  }
+}
