@@ -35,6 +35,14 @@
           <div class="token-details__freeze-authority">
             Freeze authority: {{ extracted.freezeAuthority }}
           </div>
+
+          <div class="token-details__actions">
+            @if (extracted.mintAuthority?.equals(currentUserPublicKey)) {
+              <button mat-raised-button color="primary" (click)="openMintTokenDialog()">
+                Mint token
+              </button>
+            }
+          </div>
         </div>
       </mat-card-content>
     </mat-card>

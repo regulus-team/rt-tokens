@@ -111,7 +111,7 @@ export class DashboardTokenState {
   loadTokenDetails(ctx: StateContext<DashboardTokenStateModel>, {publicKey}: LoadTokenDetails): void {
     ctx.patchState({
       loadTokenDetailsProcess: tokenDetailsProgressStatuses.loadingTokenAccount,
-      tokenAccount: publicKey.toString(),
+      tokenAccount: publicKey,
       lastLoadTokenDetailsError: null,
     });
 
@@ -125,7 +125,7 @@ export class DashboardTokenState {
   loadAssociatedTokenAccount(ctx: StateContext<DashboardTokenStateModel>, {tokenAccountData}: LoadAssociatedTokenAccount): void {
     ctx.patchState({
       loadTokenDetailsProcess: tokenDetailsProgressStatuses.loadingAssociatedTokenAccount,
-      associatedTokenAccount: tokenAccountData.value.data.parsed.info.mint,
+      associatedTokenAccount: new PublicKey(tokenAccountData.value.data.parsed.info.mint),
       tokenAmount: tokenAccountData.value.data.parsed.info.tokenAmount,
     });
 
@@ -141,8 +141,8 @@ export class DashboardTokenState {
     ctx.patchState({
       loadTokenDetailsProcess: tokenDetailsProgressStatuses.succeed,
       supply: associatedTokenAccount.value.data.parsed.info.supply,
-      mintAuthority: associatedTokenAccount.value.data.parsed.info.mintAuthority,
-      freezeAuthority: associatedTokenAccount.value.data.parsed.info.freezeAuthority,
+      mintAuthority: new PublicKey(associatedTokenAccount.value.data.parsed.info.mintAuthority),
+      freezeAuthority: new PublicKey(associatedTokenAccount.value.data.parsed.info.freezeAuthority),
     });
   }
 

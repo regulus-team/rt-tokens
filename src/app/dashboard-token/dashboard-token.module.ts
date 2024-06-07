@@ -12,7 +12,7 @@ import {DashboardTokenDialogAddNewComponent} from './components/dashboard-token-
 import {RtWalletModule} from '../rt-wallet/rt-wallet.module';
 import {MatButton} from '@angular/material/button';
 import {DashboardTokenDetailsComponent} from './components/dashboard-token-details/dashboard-token-details.component';
-
+import {DashboardTokenDialogMintTokenComponent} from './components/dashboard-token-dialog-mint-token/dashboard-token-dialog-mint-token.component';
 
 @NgModule({
   declarations: [
@@ -20,6 +20,7 @@ import {DashboardTokenDetailsComponent} from './components/dashboard-token-detai
     DashboardTokenListComponent,
     DashboardTokenDetailsComponent,
     DashboardTokenDialogAddNewComponent,
+    DashboardTokenDialogMintTokenComponent,
   ],
   imports: [
     CommonModule,
@@ -32,5 +33,4 @@ import {DashboardTokenDetailsComponent} from './components/dashboard-token-detai
   ],
   providers: [DashboardTokenService],
 })
-export class DashboardTokenModule {
-}
+export class DashboardTokenModule {}

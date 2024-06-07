@@ -1,11 +1,14 @@
-import {filter, map, Subscription} from 'rxjs';
+import {filter, map, Subscription, take} from 'rxjs';
 import {ChangeDetectionStrategy, Component, OnDestroy, OnInit} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
+import {MatDialog} from '@angular/material/dialog';
 import {PublicKey} from '@solana/web3.js';
 import {Store} from '@ngxs/store';
 import {tokenDetailsProgressStatuses} from '../../symbols';
 import {LoadTokenDetails} from '../../states/dashboard-token/dashboard-token.actions';
 import {DashboardTokenState} from '../../states/dashboard-token/dashboard-token.state';
+import {currentWalletAdapter} from '../../../shared/symbols/solana.symbols';
+import {DashboardTokenDialogMintTokenComponent} from '../dashboard-token-dialog-mint-token/dashboard-token-dialog-mint-token.component';
 
 @Component({
   selector: 'app-dashboard-token-details',
@@ -23,6 +26,9 @@ export class DashboardTokenDetailsComponent implements OnInit, OnDestroy {
   public readonly freezeAuthority$ = this.store.select(DashboardTokenState.freezeAuthority);
   public readonly lastLoadTokenDetailsError$ = this.store.select(DashboardTokenState.lastLoadTokenDetailsError);
 
+  /** Current user's public key. */
+  public readonly currentUserPublicKey: PublicKey = currentWalletAdapter.publicKey as PublicKey;
+
   /** Progress statuses of the token details loading. */
   public readonly tokenDetailsProgressStatuses = tokenDetailsProgressStatuses;
 
@@ -31,6 +37,7 @@ export class DashboardTokenDetailsComponent implements OnInit, OnDestroy {
 
   constructor(
     private route: ActivatedRoute,
+    private dialog: MatDialog,
     private store: Store,
   ) {}
 
@@ -87,4 +94,27 @@ export class DashboardTokenDetailsComponent implements OnInit, OnDestroy {
   //
   //   console.log('signedTransaction:', signedTransaction);
   // }
+
+  /**
+   * Open the dialog window for minting a new token.
+   */
+  public openMintTokenDialog(): void {
+    this.dialog
+      .open<DashboardTokenDialogMintTokenComponent>(DashboardTokenDialogMintTokenComponent, {
+        data: {some: 'data'},
+        backdropClass: ['rt-dialog'],
+        hasBackdrop: true,
+      })
+      .afterClosed()
+      .pipe(
+        take(1),
+        filter(data => !!data),
+      )
+      .subscribe({
+        next: data => {
+          console.log('Data received from the dialog window: ');
+          console.log(data);
+        },
+      });
+  }
 }

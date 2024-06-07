@@ -1,6 +1,7 @@
 import {RpcResponseTokenData, TokenAccountDataInfoAmount, tokenDetailsProgressStatuses} from '../../symbols';
 import {progressStatuses} from '../../../shared/symbols/statuses.symbols';
 import {UnknownError} from '../../../shared/symbols/errors.symbols';
+import {PublicKey} from '@solana/web3.js';
 
 /** Unique identifier of the dashboard token state. */
 export const dashboardTokenStateId = '_DashboardToken_';
@@ -20,10 +21,10 @@ export interface DashboardTokenStateModel {
   loadTokenDetailsProcess: tokenDetailsProgressStatuses;
 
   /** Contain the public key string of the token account for the currently loaded token. */
-  tokenAccount: Nullable<PublicKeyString>;
+  tokenAccount: Nullable<PublicKey>;
 
   /** Contain the public key string of the associated token account for the currently loaded token. */
-  associatedTokenAccount: Nullable<PublicKeyString>;
+  associatedTokenAccount: Nullable<PublicKey>;
 
   /** Contain the amount details of the currently loaded token. */
   tokenAmount: Nullable<TokenAccountDataInfoAmount>;
@@ -32,10 +33,10 @@ export interface DashboardTokenStateModel {
   supply: Nullable<string>;
 
   /** Contain the public key string of the account with the mint authority for the currently loaded token. */
-  mintAuthority: Nullable<PublicKeyString>;
+  mintAuthority: Nullable<PublicKey>;
 
   /** Contain the public key string of the account with the freeze authority for the currently loaded token. */
-  freezeAuthority: Nullable<PublicKeyString>;
+  freezeAuthority: Nullable<PublicKey>;
 
   /** Contain the last error that occurred during the token details loading. */
   lastLoadTokenDetailsError: Nullable<UnknownError>;
