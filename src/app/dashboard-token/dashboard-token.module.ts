@@ -13,6 +13,8 @@ import {RtWalletModule} from '../rt-wallet/rt-wallet.module';
 import {MatButton} from '@angular/material/button';
 import {DashboardTokenDetailsComponent} from './components/dashboard-token-details/dashboard-token-details.component';
 import {DashboardTokenDialogMintTokenComponent} from './components/dashboard-token-dialog-mint-token/dashboard-token-dialog-mint-token.component';
+import {RtFormsModule} from '../rt-forms/rt-forms.module';
+import {ReactiveFormsModule} from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -30,6 +32,8 @@ import {DashboardTokenDialogMintTokenComponent} from './components/dashboard-tok
     MatCardModule,
     MatDividerModule,
     MatButton,
+    RtFormsModule,
+    ReactiveFormsModule,
   ],
   providers: [DashboardTokenService],
 })

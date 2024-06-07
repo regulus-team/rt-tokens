@@ -8,6 +8,7 @@ import {
   LoadTokenList,
   LoadTokenListFail,
   LoadTokenListSuccess,
+  ReloadCurrentTokenDetails,
 } from './dashboard-token.actions';
 import {dashboardTokenStateId, DashboardTokenStateModel, defaultDashboardTokenState} from './dashboard-token.model';
 import {DashboardTokenService} from '../../services/dashboard-token/dashboard-token.service';
@@ -105,6 +106,20 @@ export class DashboardTokenState {
       loadTokenListProcess: progressStatuses.interrupted,
       lastLoadTokenListError: error,
     });
+  }
+
+  @Action(ReloadCurrentTokenDetails)
+  reloadCurrentTokenDetails(ctx: StateContext<DashboardTokenStateModel>): void {
+    // Get the current token account.
+    const currentTokenAccount = ctx.getState().tokenAccount;
+
+    // Check if the token account is selected.
+    if (!currentTokenAccount) {
+      throw new Error('Token details cannot be reloaded as no token account is selected.');
+    }
+
+    // Load the token details.
+    ctx.dispatch(new LoadTokenDetails(currentTokenAccount));
   }
 
   @Action(LoadTokenDetails)

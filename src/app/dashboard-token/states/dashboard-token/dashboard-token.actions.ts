@@ -21,6 +21,10 @@ export class LoadTokenListFail {
   constructor(public error: UnknownError) {}
 }
 
+export class ReloadCurrentTokenDetails {
+  static type = `${dashboardTokenStateId} ${ReloadCurrentTokenDetails.name}`;
+}
+
 export class LoadTokenDetails {
   static type = `${dashboardTokenStateId} ${LoadTokenDetails.name}`;
 

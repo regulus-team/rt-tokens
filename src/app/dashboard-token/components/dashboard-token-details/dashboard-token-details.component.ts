@@ -4,11 +4,14 @@ import {ActivatedRoute} from '@angular/router';
 import {MatDialog} from '@angular/material/dialog';
 import {PublicKey} from '@solana/web3.js';
 import {Store} from '@ngxs/store';
+import {
+  DashboardTokenDialogMintTokenComponent,
+  DialogMintTokenData,
+} from '../dashboard-token-dialog-mint-token/dashboard-token-dialog-mint-token.component';
 import {tokenDetailsProgressStatuses} from '../../symbols';
-import {LoadTokenDetails} from '../../states/dashboard-token/dashboard-token.actions';
+import {LoadTokenDetails, ReloadCurrentTokenDetails} from '../../states/dashboard-token/dashboard-token.actions';
 import {DashboardTokenState} from '../../states/dashboard-token/dashboard-token.state';
 import {currentWalletAdapter} from '../../../shared/symbols/solana.symbols';
-import {DashboardTokenDialogMintTokenComponent} from '../dashboard-token-dialog-mint-token/dashboard-token-dialog-mint-token.component';
 
 @Component({
   selector: 'app-dashboard-token-details',
@@ -64,44 +67,25 @@ export class DashboardTokenDetailsComponent implements OnInit, OnDestroy {
     this.subscription.unsubscribe();
   }
 
-  // Todo: load the token details and check if the user has mint authority.
-  // mintAccountKeypair: 7LMNNxJTkVty8QJjKL16e3tUMooX4AbecC7qNuBYojcg -- mint
-  // associatedTokenAddress: FBPpt91h5RKgYcMMsgCzVEzoiEfZaLQDhc9xNw96YGd4 -- pubkey
-  // public async mintToken(amount: number) {
-  //   // Extract the current user's public key.
-  //   const currentUserPubkey = currentWalletAdapter.publicKey as PublicKey;
-  //
-  //   const mintAccount = new PublicKey('7LMNNxJTkVty8QJjKL16e3tUMooX4AbecC7qNuBYojcg');
-  //   const mintAuthority = currentUserPubkey;
-  //   const associatedTokenAddress = new PublicKey('FBPpt91h5RKgYcMMsgCzVEzoiEfZaLQDhc9xNw96YGd4');
-  //
-  //
-  //   // Get an associated token account of the wallet.
-  //   const tokenAssociatedAccount = await getAssociatedTokenAddress(mintAccount, currentUserPubkey);
-  //
-  //   console.log('tokenAssociatedAccount:', tokenAssociatedAccount.toString());
-  //
-  //   const transaction = new Transaction().add(
-  //     createMintToInstruction(
-  //       mintAccount,
-  //       associatedTokenAddress,
-  //       mintAuthority,
-  //       amount,
-  //     ));
-  //
-  //   // Request the wallet to sign the transaction and send it to the cluster.
-  //   const signedTransaction = await currentWalletAdapter.sendTransaction(transaction, connectionToCluster);
-  //
-  //   console.log('signedTransaction:', signedTransaction);
-  // }
-
   /**
    * Open the dialog window for minting a new token.
    */
-  public openMintTokenDialog(): void {
+  public openMintTokenDialog(tokenAccountPublicKey: Nullable<PublicKey>, associatedTokenAccountPublicKey: Nullable<PublicKey>): void {
+    // Mint dialog button is available only if it has mint authority, so consider the current wallet as mint authority.
+    const mintAuthorityPublicKey = currentWalletAdapter.publicKey;
+
+    // If any of the required public keys is not set, do nothing.
+    if (!tokenAccountPublicKey || !associatedTokenAccountPublicKey || !mintAuthorityPublicKey) {
+      return;
+    }
+
     this.dialog
-      .open<DashboardTokenDialogMintTokenComponent>(DashboardTokenDialogMintTokenComponent, {
-        data: {some: 'data'},
+      .open<DashboardTokenDialogMintTokenComponent, DialogMintTokenData>(DashboardTokenDialogMintTokenComponent, {
+        data: {
+          tokenAccountPublicKey,
+          associatedTokenAccountPublicKey,
+          mintAuthorityPublicKey,
+        },
         backdropClass: ['rt-dialog'],
         hasBackdrop: true,
       })

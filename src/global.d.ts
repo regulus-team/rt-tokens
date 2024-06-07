@@ -4,6 +4,11 @@
 type Nullable<T> = T | null;
 
 /**
+ * Indicates that a value cannot be null.
+ */
+type NotNullable<T> = T extends null | undefined ? never : T;
+
+/**
  * The string representation of a public key.
  */
 type PublicKeyString = string;

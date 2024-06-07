@@ -1,9 +1,9 @@
 <div class="mint-token-dialog">
   <h2 class="add-token-dialog__title title">Mint token</h2>
 
-  <input type="text">
+  <app-rt-text-input inputType="number" [formControl]="tokenAmountControl"></app-rt-text-input>
 
-  <button mat-button (click)="mintToken()">Mint token</button>
+  <button mat-button (click)="mintToken(tokenAmountControl.value)">Mint token</button>
 </div>
 
 

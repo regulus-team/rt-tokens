@@ -38,7 +38,7 @@
 
           <div class="token-details__actions">
             @if (extracted.mintAuthority?.equals(currentUserPublicKey)) {
-              <button mat-raised-button color="primary" (click)="openMintTokenDialog()">
+              <button mat-raised-button color="primary" (click)="openMintTokenDialog(extracted.tokenAccount, extracted.associatedTokenAccount)">
                 Mint token
               </button>
             }

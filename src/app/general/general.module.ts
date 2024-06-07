@@ -8,26 +8,12 @@ import {MatButtonModule} from '@angular/material/button';
 import {RtSvgSpriteModule} from '../rt-svg-sprite/rt-svg-sprite.module';
 import {RtPlatformModule} from '../rt-platform/rt-platform.module';
 import {Settings} from '../../conf/settings';
+import {RtFormsModule} from '../rt-forms/rt-forms.module';
 
 @NgModule({
-  declarations: [
-    GeneralFooterComponent,
-    GeneralHeaderComponent,
-    GeneralNotFoundComponent,
-  ],
-  imports: [
-    CommonModule,
-    RouterLink,
-    MatButtonModule,
-    RouterModule,
-    RtSvgSpriteModule,
-    RtPlatformModule,
-  ],
+  declarations: [GeneralFooterComponent, GeneralHeaderComponent, GeneralNotFoundComponent],
+  imports: [CommonModule, RouterLink, MatButtonModule, RouterModule, RtSvgSpriteModule, RtPlatformModule, RtFormsModule],
   providers: [Settings],
-  exports: [
-    GeneralFooterComponent,
-    GeneralHeaderComponent,
-  ],
+  exports: [GeneralFooterComponent, GeneralHeaderComponent],
 })
-export class GeneralModule {
-}
+export class GeneralModule {}
