@@ -1,7 +1,6 @@
 import {Injectable} from '@angular/core';
 import {createMintToInstruction, TOKEN_PROGRAM_ID} from '@solana/spl-token';
 import {AccountInfo, PublicKey, RpcResponseAndContext, Transaction} from '@solana/web3.js';
-import {connectionToCluster, currentWalletAdapter} from '../../../shared/symbols/solana.symbols';
 import {
   RpcResponseAssociatedTokenAccount,
   RpcResponseTokenAccount,
@@ -9,15 +8,29 @@ import {
   RpcResponseUserAccount,
 } from '../../symbols/dashboard-token-rcp-responce.symbols';
 import {MintTokenActionData} from '../../symbols/dashboard-token-action-data.symbols';
+import {RtSolanaService} from '../../../rt-solana/services/rt-solana/rt-solana.service';
 
 @Injectable()
 export class DashboardTokenService {
+  /**
+   * The current wallet adapter.
+   * Used for all wallet-related operations.
+   */
+  public readonly currentWalletAdapter = this.rtSolana.currentWalletAdapter;
+
+  /**
+   * Connection to the current Solana network cluster.
+   */
+  public readonly currentClusterConnection = this.rtSolana.currentClusterConnection;
+
+  constructor(private rtSolana: RtSolanaService) {}
+
   /**
    * Load all associated token accounts for a given owner account.
    * @param publicKey - The public key of the owner account.
    */
   public loadAllAccountTokens(publicKey: PublicKey): Promise<RpcResponseAndContext<RpcResponseTokenData[]>> {
-    return connectionToCluster.getParsedTokenAccountsByOwner(publicKey, {
+    return this.currentClusterConnection.getParsedTokenAccountsByOwner(publicKey, {
       programId: TOKEN_PROGRAM_ID,
     });
   }
@@ -30,7 +43,9 @@ export class DashboardTokenService {
    * @param userAccount - The public key of the user account.
    */
   public loadUserAccountData(userAccount: PublicKey): Promise<RpcResponseAndContext<RpcResponseUserAccount>> {
-    return connectionToCluster.getParsedAccountInfo(userAccount) as unknown as Promise<RpcResponseAndContext<RpcResponseUserAccount>>;
+    return this.currentClusterConnection.getParsedAccountInfo(userAccount) as unknown as Promise<
+      RpcResponseAndContext<RpcResponseUserAccount>
+    >;
   }
 
   /**
@@ -41,7 +56,9 @@ export class DashboardTokenService {
    * @param tokenAccount - The public key of the token account.
    */
   public loadTokenAccountData(tokenAccount: PublicKey): Promise<RpcResponseAndContext<AccountInfo<RpcResponseTokenAccount>>> {
-    return connectionToCluster.getParsedAccountInfo(tokenAccount) as Promise<RpcResponseAndContext<AccountInfo<RpcResponseTokenAccount>>>;
+    return this.currentClusterConnection.getParsedAccountInfo(tokenAccount) as Promise<
+      RpcResponseAndContext<AccountInfo<RpcResponseTokenAccount>>
+    >;
   }
 
   /**
@@ -54,7 +71,7 @@ export class DashboardTokenService {
   public loadAssociatedTokenAccountData(
     associatedTokenAccount: PublicKey,
   ): Promise<RpcResponseAndContext<AccountInfo<RpcResponseAssociatedTokenAccount>>> {
-    return connectionToCluster.getParsedAccountInfo(associatedTokenAccount) as Promise<
+    return this.currentClusterConnection.getParsedAccountInfo(associatedTokenAccount) as Promise<
       RpcResponseAndContext<AccountInfo<RpcResponseAssociatedTokenAccount>>
     >;
   }
@@ -75,6 +92,6 @@ export class DashboardTokenService {
     );
 
     // Request the wallet to sign the transaction and send it to the cluster.
-    return currentWalletAdapter.sendTransaction(transaction, connectionToCluster);
+    return this.currentWalletAdapter.sendTransaction(transaction, this.currentClusterConnection);
   }
 }

@@ -19,7 +19,7 @@ import {dashboardTokenStateId, DashboardTokenStateModel, defaultDashboardTokenSt
 import {DashboardTokenService} from '../../services/dashboard-token/dashboard-token.service';
 import {tokenDetailsProgressStatuses} from '../../symbols/dashboard-token-general.symbols';
 import {progressStatuses} from '../../../shared/symbols/statuses.symbols';
-import {waitForTransactionBySignature} from '../../../shared/symbols/solana.symbols';
+import {RtSolanaService} from '../../../rt-solana/services/rt-solana/rt-solana.service';
 
 @State<DashboardTokenStateModel>({
   name: dashboardTokenStateId,
@@ -27,7 +27,10 @@ import {waitForTransactionBySignature} from '../../../shared/symbols/solana.symb
 })
 @Injectable()
 export class DashboardTokenState {
-  constructor(private dashboardToken: DashboardTokenService) {}
+  constructor(
+    private dashboardToken: DashboardTokenService,
+    private rtSolana: RtSolanaService,
+  ) {}
 
   @Selector()
   static loadTokenListProcess(state: DashboardTokenStateModel): DashboardTokenStateModel['loadTokenListProcess'] {
@@ -205,7 +208,7 @@ export class DashboardTokenState {
 
     // Reload current token details if the minted token is the currently selected token.
     if (storedTokenAccount?.equals(mintTokenData.tokenAccountPublicKey)) {
-      waitForTransactionBySignature(transactionSignature).then(isConfirmed => {
+      this.rtSolana.waitForTransactionBySignature(transactionSignature).then(isConfirmed => {
         if (isConfirmed) {
           ctx.dispatch(new ReloadCurrentTokenDetails());
         }

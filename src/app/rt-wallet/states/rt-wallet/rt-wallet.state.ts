@@ -12,10 +12,10 @@ import {
   GetWalletBalanceSuccess,
   RequestAirdrop,
 } from './rt-wallet.actions';
-import {defaultRtWalletState, uniqueStateIdentifier, RtWalletStateModel} from './rt-wallet.model';
+import {defaultRtWalletState, RtWalletStateModel, uniqueStateIdentifier} from './rt-wallet.model';
 import {RtWalletService} from '../../services/rt-wallet/rt-wallet.service';
-import {currentWalletAdapter} from '../../../shared/symbols/solana.symbols';
 import {progressStatuses} from '../../../shared/symbols/statuses.symbols';
+import {RtSolanaService} from '../../../rt-solana/services/rt-solana/rt-solana.service';
 
 @State<RtWalletStateModel>({
   name: uniqueStateIdentifier,
@@ -23,8 +23,10 @@ import {progressStatuses} from '../../../shared/symbols/statuses.symbols';
 })
 @Injectable()
 export class RtWalletState {
-  constructor(private walletService: RtWalletService) {
-  }
+  constructor(
+    private walletService: RtWalletService,
+    private rtSolana: RtSolanaService,
+  ) {}
 
   @Selector()
   static connectWalletStatus(state: RtWalletStateModel): RtWalletStateModel['connectWalletStatus'] {
@@ -68,7 +70,8 @@ export class RtWalletState {
       connectWalletError: null,
     });
 
-    currentWalletAdapter.connect()
+    this.rtSolana.currentWalletAdapter
+      .connect()
       .then(() => ctx.dispatch(new ConnectWalletSuccess()))
       .catch(error => ctx.dispatch(new ConnectWalletFail(error)));
   }
@@ -95,7 +98,8 @@ export class RtWalletState {
       loadBalanceError: null,
     });
 
-    this.walletService.getWalletBalance(publicKey)
+    this.walletService
+      .getWalletBalance(publicKey)
       .then(balance => ctx.dispatch(new GetWalletBalanceSuccess(balance)))
       .catch(error => ctx.dispatch(new GetWalletBalanceFail(error)));
   }
@@ -123,14 +127,16 @@ export class RtWalletState {
       updateBalanceError: null,
     });
 
-    this.walletService.requestAirdrop(publicKey, lamportsAmount)
+    this.walletService
+      .requestAirdrop(publicKey, lamportsAmount)
       .then(transactionSignature => ctx.dispatch(new ConfirmAirdrop(transactionSignature, lamportsAmount)))
       .catch(error => ctx.dispatch(new AirdropFail(error)));
   }
 
   @Action(ConfirmAirdrop)
   confirmAirdrop(ctx: StateContext<RtWalletStateModel>, {transactionSignature, lamportsAmount}: ConfirmAirdrop): void {
-    this.walletService.confirmAirdrop(transactionSignature)
+    this.walletService
+      .confirmAirdrop(transactionSignature)
       .then(() => ctx.dispatch(new AirdropSuccess(lamportsAmount)))
       .catch(error => ctx.dispatch(new AirdropFail(error)));
   }

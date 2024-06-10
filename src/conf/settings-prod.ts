@@ -1,10 +1,12 @@
 import {Settings} from './settings';
 import {AllProjectSettings} from './symbols/conf.symbols';
 
+import {NetCluster} from '../app/rt-solana/symbols';
+
 /**
- * Settings for the staging environment.
+ * Settings for the production environment.
  */
 export class SettingsProd extends Settings implements AllProjectSettings {
-  /** Base URL of the project for the production server environment. */
   public override coreBaseUrl = 'https://artmetric.regulus.team';
+  public override currentNetCluster: NetCluster = 'mainnet-beta';
 }

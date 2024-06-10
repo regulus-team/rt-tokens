@@ -1,8 +1,8 @@
-import {Injectable, Inject, PLATFORM_ID, Injector, InjectionToken} from '@angular/core';
+import {Injectable, Inject, PLATFORM_ID, InjectionToken} from '@angular/core';
 import {isPlatformBrowser} from '@angular/common';
 
 @Injectable()
-export class WindowService {
+export class RtPlatformWindowService {
   private readonly _window: Window;
   constructor(@Inject(PLATFORM_ID) platformId: string) {
     if (!isPlatformBrowser(platformId)) {

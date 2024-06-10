@@ -1,16 +1,16 @@
 import {Inject, Injectable, Optional, PLATFORM_ID} from '@angular/core';
-import {Settings} from '../../conf/settings';
+import {Settings} from '../../../../conf/settings';
 import {isPlatformBrowser, isPlatformServer} from '@angular/common';
-import {BASE_URL} from './models';
+import {BASE_URL} from '../../symbols';
 
 @Injectable({
   providedIn: 'root',
 })
 export class RtPlatformService {
   constructor(
-    @Inject(PLATFORM_ID) private platformId: any,
+    @Inject(PLATFORM_ID) private platformId: string,
     private settings: Settings,
-    @Optional() @Inject(BASE_URL) private serverBaseUrl: any,
+    @Optional() @Inject(BASE_URL) private serverBaseUrl: string,
   ) {}
 
   get baseUrl(): string {

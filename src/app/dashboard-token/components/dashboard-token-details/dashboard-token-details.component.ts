@@ -10,8 +10,8 @@ import {
 } from '../dashboard-token-dialog-mint-token/dashboard-token-dialog-mint-token.component';
 import {LoadTokenDetails} from '../../states/dashboard-token/dashboard-token.actions';
 import {DashboardTokenState} from '../../states/dashboard-token/dashboard-token.state';
-import {currentWalletAdapter} from '../../../shared/symbols/solana.symbols';
 import {tokenDetailsProgressStatuses} from '../../symbols/dashboard-token-general.symbols';
+import {RtSolanaService} from '../../../rt-solana/services/rt-solana/rt-solana.service';
 
 @Component({
   selector: 'app-dashboard-token-details',
@@ -29,8 +29,14 @@ export class DashboardTokenDetailsComponent implements OnInit, OnDestroy {
   public readonly freezeAuthority$ = this.store.select(DashboardTokenState.freezeAuthority);
   public readonly lastLoadTokenDetailsError$ = this.store.select(DashboardTokenState.lastLoadTokenDetailsError);
 
+  /**
+   * The current wallet adapter.
+   * Used for all wallet-related operations.
+   */
+  public readonly currentWalletAdapter = this.rtSolana.currentWalletAdapter;
+
   /** Current user's public key. */
-  public readonly currentUserPublicKey: PublicKey = currentWalletAdapter.publicKey as PublicKey;
+  public readonly currentUserPublicKey: PublicKey = this.currentWalletAdapter.publicKey as PublicKey;
 
   /** Progress statuses of the token details loading. */
   public readonly tokenDetailsProgressStatuses = tokenDetailsProgressStatuses;
@@ -42,6 +48,7 @@ export class DashboardTokenDetailsComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private dialog: MatDialog,
     private store: Store,
+    private rtSolana: RtSolanaService,
   ) {}
 
   ngOnInit(): void {
@@ -72,7 +79,7 @@ export class DashboardTokenDetailsComponent implements OnInit, OnDestroy {
    */
   public openMintTokenDialog(tokenAccountPublicKey: Nullable<PublicKey>, associatedTokenAccountPublicKey: Nullable<PublicKey>): void {
     // Mint dialog button is available only if it has mint authority, so consider the current wallet as mint authority.
-    const mintAuthorityPublicKey = currentWalletAdapter.publicKey;
+    const mintAuthorityPublicKey = this.currentWalletAdapter.publicKey;
 
     // If any of the required public keys is not set, do nothing.
     if (!tokenAccountPublicKey || !associatedTokenAccountPublicKey || !mintAuthorityPublicKey) {

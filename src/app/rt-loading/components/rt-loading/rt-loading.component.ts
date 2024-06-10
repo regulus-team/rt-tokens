@@ -1,5 +1,5 @@
 import {AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, HostBinding, Input, ViewChild} from '@angular/core';
-import {RtPlatformService} from '../../../rt-platform/rt-platform.service';
+import {RtPlatformService} from '../../../rt-platform/services/rt-platform/rt-platform.service';
 import {opacityHalfAnimation} from '../../../shared/animations/opacity-half.animation';
 import {fadeOutAnimation} from '../../../shared/animations/fade-out.animation';
 import {fadeInAnimation} from '../../../shared/animations/fade-in.animation';

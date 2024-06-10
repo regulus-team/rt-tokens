@@ -1,6 +1,6 @@
 import {progressStatuses} from '../../../shared/symbols/statuses.symbols';
 import {UnknownError} from '../../../shared/symbols/errors.symbols';
-import {Lamports} from '../../../shared/symbols/solana.symbols';
+import {Lamports} from '../../../rt-solana/symbols';
 
 /** Unique identifier of the related state. */
 export const uniqueStateIdentifier = '_RtWallet_';

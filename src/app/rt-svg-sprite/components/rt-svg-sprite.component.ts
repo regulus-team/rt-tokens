@@ -1,11 +1,10 @@
+import {Subscription} from 'rxjs';
 import {HttpClient} from '@angular/common/http';
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit} from '@angular/core';
 import {DomSanitizer, SafeHtml} from '@angular/platform-browser';
-import {Subscription} from 'rxjs';
-import {RtPlatformService} from '../../rt-platform/rt-platform.service';
+import {RtPlatformService} from '../../rt-platform/services/rt-platform/rt-platform.service';
 
 @Component({
-  // eslint-disable-next-line @angular-eslint/component-selector
   selector: 'rt-svg-sprite',
   templateUrl: './rt-svg-sprite.component.html',
   styleUrls: ['./rt-svg-sprite.component.scss'],
