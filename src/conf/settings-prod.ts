@@ -6,8 +6,5 @@ import {AllProjectSettings} from './symbols/conf.symbols';
  */
 export class SettingsProd extends Settings implements AllProjectSettings {
   /** Base URL of the project for the production server environment. */
-  coreBaseUrl = 'https://artmetric.regulus.team';
-
-  /** Stripe public key. */
-  rtStripePublicKey = 'pk_test_TYooMQauvdEDq54NiTphI7jx';
+  public override coreBaseUrl = 'https://artmetric.regulus.team';
 }

@@ -1,5 +1,6 @@
 import {Injectable} from '@angular/core';
 import {Action, Selector, State, StateContext} from '@ngxs/store';
+import {PublicKey} from '@solana/web3.js';
 import {
   LoadAssociatedTokenAccount,
   LoadTokenDetails,
@@ -8,13 +9,17 @@ import {
   LoadTokenList,
   LoadTokenListFail,
   LoadTokenListSuccess,
+  MintToken,
+  MintTokenFail,
+  MintTokenSuccess,
   ReloadCurrentTokenDetails,
+  ResetMintTokenProcess,
 } from './dashboard-token.actions';
 import {dashboardTokenStateId, DashboardTokenStateModel, defaultDashboardTokenState} from './dashboard-token.model';
 import {DashboardTokenService} from '../../services/dashboard-token/dashboard-token.service';
+import {tokenDetailsProgressStatuses} from '../../symbols/dashboard-token-general.symbols';
 import {progressStatuses} from '../../../shared/symbols/statuses.symbols';
-import {tokenDetailsProgressStatuses} from '../../symbols';
-import {PublicKey} from '@solana/web3.js';
+import {waitForTransactionBySignature} from '../../../shared/symbols/solana.symbols';
 
 @State<DashboardTokenStateModel>({
   name: dashboardTokenStateId,
@@ -77,6 +82,16 @@ export class DashboardTokenState {
   @Selector()
   static lastLoadTokenDetailsError(state: DashboardTokenStateModel): DashboardTokenStateModel['lastLoadTokenDetailsError'] {
     return state.lastLoadTokenDetailsError;
+  }
+
+  @Selector()
+  static mintTokenProcess(state: DashboardTokenStateModel): DashboardTokenStateModel['mintTokenProcess'] {
+    return state.mintTokenProcess;
+  }
+
+  @Selector()
+  static lastMintTokenError(state: DashboardTokenStateModel): DashboardTokenStateModel['lastMintTokenError'] {
+    return state.lastMintTokenError;
   }
 
   @Action(LoadTokenList)
@@ -166,6 +181,55 @@ export class DashboardTokenState {
     ctx.patchState({
       loadTokenDetailsProcess: tokenDetailsProgressStatuses.interrupted,
       lastLoadTokenDetailsError: error,
+    });
+  }
+
+  @Action(MintToken)
+  mintToken(ctx: StateContext<DashboardTokenStateModel>, {mintTokenData}: MintToken): void {
+    ctx.patchState({
+      mintTokenProcess: progressStatuses.inProgress,
+      lastMintTokenError: null,
+    });
+
+    this.dashboardToken
+      .mintSpecificToken(mintTokenData)
+      .then(signature => {
+        ctx.dispatch(new MintTokenSuccess(signature, mintTokenData));
+      })
+      .catch(error => ctx.dispatch(new MintTokenFail(error)));
+  }
+
+  @Action(MintTokenSuccess)
+  mintTokenSuccess(ctx: StateContext<DashboardTokenStateModel>, {transactionSignature, mintTokenData}: MintTokenSuccess): void {
+    const storedTokenAccount = ctx.getState().tokenAccount;
+
+    // Reload current token details if the minted token is the currently selected token.
+    if (storedTokenAccount?.equals(mintTokenData.tokenAccountPublicKey)) {
+      waitForTransactionBySignature(transactionSignature).then(isConfirmed => {
+        if (isConfirmed) {
+          ctx.dispatch(new ReloadCurrentTokenDetails());
+        }
+      });
+    }
+
+    ctx.patchState({
+      mintTokenProcess: progressStatuses.succeed,
+    });
+  }
+
+  @Action(MintTokenFail)
+  mintTokenFail(ctx: StateContext<DashboardTokenStateModel>, {error}: MintTokenFail): void {
+    ctx.patchState({
+      mintTokenProcess: progressStatuses.interrupted,
+      lastMintTokenError: error,
+    });
+  }
+
+  @Action(ResetMintTokenProcess)
+  resetMintTokenProgress(ctx: StateContext<DashboardTokenStateModel>): void {
+    ctx.patchState({
+      mintTokenProcess: progressStatuses.notInitialized,
+      lastMintTokenError: null,
     });
   }
 }

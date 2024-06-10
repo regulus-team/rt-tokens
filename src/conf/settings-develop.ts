@@ -6,8 +6,5 @@ import {AllProjectSettings} from './symbols/conf.symbols';
  */
 export class SettingsDevelop extends Settings implements AllProjectSettings {
   /** Base URL of the project for the development server environment. */
-  coreBaseUrl = 'https://dev.artmetric.io/';
-
-  /** Stripe public key. */
-  rtStripePublicKey = 'pk_test_TYooMQauvdEDq54NiTphI7jx';
+  public override coreBaseUrl = 'https://dev.artmetric.io/';
 }

@@ -1,7 +1,8 @@
-import {RpcResponseTokenData, TokenAccountDataInfoAmount, tokenDetailsProgressStatuses} from '../../symbols';
 import {progressStatuses} from '../../../shared/symbols/statuses.symbols';
 import {UnknownError} from '../../../shared/symbols/errors.symbols';
 import {PublicKey} from '@solana/web3.js';
+import {tokenDetailsProgressStatuses} from '../../symbols/dashboard-token-general.symbols';
+import {RpcResponseTokenData, TokenAccountDataInfoAmount} from '../../symbols/dashboard-token-rcp-responce.symbols';
 
 /** Unique identifier of the dashboard token state. */
 export const dashboardTokenStateId = '_DashboardToken_';
@@ -40,6 +41,12 @@ export interface DashboardTokenStateModel {
 
   /** Contain the last error that occurred during the token details loading. */
   lastLoadTokenDetailsError: Nullable<UnknownError>;
+
+  /** Contain current process status of the mint token process. */
+  mintTokenProcess: progressStatuses;
+
+  /** Contain the last error that occurred during the minting token process. */
+  lastMintTokenError: Nullable<UnknownError>;
 }
 
 /** Default data for state initialization & reset. */
@@ -58,4 +65,7 @@ export const defaultDashboardTokenState: DashboardTokenStateModel = {
   freezeAuthority: null,
 
   lastLoadTokenDetailsError: null,
+
+  mintTokenProcess: progressStatuses.notInitialized,
+  lastMintTokenError: null,
 };

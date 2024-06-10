@@ -1,0 +1,129 @@
+<div class="wrap" #content>
+  <ng-container>
+
+    @switch (strategy) {
+      @case (availableTransformStrategy.replace) {
+        @if (showLoading) {
+          @if (type === availableLoaderTypes.linear) {
+            <div class="linear-wrapper">
+              <mat-progress-bar
+                mode="indeterminate"
+                [ngStyle]="{'height.px': linearHeight}"
+                class="linear-progress-bar"
+              ></mat-progress-bar>
+            </div>
+          }
+          @if (type === availableLoaderTypes.circular) {
+            <div class="spinner-wrapper">
+              <mat-spinner [diameter]="circularHeight"></mat-spinner>
+            </div>
+          }
+        } @else {
+          <ng-container *ngTemplateOutlet="ngContent"></ng-container>
+        }
+        <ng-template #loader>
+          <ng-container *ngTemplateOutlet="ngContent"></ng-container>
+        </ng-template>
+      }
+      @case (availableTransformStrategy.overlay) {
+        <div class="content-with-overlay__wrap">
+          @if (showLoading) {
+            <div
+              class="overlay"
+            [ngStyle]="{
+            backgroundColor: overlayColor,
+              'height.px': contentHeight,
+              'width.px': contentWidth
+            }"
+              >
+              @if (type === availableLoaderTypes.linear) {
+                <div class="linear-wrapper linear-wrapper__overlay">
+                  <mat-progress-bar
+                    mode="indeterminate"
+                    [ngStyle]="{'height.px': linearHeight, 'margin-top.px': -linearHeight}"
+                  ></mat-progress-bar>
+                </div>
+              }
+              @if (type === availableLoaderTypes.circular) {
+                <div
+                  class="spinner-wrapper"
+              [ngStyle]="{
+              position: 'absolute',
+                'margin-top.px': centringCircular ? (contentHeight/2 - circularHeight/2) : 0,
+                'margin-left.px': centringCircular ? (contentWidth/2 - circularHeight/2) : 0
+              }"
+                  >
+                  <mat-spinner [diameter]="circularHeight"></mat-spinner>
+                </div>
+              }
+            </div>
+          }
+          <div>
+            <ng-container *ngTemplateOutlet="ngContent"></ng-container>
+          </div>
+        </div>
+      }
+      @case (availableTransformStrategy.disappear) {
+        <div class="content__wrap" [class.ignore-clicks]="showLoading" #content>
+          @if (showLoading) {
+            <div class="loading-indicator_wrap">
+              @if (type === availableLoaderTypes.linear) {
+                <div class="linear-wrapper">
+                  <mat-progress-bar @fadeIn @fadeOut mode="indeterminate" [ngStyle]="{'height.px': linearHeight}"></mat-progress-bar>
+                </div>
+              }
+              @if (type === availableLoaderTypes.circular) {
+                <div
+                  class="spinner-wrapper"
+              [ngStyle]="{
+              position: 'absolute',
+                'margin-top.px': centringCircular ? (contentHeight/2 - circularHeight/2) : 0,
+                'margin-left.px': centringCircular ? (contentWidth/2 - circularHeight/2) : 0
+              }"
+                  >
+                  <mat-spinner [diameter]="circularHeight"></mat-spinner>
+                </div>
+              }
+            </div>
+          }
+          <div [@opacityHalf]="showLoading" class="content__wrap-content">
+            <ng-container *ngTemplateOutlet="ngContent"></ng-container>
+          </div>
+        </div>
+      }
+      @case (availableTransformStrategy.skeleton) {
+        @if (showLoading) {
+          <div class="skeleton-wrap">
+            @if (type === availableLoaderTypes.circular) {
+              <div
+                class="skeleton-wrap__circular"
+                [ngStyle]="{height: circularHeight+'px', width: circularHeight+'px'}"
+                >
+              </div>
+            } @else {
+              <div
+                class="skeleton-wrap__linear"
+                [ngStyle]="{height: linearHeight?linearHeight+'px': '100%', width: linearWidth?linearWidth+'px': '100%'}"
+                >
+              </div>
+            }
+            <ng-template #linear>
+              <div
+                class="skeleton-wrap__linear"
+                [ngStyle]="{height: linearHeight?linearHeight+'px': '100%', width: linearWidth?linearWidth+'px': '100%'}"
+                >
+              </div>
+            </ng-template>
+          </div>
+        } @else {
+          <ng-content></ng-content>
+        }
+      }
+    }
+  </ng-container>
+
+  <ng-template #ngContent>
+    <ng-content></ng-content>
+  </ng-template>
+</div>
+

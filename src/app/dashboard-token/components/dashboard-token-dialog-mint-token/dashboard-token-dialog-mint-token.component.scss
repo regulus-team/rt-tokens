@@ -1,10 +1,21 @@
-.add-token-dialog {
+.mint-token-dialog {
   padding: 20px 10px;
   display: flex;
   flex-direction: column;
 }
 
-.add-token-dialog__title {
+.mint-token-dialog__title {
   text-align: center;
   margin-bottom: 20px;
+}
+
+.mint-token-dialog__input {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mint-token-dialog__error {
+  max-width: 329px;
+  color: var(--mat-form-field-error-text-color);
 }

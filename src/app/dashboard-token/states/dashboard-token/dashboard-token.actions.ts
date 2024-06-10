@@ -1,7 +1,12 @@
 import {dashboardTokenStateId} from './dashboard-token.model';
-import {RpcResponseAssociatedTokenAccount, RpcResponseTokenAccount, RpcResponseTokenData} from '../../symbols';
 import {UnknownError} from '../../../shared/symbols/errors.symbols';
-import {AccountInfo, PublicKey, RpcResponseAndContext} from '@solana/web3.js';
+import {AccountInfo, PublicKey, RpcResponseAndContext, TransactionSignature} from '@solana/web3.js';
+import {
+  RpcResponseAssociatedTokenAccount,
+  RpcResponseTokenAccount,
+  RpcResponseTokenData,
+} from '../../symbols/dashboard-token-rcp-responce.symbols';
+import {MintTokenActionData} from '../../symbols/dashboard-token-action-data.symbols';
 
 export class LoadTokenList {
   static type = `${dashboardTokenStateId} ${LoadTokenList.name}`;
@@ -47,4 +52,29 @@ export class LoadTokenDetailsFail {
   static type = `${dashboardTokenStateId} ${LoadTokenDetailsFail.name}`;
 
   constructor(public error: UnknownError) {}
+}
+
+export class MintToken {
+  static type = `${dashboardTokenStateId} ${MintToken.name}`;
+
+  constructor(public mintTokenData: MintTokenActionData) {}
+}
+
+export class MintTokenSuccess {
+  static type = `${dashboardTokenStateId} ${MintTokenSuccess.name}`;
+
+  constructor(
+    public transactionSignature: TransactionSignature,
+    public mintTokenData: MintTokenActionData,
+  ) {}
+}
+
+export class MintTokenFail {
+  static type = `${dashboardTokenStateId} ${MintTokenFail.name}`;
+
+  constructor(public error: UnknownError) {}
+}
+
+export class ResetMintTokenProcess {
+  static type = `${dashboardTokenStateId} ${ResetMintTokenProcess.name}`;
 }

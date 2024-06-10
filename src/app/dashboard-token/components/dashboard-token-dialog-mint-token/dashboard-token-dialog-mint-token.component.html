@@ -1,9 +1,30 @@
-<div class="mint-token-dialog">
-  <h2 class="add-token-dialog__title title">Mint token</h2>
+@if ({
+  mintTokenProcess: mintTokenProcess$ | async,
+  lastMintTokenError: lastMintTokenError$ | async,
+}; as extracted) {
+  <rt-loading
+    [while]="extracted.mintTokenProcess === progressStatuses.inProgress"
+    [until]="extracted.mintTokenProcess !== progressStatuses.inProgress"
+  >
+    <div class="mint-token-dialog">
+      <h2 class="mint-token-dialog__title title">Choose amount of tokens to be minted</h2>
 
-  <app-rt-text-input inputType="number" [formControl]="tokenAmountControl"></app-rt-text-input>
+      <div class="mint-token-dialog__input">
+        <app-rt-text-input inputType="number" [formControl]="tokenAmountControl"></app-rt-text-input>
+      </div>
 
-  <button mat-button (click)="mintToken(tokenAmountControl.value)">Mint token</button>
-</div>
+      @if (extracted.mintTokenProcess === progressStatuses.interrupted) {
+        <div class="mint-token-dialog__error">
+          {{ extracted.lastMintTokenError }}
+        </div>
+      }
+
+      <button mat-button (click)="mintToken(extracted.mintTokenProcess !== progressStatuses.inProgress, tokenAmountControl.value)">
+        Mint token
+      </button>
+    </div>
+  </rt-loading>
+}
+
 
 

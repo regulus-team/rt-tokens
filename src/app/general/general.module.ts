@@ -9,10 +9,11 @@ import {RtSvgSpriteModule} from '../rt-svg-sprite/rt-svg-sprite.module';
 import {RtPlatformModule} from '../rt-platform/rt-platform.module';
 import {Settings} from '../../conf/settings';
 import {RtFormsModule} from '../rt-forms/rt-forms.module';
+import {RtLoadingModule} from '../rt-loading/rt-loading.module';
 
 @NgModule({
   declarations: [GeneralFooterComponent, GeneralHeaderComponent, GeneralNotFoundComponent],
-  imports: [CommonModule, RouterLink, MatButtonModule, RouterModule, RtSvgSpriteModule, RtPlatformModule, RtFormsModule],
+  imports: [CommonModule, RouterLink, MatButtonModule, RouterModule, RtSvgSpriteModule, RtPlatformModule, RtFormsModule, RtLoadingModule],
   providers: [Settings],
   exports: [GeneralFooterComponent, GeneralHeaderComponent],
 })

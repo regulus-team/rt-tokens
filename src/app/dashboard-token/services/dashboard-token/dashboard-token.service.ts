@@ -1,8 +1,14 @@
 import {Injectable} from '@angular/core';
-import {TOKEN_PROGRAM_ID} from '@solana/spl-token';
-import {AccountInfo, PublicKey, RpcResponseAndContext} from '@solana/web3.js';
-import {RpcResponseAssociatedTokenAccount, RpcResponseTokenAccount, RpcResponseTokenData, RpcResponseUserAccount} from '../../symbols';
-import {connectionToCluster} from '../../../shared/symbols/solana.symbols';
+import {createMintToInstruction, TOKEN_PROGRAM_ID} from '@solana/spl-token';
+import {AccountInfo, PublicKey, RpcResponseAndContext, Transaction} from '@solana/web3.js';
+import {connectionToCluster, currentWalletAdapter} from '../../../shared/symbols/solana.symbols';
+import {
+  RpcResponseAssociatedTokenAccount,
+  RpcResponseTokenAccount,
+  RpcResponseTokenData,
+  RpcResponseUserAccount,
+} from '../../symbols/dashboard-token-rcp-responce.symbols';
+import {MintTokenActionData} from '../../symbols/dashboard-token-action-data.symbols';
 
 @Injectable()
 export class DashboardTokenService {
@@ -51,5 +57,24 @@ export class DashboardTokenService {
     return connectionToCluster.getParsedAccountInfo(associatedTokenAccount) as Promise<
       RpcResponseAndContext<AccountInfo<RpcResponseAssociatedTokenAccount>>
     >;
+  }
+
+  /**
+   * Mint a specific number of tokens.
+   * @param mintTokenActionData - Data required to mint tokens.
+   */
+  public mintSpecificToken(mintTokenActionData: MintTokenActionData): Promise<string> {
+    // Create a transaction that mints tokens.
+    const transaction = new Transaction().add(
+      createMintToInstruction(
+        mintTokenActionData.associatedTokenAccountPublicKey,
+        mintTokenActionData.tokenAccountPublicKey,
+        mintTokenActionData.mintAuthorityPublicKey,
+        mintTokenActionData.tokenNumber,
+      ),
+    );
+
+    // Request the wallet to sign the transaction and send it to the cluster.
+    return currentWalletAdapter.sendTransaction(transaction, connectionToCluster);
   }
 }

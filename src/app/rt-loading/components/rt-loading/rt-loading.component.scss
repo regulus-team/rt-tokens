@@ -1,0 +1,86 @@
+
+.spinner-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+.ignore-clicks {
+  pointer-events: none !important;
+  position: relative;
+}
+
+.overlay {
+  opacity: 0.7;
+  position: absolute;
+  z-index: 99;
+  cursor: wait;
+}
+
+.wrap {
+  display: flex;
+  flex-direction: column;
+  align-content: stretch;
+}
+
+.dialog {
+  position: absolute;
+  top: -24px;
+  left: -50px;
+  width: calc(100% + 100px);
+  height: 3px;
+}
+
+
+.skeleton-wrap__circular {
+  border-radius: 50%;
+}
+
+.skeleton-wrap__linear {
+  border-radius: 8px;
+}
+
+.skeleton-wrap__circular, .skeleton-wrap__linear {
+  background: linear-gradient(0.85turn, var(--primary-200), var(--primary-50), var(--primary-200));
+  animation: colorChange 2s infinite linear;
+}
+
+.skeleton-wrap {
+  width: 100%;
+}
+
+.content__wrap {
+  position: relative;
+  height: 100%;
+}
+
+.loading-indicator_wrap{
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+
+.content__wrap-content {
+  height: 100%;
+}
+
+@keyframes colorChange {
+  from {
+    background-position: top 0 left 0;
+    background-size: 1000%
+  }
+  50% {
+    background-position: top center;
+    background-size: 1000%
+  }
+  to {
+    background-position: top 0 right 0;
+    background-size: 1000%
+  }
+}

@@ -6,8 +6,5 @@ import {AllProjectSettings} from './symbols/conf.symbols';
  */
 export class SettingsStag extends Settings implements AllProjectSettings {
   /** Base URL of the project for the staging server environment. */
-  coreBaseUrl = 'https://stag.artmetric.regulus.team';
-
-  /** Stripe public key. */
-  rtStripePublicKey = 'pk_test_TYooMQauvdEDq54NiTphI7jx';
+  public override coreBaseUrl = 'https://stag.artmetric.regulus.team';
 }

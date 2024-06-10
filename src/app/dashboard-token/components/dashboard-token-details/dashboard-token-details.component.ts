@@ -8,10 +8,10 @@ import {
   DashboardTokenDialogMintTokenComponent,
   DialogMintTokenData,
 } from '../dashboard-token-dialog-mint-token/dashboard-token-dialog-mint-token.component';
-import {tokenDetailsProgressStatuses} from '../../symbols';
-import {LoadTokenDetails, ReloadCurrentTokenDetails} from '../../states/dashboard-token/dashboard-token.actions';
+import {LoadTokenDetails} from '../../states/dashboard-token/dashboard-token.actions';
 import {DashboardTokenState} from '../../states/dashboard-token/dashboard-token.state';
 import {currentWalletAdapter} from '../../../shared/symbols/solana.symbols';
+import {tokenDetailsProgressStatuses} from '../../symbols/dashboard-token-general.symbols';
 
 @Component({
   selector: 'app-dashboard-token-details',
