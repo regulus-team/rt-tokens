@@ -1,0 +1,17 @@
+<div class="rt-text-input">
+  <mat-form-field appearance="outline">
+    <input
+      #textInputElement
+      matInput
+      [type]="inputType"
+      [formControl]="textInputControl"
+      [placeholder]="placeholder || ''"
+    >
+  </mat-form-field>
+
+  @if (errorMessage && ngControl.invalid && (ngControl.dirty || ngControl.touched)) {
+    <mat-error class="rt-input-error">
+      {{ errorMessage }}
+    </mat-error>
+  }
+</div>

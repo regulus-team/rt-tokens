@@ -1,0 +1,94 @@
+@if ({
+  singleFileInputCurrentValue: singleFileInputCurrentValue$ | async,
+  filePreview: filePreview$ | async,
+}; as extracted) {
+  <div
+    class="rt-single-file-input"
+    [ngStyle]="{
+      'min-height': acceptableFileTypesString ? '170px' : '146px',
+    }"
+  >
+    <!-- Selected file preview. -->
+    @if (extracted.singleFileInputCurrentValue) {
+      <div class="rt-single-file-input__file-preview">
+        @if (extracted.filePreview) {
+          <div class="rt-single-file-input__file-icon">
+            @if (extracted.filePreview.isImage) {
+              <img class="rt-single-file-input__image-icon" [src]="extracted.filePreview.src" width="64" height="64" alt="image preview">
+            } @else {
+              <div class="rt-single-file-input__file-document-icon">
+                <span class="rt-single-file-input__extension-icon">.{{ extracted.filePreview.extension }}</span>
+              </div>
+            }
+          </div>
+          <div class="rt-single-file-input__file-details">
+            <div class="rt-single-file-input__file-name">{{ extracted.filePreview.name }}</div>
+
+            <div
+              class="rt-single-file-input__remove-file icon_clickable icon_clickable_small"
+              matTooltip="Remove image"
+              [matTooltipShowDelay]="500"
+              (click)="resetFileInput()"
+            >
+              <svg height="24" width="24">
+                <use xlink:href="#close"></use>
+              </svg>
+            </div>
+          </div>
+        } @else {
+          Processing...
+          <button type="button" mat-stroked-button color="secondary" (click)="resetFileInput()">
+            Cancel
+          </button>
+        }
+      </div>
+    } @else {
+      <div
+        class="rt-single-file-input__drag-n-drop-area"
+        #dragAndDropArea
+        [ngClass]="{
+          'rt-single-file-input__drag-n-drop-area_drag-over': enterAndLeaveDifference > 0,
+          'rt-single-file-input__drag-n-drop-area_invalid': !isLastDroppedFileValid,
+        }"
+        (drop)="elementDropped($event)"
+        (dragover)="$event.preventDefault()"
+        (dragenter)="elementEnteredDroppableArea($event)"
+        (dragleave)="elementLeftDroppableArea($event)"
+      >
+        <div class="rt-single-file-input__drop-file-text">{{ dropFileLabel }}</div>
+        <div class="rt-single-file-input__option-text">or</div>
+        <div class="rt-single-file-input__action-button">
+          <button type="button" mat-stroked-button color="secondary" (click)="fileInput.click()">
+            {{ actionButtonLabel }}
+          </button>
+        </div>
+
+        @if (acceptableFileTypesString) {
+          <div
+            class="rt-single-file-input__acceptable-file-types"
+            [ngClass]="{
+              'rt-single-file-input__acceptable-file-types_invalid': !isLastDroppedFileValid,
+              'rt-single-file-input__acceptable-file-types_drag-over': enterAndLeaveDifference > 0,
+            }"
+          >
+            Acceptable file types: {{ acceptableFileTypesString }}
+          </div>
+        }
+
+        <input
+          type="file"
+          #fileInput
+          [accept]="acceptableFileTypesString"
+          (change)="onFileSelected($event)"
+          style="display: none;"
+        >
+      </div>
+
+      @if (errorMessage && ngControl.invalid && (ngControl.dirty || ngControl.touched)) {
+        <mat-error class="rt-input-error">
+          {{ errorMessage }}
+        </mat-error>
+      }
+    }
+  </div>
+}

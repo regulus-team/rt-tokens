@@ -1,0 +1,21 @@
+// Overwrite Material Design variables.
+html, .dark-theme {
+  // Material form field overrides.
+  --mat-form-field-container-vertical-padding: 8px;
+  --mat-form-field-container-text-size: 16px;
+  --mat-form-field-container-text-tracking: 0;
+  --mat-form-field-container-text-weight: 400;
+  --mat-form-field-state-layer-color: inherit;
+  --mdc-filled-text-field-container-color: inherit;
+  --mat-form-field-filled-with-label-container-padding-top: 14px;
+  --mat-form-field-filled-with-label-container-padding-bottom: 14px;
+  --mat-form-field-container-height: 32px;
+  //--mdc-filled-text-field-input-text-color: var(--color-dark);
+  //--mdc-filled-text-field-input-text-placeholder-color: var(--color-gray3);
+  //--mdc-outlined-text-field-input-text-placeholder-color: var(--color-gray3);
+  //--mat-form-field-disabled-input-text-placeholder-color: var(--color-gray3);
+}
+
+.mat-mdc-form-field {
+  width: 100%;
+}

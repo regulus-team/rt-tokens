@@ -1,0 +1,61 @@
+<div class="add-token-dialog">
+  <h2 class="add-token-dialog__title title">Add new token</h2>
+
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="rt-form add-token-dialog__rt-form" data-cy="form">
+    <div class="add-token-dialog__rt-form-label rt-form-label">
+      {{ labels.name }}
+    </div>
+    <app-rt-text-input
+      [placeholder]="placeholders.name"
+      [formControlName]="formControlNames.name"
+      [errorMessage]="actualErrorMessages.name"
+    ></app-rt-text-input>
+
+    <div class="add-token-dialog__rt-form-label rt-form-label">
+      {{ labels.symbol }}
+    </div>
+    <app-rt-text-input
+      [placeholder]="placeholders.symbol"
+      [formControlName]="formControlNames.symbol"
+      [errorMessage]="actualErrorMessages.symbol"
+    ></app-rt-text-input>
+
+    <div class="add-token-dialog__rt-form-label rt-form-label">
+      {{ labels.decimals }}
+    </div>
+    <app-rt-text-input
+      inputType="number"
+      [placeholder]="placeholders.decimals"
+      [formControlName]="formControlNames.decimals"
+      [errorMessage]="actualErrorMessages.decimals"
+    ></app-rt-text-input>
+
+    <div class="add-token-dialog__rt-form-label rt-form-label">
+      {{ labels.description }}
+    </div>
+    <app-rt-text-input
+      [placeholder]="placeholders.description"
+      [formControlName]="formControlNames.description"
+      [errorMessage]="actualErrorMessages.description"
+    ></app-rt-text-input>
+
+    <div class="add-token-dialog__rt-form-label rt-form-label">
+      {{ labels.image }}
+    </div>
+    <div class="add-token-dialog__add-image-wrap">
+      <app-rt-single-file-input
+        dropFileLabel="Drop the image here"
+        actionButtonLabel="Select the image"
+        [acceptableFileTypes]="acceptableTypesForImage"
+        [formControlName]="formControlNames.image"
+        [errorMessage]="actualErrorMessages.image"
+      ></app-rt-single-file-input>
+    </div>
+
+    <div class="add-token-dialog__actions">
+      <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid">Create token</button>
+    </div>
+  </form>
+</div>
+
+

@@ -1,0 +1,86 @@
+.pre-title {
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: var(--dark-green);
+}
+
+.title {
+  margin-bottom: 0;
+}
+
+.rt-form-label {
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: 0;
+  color: var(--common-gray-700);
+}
+
+.rt-input-error {
+  margin-top: -24px;
+  font-size: 14px;
+  line-height: 1;
+  padding-bottom: 6px;
+}
+
+// Apply custom scroll styles to all elements.
+* {
+  /* Scroll width. */
+  &::-webkit-scrollbar {
+    width: 6px;
+    background-color: rgba(0, 0, 0, 0);
+  }
+
+  /* Track styles. */
+  &::-webkit-scrollbar-thumb {
+    background-color: var(--common-gray-100);
+    border-radius: 9px;
+  }
+
+  /* Handle styles. */
+  &::-webkit-scrollbar-thumb:hover {
+    background-color: var(--common-gray-300);
+  }
+}
+
+
+.icon_clickable {
+  cursor: pointer;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: none;
+  border: none;
+  color: var(--common-gray-100);
+
+  &.icon_clickable_small {
+    height: 32px;
+    width: 32px;
+  }
+
+  &:hover {
+    background-color: var(--common-gray-50);
+
+    *:first-child {
+      color: var(--common-gray-100);
+    }
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    background: none;
+    border: none;
+    color: var(--common-gray-200);
+
+
+    &:hover {
+      background-color: inherit;
+
+      *:first-child {
+        color: var(--common-gray-250);
+      }
+    }
+  }
+}
