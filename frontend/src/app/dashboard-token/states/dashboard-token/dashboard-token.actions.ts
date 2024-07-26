@@ -1,12 +1,14 @@
-import {dashboardTokenStateId} from './dashboard-token.model';
-import {UnknownError} from '../../../shared/symbols/errors.symbols';
+import {Metadata} from '@metaplex-foundation/mpl-token-metadata/dist/src/generated/accounts/metadata';
 import {AccountInfo, PublicKey, RpcResponseAndContext, TransactionSignature} from '@solana/web3.js';
+import {dashboardTokenStateId} from './dashboard-token.model';
 import {
   RpcResponseAssociatedTokenAccount,
   RpcResponseTokenAccount,
   RpcResponseTokenData,
 } from '../../symbols/dashboard-token-rcp-responce.symbols';
 import {CreateFungibleTokenActionData, MintTokenActionData} from '../../symbols/dashboard-token-action-data.symbols';
+import {MetadataJsonFieldsTokenAccountPair} from '../../symbols/dashboard-token-metadata-retrieval.symbols';
+import {UnknownError} from '../../../shared/symbols/errors.symbols';
 
 export class LoadTokenList {
   static type = `${dashboardTokenStateId} ${LoadTokenList.name}`;
@@ -14,10 +16,22 @@ export class LoadTokenList {
   constructor(public publicKey: PublicKey) {}
 }
 
+export class LoadTokenListMetadata {
+  static type = `${dashboardTokenStateId} ${LoadTokenListMetadata.name}`;
+
+  constructor(public tokenListContext: RpcResponseAndContext<RpcResponseTokenData[]>) {}
+}
+
+export class LoadTokenListMetadataJson {
+  static type = `${dashboardTokenStateId} ${LoadTokenListMetadataJson.name}`;
+
+  constructor(public tokenListMetadata: Metadata[]) {}
+}
+
 export class LoadTokenListSuccess {
   static type = `${dashboardTokenStateId} ${LoadTokenListSuccess.name}`;
 
-  constructor(public tokenListContext: RpcResponseAndContext<RpcResponseTokenData[]>) {}
+  constructor(public tokenListMetadataJson: MetadataJsonFieldsTokenAccountPair[]) {}
 }
 
 export class LoadTokenListFail {

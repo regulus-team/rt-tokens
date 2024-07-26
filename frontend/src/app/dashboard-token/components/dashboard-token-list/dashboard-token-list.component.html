@@ -1,6 +1,7 @@
 @if ({
   loadTokenListProcess: loadTokenListProcess$ | async,
-  tokenList: tokenList$ | async,
+  tokenList: tokenListPiledData$ | async,
+  latestCopiedAddress: latestCopiedAddress$ | async,
   lastLoadTokenListError: lastLoadTokenListError$ | async,
 }; as extracted) {
   <div class="mb-4">
@@ -13,26 +14,85 @@
 
   <button mat-button color="primary" (click)="openAddTokenDialog()">+ Add New Token</button>
 
-  @if (extracted.loadTokenListProcess === progressStatuses.succeed) {
-    @for (token of extracted.tokenList; track token?.pubkey) {
-      <mat-card class="token-list__item">
-        <mat-card-content>
-          <div class="token-list__item-content">
-            <div class="token-list__item-data">
-              <div class="token-list__item-pubkey">Token address: {{ token?.pubkey }}</div>
-              <div class="token-list__item-amount">Token amount: {{ token?.account?.data?.parsed?.info?.tokenAmount?.uiAmountString }}</div>
-            </div>
+  <div class="token-list__container">
+    @if (extracted.loadTokenListProcess === progressStatuses.succeed) {
+      @for (token of extracted.tokenList; track token?.tokenAccount) {
+        <mat-card class="token-list__item">
+          <mat-card-content class="token-list__item-content-wrap" [routerLink]="token?.tokenAccount">
+            <div class="token-list__item-content">
+              <div class="token-list__item-image-wrap">
+                @if (token?.jsonMetadata?.image; as image) {
+                  <img [src]="image" class="token-list__item-image" alt="token image">
+                } @else {
+                  <svg class="token-list__item-image token-list__item-image_not-found" height="16" width="16">
+                    <use xlink:href="#not-found"></use>
+                  </svg>
+                }
+              </div>
 
-            <a class="token-list__item-nav">
-              <svg class="token-list__nav-icon mat-mdc-button mat-primary" height="25" width="25" [routerLink]="token?.pubkey?.toString()">
-                <use xlink:href="#right-arrow"></use>
-              </svg>
-            </a>
-          </div>
-        </mat-card-content>
-      </mat-card>
+              <div class="token-list__item-content-wrap">
+                <div class="token-list__item-header">
+                  <a class="token-list__item-name">
+                    {{ token?.jsonMetadata?.name || token?.metaplexMetadata?.name || 'Name Not Found' }}
+                  </a>
+
+                  <div class="token-list__item-short-address">
+                    (
+                    <div class="token-list__item-short-address-content">
+                      {{ token?.tokenAccount }}
+                    </div>
+                    <div
+                      class="token-list__item-short-address-copy"
+                      [cdkCopyToClipboard]="token.tokenAccount"
+                      (click)="tokenAddressCopiedToClipboard($event, token.tokenAccount)"
+                    >
+                      @if (extracted.latestCopiedAddress === token.tokenAccount) {
+                        <svg class="token-list__item-short-address-copy-icon" height="16" width="16" matTooltip="Copied to clipboard">
+                          <use xlink:href="#check"></use>
+                        </svg>
+                      } @else {
+                        <svg class="token-list__item-short-address-copy-icon" height="16" width="16">
+                          <use xlink:href="#copy"></use>
+                        </svg>
+                      }
+                    </div>
+                    )
+                  </div>
+                </div>
+
+                <div class="token-list__item-balance">
+                  <div class="token-list__item-amount">
+                    {{ token?.tokenDetails?.account?.data?.parsed?.info?.tokenAmount?.uiAmountString }}
+                  </div>
+
+                  @if (token?.jsonMetadata?.symbol || token?.metaplexMetadata?.symbol; as symbol) {
+                    <div class="token-list__item-symbol">
+                      {{ symbol }}
+                    </div>
+                  } @else {
+                    <div class="token-list__item-symbol token-list__item-symbol_not-found">
+                      [symbol not found]
+                    </div>
+                  }
+
+                </div>
+
+                @if (token?.jsonMetadata?.description; as description) {
+                  <div class="token-list__item-description">
+                    {{ description }}
+                  </div>
+                } @else {
+                  <div class="token-list__item-description token-list__item-description_not-found">
+                    No description provided
+                  </div>
+                }
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      }
     }
-  }
+  </div>
 
   @if (extracted.lastLoadTokenListError) {
     <p>Error occurred: {{ extracted.lastLoadTokenListError }}</p>

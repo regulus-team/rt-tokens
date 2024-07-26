@@ -1,18 +1,22 @@
+import {catchError, forkJoin, map, Observable, of} from 'rxjs';
+import {HttpClient} from '@angular/common/http';
 import {Injectable} from '@angular/core';
 import {createMintToInstruction, TOKEN_PROGRAM_ID} from '@solana/spl-token';
-import {AccountInfo, clusterApiUrl, PublicKey, RpcResponseAndContext, Transaction} from '@solana/web3.js';
-import {createUmi} from '@metaplex-foundation/umi-bundle-defaults';
+import {AccountInfo, PublicKey, RpcResponseAndContext, Transaction} from '@solana/web3.js';
 import {createAndMint, mplTokenMetadata, TokenStandard} from '@metaplex-foundation/mpl-token-metadata';
 import {walletAdapterIdentity} from '@metaplex-foundation/umi-signer-wallet-adapters';
 import {generateSigner, percentAmount, some} from '@metaplex-foundation/umi';
+import {Metadata, safeFetchAllMetadata} from '@metaplex-foundation/mpl-token-metadata/dist/src/generated/accounts/metadata';
 import {
   RpcResponseAssociatedTokenAccount,
   RpcResponseTokenAccount,
   RpcResponseTokenData,
   RpcResponseUserAccount,
 } from '../../symbols/dashboard-token-rcp-responce.symbols';
+import {JsonUrlTokenAccountPair, MetadataJsonFieldsTokenAccountPair} from '../../symbols/dashboard-token-metadata-retrieval.symbols';
 import {MintTokenActionData} from '../../symbols/dashboard-token-action-data.symbols';
 import {RtSolanaService} from '../../../rt-solana/services/rt-solana/rt-solana.service';
+import {MetadataJsonFields, UmiPublicKey} from '../../../rt-solana/symbols';
 
 @Injectable()
 export class DashboardTokenService {
@@ -27,7 +31,10 @@ export class DashboardTokenService {
    */
   public readonly currentClusterConnection = this.rtSolana.currentClusterConnection;
 
-  constructor(private rtSolana: RtSolanaService) {}
+  constructor(
+    private http: HttpClient,
+    private rtSolana: RtSolanaService,
+  ) {}
 
   /**
    * Load all associated token accounts for a given owner account.
@@ -94,11 +101,9 @@ export class DashboardTokenService {
     result: {context: {slot: number}; value: {err: null | string | unknown}};
     signature: Uint8Array;
   }> {
-    // Get API URL for the current network cluster.
-    const currentRpcUrl = clusterApiUrl(this.rtSolana.currentNetCluster);
-
     // Create new UMI instance with the current RPC URL and the Metaplex token metadata plugin.
-    const umi = createUmi(currentRpcUrl).use(mplTokenMetadata()).use(walletAdapterIdentity(this.currentWalletAdapter));
+    const umi = this.rtSolana.getNewUmiInstance();
+    umi.use(mplTokenMetadata()).use(walletAdapterIdentity(this.currentWalletAdapter));
 
     // Generate a signer for the UMI instance.
     const umiSigner = generateSigner(umi);
@@ -131,5 +136,44 @@ export class DashboardTokenService {
 
     // Request the wallet to sign the transaction and send it to the cluster.
     return this.currentWalletAdapter.sendTransaction(transaction, this.currentClusterConnection);
+  }
+
+  /**
+   * Load the list of token metadata by their mint accounts.
+   * @param metadataAccounts - The address list of Metaplex token metadata accounts.
+   */
+  public loadListTokenMetadata(metadataAccounts: UmiPublicKey[]): Promise<Metadata[]> {
+    // Get a new UMI instance for the current network cluster.
+    const umi = this.rtSolana.getNewUmiInstance();
+
+    // Update the UMI instance with the current RPC URL and the Metaplex token metadata plugin.
+    umi.use(mplTokenMetadata()).use(walletAdapterIdentity(this.rtSolana.currentWalletAdapter));
+
+    // Fetch the metadata.
+    return safeFetchAllMetadata(umi, metadataAccounts);
+  }
+
+  /**
+   * Load the token image URL by the token metadata & account pair.
+   * @param jsonUrlTokenAccountPair - The list of JSON URL and token account pairs.
+   */
+  public loadListTokenImageUrlByJsonUrl(
+    jsonUrlTokenAccountPair: JsonUrlTokenAccountPair[],
+  ): Observable<MetadataJsonFieldsTokenAccountPair[]> {
+    const loadRequests = jsonUrlTokenAccountPair.map(pairData =>
+      this.http.get<MetadataJsonFields>(pairData.jsonUrl).pipe(
+        // Provide an empty value in case of an error to avoid breaking the whole forkJoin request.
+        catchError(() => of(null)),
+
+        // Map the JSON metadata to the token account.
+        map(jsonMetadata => ({jsonMetadata, tokenAccount: pairData.tokenAccount})),
+      ),
+    );
+
+    // Load all JSON metadata and return the result.
+    return forkJoin(loadRequests).pipe(
+      // Remove all items with no JSON metadata.
+      map(data => data.filter(item => !!item?.jsonMetadata) as MetadataJsonFieldsTokenAccountPair[]),
+    );
   }
 }

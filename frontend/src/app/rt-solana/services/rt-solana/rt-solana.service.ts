@@ -2,8 +2,13 @@ import {catchError, interval, map, of, switchMap, takeWhile} from 'rxjs';
 import {Injectable} from '@angular/core';
 import {clusterApiUrl, Connection, TransactionSignature} from '@solana/web3.js';
 import {PhantomWalletAdapter} from '@solana/wallet-adapter-wallets';
-import {NetCluster} from '../../symbols';
+import {createUmi} from '@metaplex-foundation/umi-bundle-defaults';
+import {Pda, Umi} from '@metaplex-foundation/umi';
+import {NetCluster, UmiPublicKey} from '../../symbols';
 import {Settings} from '../../../../conf/settings';
+import {mplTokenMetadata} from '@metaplex-foundation/mpl-token-metadata';
+import {walletAdapterIdentity} from '@metaplex-foundation/umi-signer-wallet-adapters';
+import {findMetadataPda} from '@metaplex-foundation/mpl-token-metadata/dist/src/generated/accounts/metadata';
 
 /**
  * The RT Solana service.
@@ -33,18 +38,40 @@ export class RtSolanaService {
   constructor(private settings: Settings) {}
 
   /**
+   * Get a new UMI instance with the current network cluster.
+   */
+  public getNewUmiInstance(): Umi {
+    // Get API URL for the current network cluster.
+    const currentRpcUrl = clusterApiUrl(this.currentNetCluster);
+
+    // Create a new UMI instance and return it.
+    return createUmi(currentRpcUrl);
+  }
+
+  /**
+   * Get the Metaplex token metadata account address by the mint account.
+   * @param mintAccount - The mint account public key.
+   */
+  public getMetaplexMetadataAccountAddressByMint(mintAccount: UmiPublicKey): Pda {
+    // Get a new UMI instance for the current network cluster.
+    const umi = this.getNewUmiInstance();
+
+    // Update the UMI instance with the current RPC URL and the Metaplex token metadata plugin.
+    umi.use(mplTokenMetadata()).use(walletAdapterIdentity(this.currentWalletAdapter));
+
+    // Get the metadata account addresses.
+    return findMetadataPda(umi, {mint: mintAccount});
+  }
+
+  /**
    * Wait for the transaction signature to be confirmed.
    * @param transactionSignature - The transaction signature.
    * @param retryDelay - The delay between retries in milliseconds.
    * @param retryLimit - The maximum number of retries.
    */
-  public waitForTransactionBySignature = (
-    transactionSignature: TransactionSignature,
-    retryDelay = 1000,
-    retryLimit = 10,
-  ): Promise<boolean> =>
+  public waitForTransactionBySignature(transactionSignature: TransactionSignature, retryDelay = 1000, retryLimit = 10): Promise<boolean> {
     // Create a new promise, so the subscription can be handled inside it.
-    new Promise((resolve, reject) => {
+    return new Promise((resolve, reject) => {
       // Create a new interval observable based on the retry delay.
       const subscription = interval(retryDelay)
         .pipe(
@@ -92,4 +119,5 @@ export class RtSolanaService {
           },
         });
     });
+  }
 }

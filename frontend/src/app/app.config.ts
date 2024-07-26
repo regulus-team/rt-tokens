@@ -6,10 +6,5 @@ import {NgxsModule} from '@ngxs/store';
 import {routes} from './app.routes';
 
 export const appConfig: ApplicationConfig = {
-  providers: [
-    provideRouter(routes),
-    provideClientHydration(),
-    importProvidersFrom(NgxsModule.forRoot()),
-    provideAnimationsAsync(), provideAnimationsAsync(),
-  ],
+  providers: [provideRouter(routes), provideClientHydration(), importProvidersFrom(NgxsModule.forRoot()), provideAnimationsAsync()],
 };

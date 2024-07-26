@@ -1,5 +1,5 @@
 import {NgModule} from '@angular/core';
-import {CommonModule} from '@angular/common';
+import {CommonModule, NgOptimizedImage} from '@angular/common';
 import {MatCardModule} from '@angular/material/card';
 import {MatDividerModule} from '@angular/material/divider';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
@@ -17,6 +17,8 @@ import {RtFormsModule} from '../rt-forms/rt-forms.module';
 import {RtLoadingModule} from '../rt-loading/rt-loading.module';
 import {RtIpfsModule} from '../rt-ipfs/rt-ipfs.module';
 import {settings} from '../../environments/environment.dev';
+import {CdkCopyToClipboard} from '@angular/cdk/clipboard';
+import {MatTooltip} from '@angular/material/tooltip';
 
 @NgModule({
   declarations: [
@@ -43,6 +45,9 @@ import {settings} from '../../environments/environment.dev';
       ipfsApiKey: settings.pinataApiKey,
       ipfsApiKeySecret: settings.pinataApiKeySecret,
     }),
+    NgOptimizedImage,
+    CdkCopyToClipboard,
+    MatTooltip,
   ],
   providers: [DashboardTokenService],
 })

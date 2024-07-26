@@ -11,5 +11,4 @@ import {RtSvgSpriteModule} from './rt-svg-sprite/rt-svg-sprite.module';
   styleUrl: './app.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AppComponent {
-}
+export class AppComponent {}

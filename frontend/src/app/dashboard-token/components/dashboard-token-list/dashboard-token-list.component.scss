@@ -1,18 +1,125 @@
+.token-list__container {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
 .token-list__item {
-  margin: 20px 0;
+  width: calc(50% - 10px);
+  max-width: calc(50% - 10px);
+
+  &:hover {
+    box-shadow: 0 0 3px var(--light-green);
+  }
+}
+
+.token-list__item-content-wrap {
+  cursor: pointer;
 }
 
 .token-list__item-content {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
   align-items: center;
 }
 
-.token-list__item-nav {
-  display: block;
+.token-list__item-image-wrap {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 6px 20px 6px 12px;
+  min-width: 60px;
+  height: 60px;
+  width: 60px;
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: 0 0 3px var(--common-gray-600);
 }
 
-.token-list__nav-icon {
+.token-list__item-image {
+  width: 100%;
+  max-width: 60px;
+  height: auto;
+}
+
+.token-list__item-image_not-found {
+  height: 48px;
+  margin-right: 4px;
+}
+
+.token-list__item-header {
+  display: flex;
+  gap: 6px;
+  align-items: flex-end;
+}
+
+.token-list__item-name {
+  font-size: 22px;
+  font-weight: 600;
+  text-decoration: none;
+  color: var(--light-green);
+}
+
+.token-list__item-short-address {
+  display: flex;
+  font-size: 14px;
+  color: var(--common-gray-250);
+  transform: skewX(-15deg);
+  margin-bottom: 1px;
+}
+
+.token-list__item-short-address-content {
+  max-width: 100px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.token-list__item-short-address-copy {
   cursor: pointer;
+  color: var(--common-gray-100);
+
+  &:hover {
+    color: var(--common-gray-600);
+  }
+}
+
+.token-list__item-balance {
+  margin-top: 4px;
+  font-size: 18px;
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.token-list__item-amount {
+  font-weight: 600;
+}
+
+.token-list__item-symbol {
+  font-size: 16px;
+  margin-bottom: 1px;
+}
+
+.token-list__item-symbol_not-found {
+  transform: skewX(-15deg);
+}
+
+.token-list__item-description {
+  margin-top: 8px;
+  font-size: 14px;
+  color: var(--common-gray-250);
+}
+
+.token-list__item-description_not-found {
+  transform: skewX(-15deg);
+}
+
+@media screen and (max-width: 991px) {
+  .token-list__item {
+    width: 100%;
+    max-width: 100%;
+  }
 }
 
