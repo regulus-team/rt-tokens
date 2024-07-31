@@ -1,8 +1,8 @@
 import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
 import {Store} from '@ngxs/store';
 import {PublicKey} from '@solana/web3.js';
-import {LoadTokenList} from '../../states/dashboard-token/dashboard-token.actions';
 import {RtSolanaService} from '../../../rt-solana/services/rt-solana/rt-solana.service';
+import {LoadTokenList} from '../../states/dashboard-token-list/dashboard-token-list.actions';
 
 @Component({
   selector: 'app-dashboard-token-root',

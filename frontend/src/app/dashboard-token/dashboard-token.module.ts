@@ -9,7 +9,7 @@ import {DashboardTokenRootComponent} from './components/dashboard-token-root/das
 import {DashboardTokenRoutingModule} from './dashboard-token-routing.module';
 import {DashboardTokenListComponent} from './components/dashboard-token-list/dashboard-token-list.component';
 import {DashboardTokenService} from './services/dashboard-token/dashboard-token.service';
-import {DashboardTokenState} from './states/dashboard-token/dashboard-token.state';
+import {DashboardTokenItemState} from './states/dashboard-token/dashboard-token-item.state';
 import {DashboardTokenDetailsComponent} from './components/dashboard-token-details/dashboard-token-details.component';
 import {DashboardTokenDialogMintTokenComponent} from './components/dashboard-token-dialog-mint-token/dashboard-token-dialog-mint-token.component';
 import {RtWalletModule} from '../rt-wallet/rt-wallet.module';
@@ -19,6 +19,7 @@ import {RtIpfsModule} from '../rt-ipfs/rt-ipfs.module';
 import {settings} from '../../environments/environment.dev';
 import {CdkCopyToClipboard} from '@angular/cdk/clipboard';
 import {MatTooltip} from '@angular/material/tooltip';
+import {DashboardTokenListState} from './states/dashboard-token-list/dashboard-token-list.state';
 
 @NgModule({
   declarations: [
@@ -30,7 +31,7 @@ import {MatTooltip} from '@angular/material/tooltip';
   imports: [
     CommonModule,
     DashboardTokenRoutingModule,
-    NgxsModule.forFeature([DashboardTokenState]),
+    NgxsModule.forFeature([DashboardTokenItemState, DashboardTokenListState]),
     RtWalletModule,
     MatCardModule,
     MatDividerModule,

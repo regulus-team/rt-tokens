@@ -8,6 +8,8 @@ import {NetCluster} from '../app/rt-solana/symbols';
  */
 export class CoreSettings implements CoreProjectSettings {
   public coreBaseUrl = 'http://localhost:4200';
+
+  /** The current network cluster. */
   public currentNetCluster: NetCluster = 'devnet';
 
   /** API Endpoint to Pinata gateway. */

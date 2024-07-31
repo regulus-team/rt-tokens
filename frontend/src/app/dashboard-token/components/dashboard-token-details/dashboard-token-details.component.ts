@@ -8,8 +8,8 @@ import {
   DashboardTokenDialogMintTokenComponent,
   DialogMintTokenData,
 } from '../dashboard-token-dialog-mint-token/dashboard-token-dialog-mint-token.component';
-import {LoadTokenDetails} from '../../states/dashboard-token/dashboard-token.actions';
-import {DashboardTokenState} from '../../states/dashboard-token/dashboard-token.state';
+import {LoadTokenDetails} from '../../states/dashboard-token/dashboard-token-item.actions';
+import {DashboardTokenItemState} from '../../states/dashboard-token/dashboard-token-item.state';
 import {tokenDetailsProgressStatuses} from '../../symbols/dashboard-token-general.symbols';
 import {RtSolanaService} from '../../../rt-solana/services/rt-solana/rt-solana.service';
 
@@ -20,14 +20,14 @@ import {RtSolanaService} from '../../../rt-solana/services/rt-solana/rt-solana.s
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DashboardTokenDetailsComponent implements OnInit, OnDestroy {
-  public readonly loadTokenDetailsProcess$ = this.store.select(DashboardTokenState.loadTokenDetailsProcess);
-  public readonly tokenAccount$ = this.store.select(DashboardTokenState.tokenAccount);
-  public readonly associatedTokenAccount$ = this.store.select(DashboardTokenState.associatedTokenAccount);
-  public readonly tokenAmount$ = this.store.select(DashboardTokenState.tokenAmount);
-  public readonly supply$ = this.store.select(DashboardTokenState.supply);
-  public readonly mintAuthority$ = this.store.select(DashboardTokenState.mintAuthority);
-  public readonly freezeAuthority$ = this.store.select(DashboardTokenState.freezeAuthority);
-  public readonly lastLoadTokenDetailsError$ = this.store.select(DashboardTokenState.lastLoadTokenDetailsError);
+  public readonly loadTokenDetailsProcess$ = this.store.select(DashboardTokenItemState.loadTokenDetailsProcess);
+  public readonly tokenAccount$ = this.store.select(DashboardTokenItemState.tokenAccount);
+  public readonly associatedTokenAccount$ = this.store.select(DashboardTokenItemState.associatedTokenAccount);
+  public readonly tokenAmount$ = this.store.select(DashboardTokenItemState.tokenAmount);
+  public readonly supply$ = this.store.select(DashboardTokenItemState.supply);
+  public readonly mintAuthority$ = this.store.select(DashboardTokenItemState.mintAuthority);
+  public readonly freezeAuthority$ = this.store.select(DashboardTokenItemState.freezeAuthority);
+  public readonly lastLoadTokenDetailsError$ = this.store.select(DashboardTokenItemState.lastLoadTokenDetailsError);
 
   /**
    * The current wallet adapter.

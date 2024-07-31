@@ -3,9 +3,9 @@ import {ChangeDetectionStrategy, Component, OnDestroy, OnInit} from '@angular/co
 import {MatDialog} from '@angular/material/dialog';
 import {Select} from '@ngxs/store';
 import {DashboardTokenDialogAddNewComponent} from '../dashboard-token-dialog-add-new/dashboard-token-dialog-add-new.component';
-import {DashboardTokenState} from '../../states/dashboard-token/dashboard-token.state';
-import {DashboardTokenStateModel} from '../../states/dashboard-token/dashboard-token.model';
 import {progressStatuses} from '../../../shared/symbols/statuses.symbols';
+import {DashboardTokenListState} from '../../states/dashboard-token-list/dashboard-token-list.state';
+import {DashboardTokenListStateModel} from '../../states/dashboard-token-list/dashboard-token-list.model';
 
 @Component({
   selector: 'app-dashboard-token-list',
@@ -14,10 +14,12 @@ import {progressStatuses} from '../../../shared/symbols/statuses.symbols';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DashboardTokenListComponent implements OnInit, OnDestroy {
-  @Select(DashboardTokenState.loadTokenListProcess) loadTokenListProcess$: Observable<DashboardTokenStateModel['loadTokenListProcess']>;
-  @Select(DashboardTokenState.tokenListPiledData) tokenListPiledData$: Observable<DashboardTokenStateModel['tokenListPiledData']>;
-  @Select(DashboardTokenState.lastLoadTokenListError)
-  lastLoadTokenListError$: Observable<DashboardTokenStateModel['lastLoadTokenListError']>;
+  @Select(DashboardTokenListState.loadTokenListProcess) loadTokenListProcess$: Observable<
+    DashboardTokenListStateModel['loadTokenListProcess']
+  >;
+  @Select(DashboardTokenListState.tokenListPiledData) tokenListPiledData$: Observable<DashboardTokenListStateModel['tokenListPiledData']>;
+  @Select(DashboardTokenListState.lastLoadTokenListError)
+  lastLoadTokenListError$: Observable<DashboardTokenListStateModel['lastLoadTokenListError']>;
 
   /** The latest copied token address. */
   public latestCopiedAddress$ = new BehaviorSubject<Nullable<PublicKeyString>>(null);
