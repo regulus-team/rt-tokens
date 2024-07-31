@@ -1,11 +1,10 @@
-import {BehaviorSubject, filter, Observable, Subject, Subscription, switchMap, take, timer} from 'rxjs';
+import {BehaviorSubject, filter, Subject, Subscription, switchMap, take, timer} from 'rxjs';
 import {ChangeDetectionStrategy, Component, OnDestroy, OnInit} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
-import {Select} from '@ngxs/store';
+import {Store} from '@ngxs/store';
 import {DashboardTokenDialogAddNewComponent} from '../dashboard-token-dialog-add-new/dashboard-token-dialog-add-new.component';
 import {progressStatuses} from '../../../shared/symbols/statuses.symbols';
 import {DashboardTokenListState} from '../../states/dashboard-token-list/dashboard-token-list.state';
-import {DashboardTokenListStateModel} from '../../states/dashboard-token-list/dashboard-token-list.model';
 
 @Component({
   selector: 'app-dashboard-token-list',
@@ -14,12 +13,9 @@ import {DashboardTokenListStateModel} from '../../states/dashboard-token-list/da
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DashboardTokenListComponent implements OnInit, OnDestroy {
-  @Select(DashboardTokenListState.loadTokenListProcess) loadTokenListProcess$: Observable<
-    DashboardTokenListStateModel['loadTokenListProcess']
-  >;
-  @Select(DashboardTokenListState.tokenListPiledData) tokenListPiledData$: Observable<DashboardTokenListStateModel['tokenListPiledData']>;
-  @Select(DashboardTokenListState.lastLoadTokenListError)
-  lastLoadTokenListError$: Observable<DashboardTokenListStateModel['lastLoadTokenListError']>;
+  public readonly loadTokenListProcess$ = this.store.select(DashboardTokenListState.loadTokenListProcess);
+  public readonly tokenListPiledData$ = this.store.select(DashboardTokenListState.tokenListPiledData);
+  public readonly lastLoadTokenListError$ = this.store.select(DashboardTokenListState.lastLoadTokenListError);
 
   /** The latest copied token address. */
   public latestCopiedAddress$ = new BehaviorSubject<Nullable<PublicKeyString>>(null);
@@ -36,7 +32,10 @@ export class DashboardTokenListComponent implements OnInit, OnDestroy {
   /** Component subscriptions. Will be unsubscribed on component destroy. */
   public readonly subscription = new Subscription();
 
-  constructor(private dialog: MatDialog) {}
+  constructor(
+    private dialog: MatDialog,
+    private store: Store,
+  ) {}
 
   ngOnInit(): void {
     // Reset the latest copied token address after a delay.

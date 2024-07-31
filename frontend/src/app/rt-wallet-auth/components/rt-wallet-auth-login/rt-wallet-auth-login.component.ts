@@ -1,10 +1,9 @@
-import {filter, Observable, Subscription} from 'rxjs';
+import {filter, Subscription} from 'rxjs';
 import {ChangeDetectionStrategy, Component, OnDestroy, OnInit} from '@angular/core';
 import {Router} from '@angular/router';
-import {Select, Store} from '@ngxs/store';
+import {Store} from '@ngxs/store';
 import {ConnectWallet} from '../../../rt-wallet/states/rt-wallet/rt-wallet.actions';
 import {RtWalletState} from '../../../rt-wallet/states/rt-wallet/rt-wallet.state';
-import {RtWalletStateModel} from '../../../rt-wallet/states/rt-wallet/rt-wallet.model';
 import {progressStatuses} from '../../../shared/symbols/statuses.symbols';
 
 @Component({
@@ -14,8 +13,8 @@ import {progressStatuses} from '../../../shared/symbols/statuses.symbols';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RtWalletAuthLoginComponent implements OnInit, OnDestroy {
-  @Select(RtWalletState.connectWalletStatus) public connectWalletStatus$: Observable<RtWalletStateModel['connectWalletStatus']>;
-  @Select(RtWalletState.connectWalletError) public connectWalletError$: Observable<RtWalletStateModel['connectWalletError']>;
+  public readonly connectWalletStatus$ = this.store.select(RtWalletState.connectWalletStatus);
+  public readonly connectWalletError$ = this.store.select(RtWalletState.connectWalletError);
 
   /** Available statuses for common progress processes. */
   public readonly progressStatuses = progressStatuses;
@@ -23,8 +22,10 @@ export class RtWalletAuthLoginComponent implements OnInit, OnDestroy {
   /** List of the component subscriptions. */
   private readonly subscription = new Subscription();
 
-  constructor(private store: Store, private router: Router) {
-  }
+  constructor(
+    private store: Store,
+    private router: Router,
+  ) {}
 
   ngOnInit(): void {
     // Navigate to the dashboard on the successful wallet connection.
@@ -45,5 +46,4 @@ export class RtWalletAuthLoginComponent implements OnInit, OnDestroy {
   public loginWithWallet(): void {
     this.store.dispatch(new ConnectWallet());
   }
-
 }

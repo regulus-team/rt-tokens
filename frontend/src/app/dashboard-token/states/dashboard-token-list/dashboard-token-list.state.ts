@@ -10,7 +10,7 @@ import {
 } from './dashboard-token-list.actions';
 import {dashboardTokenListStateId, DashboardTokenListStateModel, defaultDashboardTokenState} from './dashboard-token-list.model';
 import {JsonUrlTokenAccountPair, MetadataJsonFieldsTokenAccountPair} from '../../symbols/dashboard-token-metadata-retrieval.symbols';
-import {DashboardTokenService} from '../../services/dashboard-token/dashboard-token.service';
+import {DashboardTokenListService} from '../../services/dashboard-token-list/dashboard-token-list.service';
 import {progressStatuses} from '../../../shared/symbols/statuses.symbols';
 import {RtSolanaService} from '../../../rt-solana/services/rt-solana/rt-solana.service';
 import {PiledTokenData, solToUmiPublicKey} from '../../../rt-solana/symbols';
@@ -22,7 +22,7 @@ import {PiledTokenData, solToUmiPublicKey} from '../../../rt-solana/symbols';
 @Injectable()
 export class DashboardTokenListState {
   constructor(
-    private dashboardToken: DashboardTokenService,
+    private dashboardTokenList: DashboardTokenListService,
     private rtSolana: RtSolanaService,
   ) {}
 
@@ -48,7 +48,7 @@ export class DashboardTokenListState {
       lastLoadTokenListError: null,
     });
 
-    this.dashboardToken
+    this.dashboardTokenList
       .loadAllAccountTokens(publicKey)
       .then(data => ctx.dispatch(new LoadTokenListMetadata(data)))
       .catch(error => ctx.dispatch(new LoadTokenListFail(error)));
@@ -76,7 +76,7 @@ export class DashboardTokenListState {
     const metadataAccounts = tokenListPiledData.map(piledTokenData => solToUmiPublicKey(piledTokenData.metadataAccountAddress));
 
     // Load the token metadata for each mint account.
-    this.dashboardToken
+    this.dashboardTokenList
       .loadListTokenMetadata(metadataAccounts)
       .then(tokenMetadataList => ctx.dispatch(new LoadTokenListMetadataJson(tokenMetadataList)))
       .catch(error => ctx.dispatch(new LoadTokenListFail(error)));
@@ -116,7 +116,7 @@ export class DashboardTokenListState {
       }));
 
     // Load the token metadata for each mint account.
-    this.dashboardToken.loadListTokenImageUrlByJsonUrl(jsonUrlTokenAccountPair).subscribe({
+    this.dashboardTokenList.loadListTokenImageUrlByJsonUrl(jsonUrlTokenAccountPair).subscribe({
       next: tokenMetadataListJson => ctx.dispatch(new LoadTokenListSuccess(tokenMetadataListJson)),
       error: error => ctx.dispatch(new LoadTokenListFail(error)),
     });

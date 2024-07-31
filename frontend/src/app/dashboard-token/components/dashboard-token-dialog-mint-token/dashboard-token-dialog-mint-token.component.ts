@@ -4,8 +4,8 @@ import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {FormControl} from '@angular/forms';
 import {Store} from '@ngxs/store';
 import {PublicKey} from '@solana/web3.js';
-import {MintToken, ResetMintTokenProcess} from '../../states/dashboard-token/dashboard-token-item.actions';
-import {DashboardTokenItemState} from '../../states/dashboard-token/dashboard-token-item.state';
+import {MintToken, ResetMintTokenProcess} from '../../states/dashboard-token-item/dashboard-token-item.actions';
+import {DashboardTokenItemState} from '../../states/dashboard-token-item/dashboard-token-item.state';
 import {progressStatuses} from '../../../shared/symbols/statuses.symbols';
 
 /**

@@ -43,9 +43,9 @@ interface LocalLoginForm {
 
 @Component()
 export abstract class AbstractLoginComponent extends RtFormValidationComponent<LocalLoginForm> implements OnInit {
-  @Select(AuthState.isAuthenticated) isAuthenticated$: Observable<boolean>;
-  @Select(AuthState.isLoading) loading$: Observable<boolean>;
-  @Select(MessagesState.backendError) backendErrors$: Observable<any>;
+  public readonly isAuthenticated$ = this.store.select(AuthState.isAuthenticated);
+  public readonly loading$ = this.store.select(AuthState.isLoading);
+  public readonly backendErrors$ = this.store.select(MessagesState.backendError);
 
   public labels: RtFormLabels<LocalLoginForm> = {
     email: $localize`Email`,

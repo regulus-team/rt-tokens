@@ -17,7 +17,7 @@ import {
   ResetMintTokenProcess,
 } from './dashboard-token-item.actions';
 import {dashboardTokenItemStateId, DashboardTokenItemStateModel, defaultDashboardTokenItemState} from './dashboard-token-item.model';
-import {DashboardTokenService} from '../../services/dashboard-token/dashboard-token.service';
+import {DashboardTokenItemService} from '../../services/dashboard-token-item/dashboard-token-item.service';
 import {tokenDetailsProgressStatuses} from '../../symbols/dashboard-token-general.symbols';
 import {progressStatuses} from '../../../shared/symbols/statuses.symbols';
 import {RtSolanaService} from '../../../rt-solana/services/rt-solana/rt-solana.service';
@@ -30,7 +30,7 @@ import {RtIpfsService} from '../../../rt-ipfs/services/rt-ipfs/rt-ipfs.service';
 @Injectable()
 export class DashboardTokenItemState {
   constructor(
-    private dashboardToken: DashboardTokenService,
+    private dashboardTokenItem: DashboardTokenItemService,
     private rtSolana: RtSolanaService,
     private rtIpfs: RtIpfsService,
   ) {}
@@ -107,7 +107,7 @@ export class DashboardTokenItemState {
       lastLoadTokenDetailsError: null,
     });
 
-    this.dashboardToken
+    this.dashboardTokenItem
       .loadTokenAccountData(publicKey)
       .then(tokenAccountData => ctx.dispatch(new LoadAssociatedTokenAccount(tokenAccountData)))
       .catch(error => ctx.dispatch(new LoadTokenDetailsFail(error)));
@@ -122,7 +122,7 @@ export class DashboardTokenItemState {
     });
 
     const associatedTokenAccountPublicKey = new PublicKey(tokenAccountData.value.data.parsed.info.mint);
-    this.dashboardToken
+    this.dashboardTokenItem
       .loadAssociatedTokenAccountData(associatedTokenAccountPublicKey)
       .then(associatedTokenAccount => ctx.dispatch(new LoadTokenDetailsSuccess(associatedTokenAccount)))
       .catch(error => ctx.dispatch(new LoadTokenDetailsFail(error)));
@@ -157,7 +157,7 @@ export class DashboardTokenItemState {
       .uploadTokenMetadata(tokenMetadata)
       .pipe(
         switchMap(tokenMetadataIpfsUrl =>
-          this.dashboardToken.createFungibleToken(tokenMetadata.name, tokenMetadata.decimals, tokenMetadataIpfsUrl),
+          this.dashboardTokenItem.createFungibleToken(tokenMetadata.name, tokenMetadata.decimals, tokenMetadataIpfsUrl),
         ),
       )
       .subscribe({
@@ -188,7 +188,7 @@ export class DashboardTokenItemState {
       lastMintTokenError: null,
     });
 
-    this.dashboardToken
+    this.dashboardTokenItem
       .mintSpecificToken(mintTokenData)
       .then(signature => {
         ctx.dispatch(new MintTokenSuccess(signature, mintTokenData));

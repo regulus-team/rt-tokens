@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Inject, OnInit, ViewChild} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {Store} from '@ngxs/store';
-import {CreateFungibleToken} from '../../states/dashboard-token/dashboard-token-item.actions';
+import {CreateFungibleToken} from '../../states/dashboard-token-item/dashboard-token-item.actions';
 import {CreateFungibleTokenActionData} from '../../symbols/dashboard-token-action-data.symbols';
 import {RtFormValidationComponent} from '../../../rt-forms/rt-form-validation.component';
 import {ReactiveFormsModule, UntypedFormBuilder, Validators} from '@angular/forms';

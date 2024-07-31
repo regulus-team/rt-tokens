@@ -8,8 +8,8 @@ import {NgxsModule} from '@ngxs/store';
 import {DashboardTokenRootComponent} from './components/dashboard-token-root/dashboard-token-root.component';
 import {DashboardTokenRoutingModule} from './dashboard-token-routing.module';
 import {DashboardTokenListComponent} from './components/dashboard-token-list/dashboard-token-list.component';
-import {DashboardTokenService} from './services/dashboard-token/dashboard-token.service';
-import {DashboardTokenItemState} from './states/dashboard-token/dashboard-token-item.state';
+import {DashboardTokenItemService} from './services/dashboard-token-item/dashboard-token-item.service';
+import {DashboardTokenItemState} from './states/dashboard-token-item/dashboard-token-item.state';
 import {DashboardTokenDetailsComponent} from './components/dashboard-token-details/dashboard-token-details.component';
 import {DashboardTokenDialogMintTokenComponent} from './components/dashboard-token-dialog-mint-token/dashboard-token-dialog-mint-token.component';
 import {RtWalletModule} from '../rt-wallet/rt-wallet.module';
@@ -20,6 +20,7 @@ import {settings} from '../../environments/environment.dev';
 import {CdkCopyToClipboard} from '@angular/cdk/clipboard';
 import {MatTooltip} from '@angular/material/tooltip';
 import {DashboardTokenListState} from './states/dashboard-token-list/dashboard-token-list.state';
+import {DashboardTokenListService} from './services/dashboard-token-list/dashboard-token-list.service';
 
 @NgModule({
   declarations: [
@@ -50,6 +51,6 @@ import {DashboardTokenListState} from './states/dashboard-token-list/dashboard-t
     CdkCopyToClipboard,
     MatTooltip,
   ],
-  providers: [DashboardTokenService],
+  providers: [DashboardTokenItemService, DashboardTokenListService],
 })
 export class DashboardTokenModule {}

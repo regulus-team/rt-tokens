@@ -8,8 +8,8 @@ import {
   DashboardTokenDialogMintTokenComponent,
   DialogMintTokenData,
 } from '../dashboard-token-dialog-mint-token/dashboard-token-dialog-mint-token.component';
-import {LoadTokenDetails} from '../../states/dashboard-token/dashboard-token-item.actions';
-import {DashboardTokenItemState} from '../../states/dashboard-token/dashboard-token-item.state';
+import {LoadTokenDetails} from '../../states/dashboard-token-item/dashboard-token-item.actions';
+import {DashboardTokenItemState} from '../../states/dashboard-token-item/dashboard-token-item.state';
 import {tokenDetailsProgressStatuses} from '../../symbols/dashboard-token-general.symbols';
 import {RtSolanaService} from '../../../rt-solana/services/rt-solana/rt-solana.service';
 
