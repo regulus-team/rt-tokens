@@ -70,7 +70,7 @@ export type SolPublicKey = PublicKeySolana;
 /**
  * Define the transform function for the Solana public key to the UMI public key with another name.
  */
-export const solToUmiPublicKey = publicKey;
+export const toUmiPublicKey = publicKey;
 
 /**
  * Define the piled data for the token.

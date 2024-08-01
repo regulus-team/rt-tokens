@@ -7,6 +7,8 @@ import {
   CreateFungibleTokenFail,
   CreateFungibleTokenSuccess,
   LoadAssociatedTokenAccount,
+  LoadMetadataTokenAccount,
+  LoadMetadataTokenJson,
   LoadTokenDetails,
   LoadTokenDetailsFail,
   LoadTokenDetailsSuccess,
@@ -19,9 +21,11 @@ import {
 import {dashboardTokenItemStateId, DashboardTokenItemStateModel, defaultDashboardTokenItemState} from './dashboard-token-item.model';
 import {DashboardTokenItemService} from '../../services/dashboard-token-item/dashboard-token-item.service';
 import {tokenDetailsProgressStatuses} from '../../symbols/dashboard-token-general.symbols';
+import {JsonUrlTokenAccountPair, MetadataJsonFieldsTokenAccountPair} from '../../symbols/dashboard-token-metadata-retrieval.symbols';
 import {progressStatuses} from '../../../shared/symbols/statuses.symbols';
 import {RtSolanaService} from '../../../rt-solana/services/rt-solana/rt-solana.service';
 import {RtIpfsService} from '../../../rt-ipfs/services/rt-ipfs/rt-ipfs.service';
+import {MetadataJsonFields, toUmiPublicKey} from '../../../rt-solana/symbols';
 
 @State<DashboardTokenItemStateModel>({
   name: dashboardTokenItemStateId,
@@ -61,6 +65,11 @@ export class DashboardTokenItemState {
   }
 
   @Selector()
+  static tokenOwner(state: DashboardTokenItemStateModel): DashboardTokenItemStateModel['tokenOwner'] {
+    return state.tokenOwner;
+  }
+
+  @Selector()
   static mintAuthority(state: DashboardTokenItemStateModel): DashboardTokenItemStateModel['mintAuthority'] {
     return state.mintAuthority;
   }
@@ -68,6 +77,16 @@ export class DashboardTokenItemState {
   @Selector()
   static freezeAuthority(state: DashboardTokenItemStateModel): DashboardTokenItemStateModel['freezeAuthority'] {
     return state.freezeAuthority;
+  }
+
+  @Selector()
+  static tokenMetadata(state: DashboardTokenItemStateModel): DashboardTokenItemStateModel['tokenMetadata'] {
+    return state.tokenMetadata;
+  }
+
+  @Selector()
+  static tokenMetadataJson(state: DashboardTokenItemStateModel): DashboardTokenItemStateModel['tokenMetadataJson'] {
+    return state.tokenMetadataJson;
   }
 
   @Selector()
@@ -118,23 +137,73 @@ export class DashboardTokenItemState {
     ctx.patchState({
       loadTokenDetailsProcess: tokenDetailsProgressStatuses.loadingAssociatedTokenAccount,
       associatedTokenAccount: new PublicKey(tokenAccountData.value.data.parsed.info.mint),
+      tokenOwner: new PublicKey(tokenAccountData.value.data.parsed.info.owner),
       tokenAmount: tokenAccountData.value.data.parsed.info.tokenAmount,
     });
 
     const associatedTokenAccountPublicKey = new PublicKey(tokenAccountData.value.data.parsed.info.mint);
     this.dashboardTokenItem
       .loadAssociatedTokenAccountData(associatedTokenAccountPublicKey)
-      .then(associatedTokenAccount => ctx.dispatch(new LoadTokenDetailsSuccess(associatedTokenAccount)))
+      .then(associatedTokenAccount => ctx.dispatch(new LoadMetadataTokenAccount(associatedTokenAccount)))
       .catch(error => ctx.dispatch(new LoadTokenDetailsFail(error)));
   }
 
-  @Action(LoadTokenDetailsSuccess)
-  loadTokenDetailsSuccess(ctx: StateContext<DashboardTokenItemStateModel>, {associatedTokenAccount}: LoadTokenDetailsSuccess): void {
+  @Action(LoadMetadataTokenAccount)
+  loadMetadataTokenAccount(ctx: StateContext<DashboardTokenItemStateModel>, {associatedTokenAccount}: LoadMetadataTokenAccount): void {
     ctx.patchState({
-      loadTokenDetailsProcess: tokenDetailsProgressStatuses.succeed,
+      loadTokenDetailsProcess: tokenDetailsProgressStatuses.loadingMetadataAccount,
       supply: associatedTokenAccount.value.data.parsed.info.supply,
       mintAuthority: new PublicKey(associatedTokenAccount.value.data.parsed.info.mintAuthority),
       freezeAuthority: new PublicKey(associatedTokenAccount.value.data.parsed.info.freezeAuthority),
+    });
+
+    // Get the metadata account address.
+    const associatedAccountAddress = ctx.getState().associatedTokenAccount as PublicKey;
+    const metadataAccountPda = this.rtSolana.getMetaplexMetadataAccountAddressByMint(toUmiPublicKey(associatedAccountAddress));
+    const metadataAccount = metadataAccountPda[0];
+
+    // Load the token metadata.
+    this.dashboardTokenItem
+      .loadTokenMetadata(metadataAccount)
+      .then(metadata => ctx.dispatch(new LoadMetadataTokenJson(metadata)))
+      .catch(error => ctx.dispatch(new LoadTokenDetailsFail(error)));
+  }
+
+  @Action(LoadMetadataTokenJson)
+  loadMetadataTokenJson(ctx: StateContext<DashboardTokenItemStateModel>, {tokenMetadata}: LoadMetadataTokenJson): void {
+    ctx.patchState({
+      tokenMetadata,
+      loadTokenDetailsProcess: tokenDetailsProgressStatuses.loadingMetadataJson,
+    });
+
+    // Select the associated token account.
+    const associatedTokenAccount = ctx.getState().associatedTokenAccount as PublicKey;
+
+    // If the token metadata is available, load the token metadata JSON.
+    if (tokenMetadata?.uri) {
+      const jsonUrlTokenAccountPair: JsonUrlTokenAccountPair = {
+        jsonUrl: tokenMetadata.uri,
+        tokenAccount: associatedTokenAccount.toString(),
+      };
+      this.dashboardTokenItem.loadTokenMetadataJsonByUrl(jsonUrlTokenAccountPair).subscribe({
+        next: tokenMetadataJson => ctx.dispatch(new LoadTokenDetailsSuccess(tokenMetadataJson)),
+        error: error => ctx.dispatch(new LoadTokenDetailsFail(error)),
+      });
+      // Otherwise, finish the process with a null JSON metadata.
+    } else {
+      const jsonUrlTokenAccountPair: MetadataJsonFieldsTokenAccountPair<Nullable<MetadataJsonFields>> = {
+        jsonMetadata: null,
+        tokenAccount: associatedTokenAccount.toString(),
+      };
+      ctx.dispatch(new LoadTokenDetailsSuccess(jsonUrlTokenAccountPair));
+    }
+  }
+
+  @Action(LoadTokenDetailsSuccess)
+  loadTokenDetailsSuccess(ctx: StateContext<DashboardTokenItemStateModel>, {tokenMetadataJson}: LoadTokenDetailsSuccess): void {
+    ctx.patchState({
+      tokenMetadataJson,
+      loadTokenDetailsProcess: tokenDetailsProgressStatuses.succeed,
     });
   }
 

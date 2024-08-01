@@ -3,6 +3,9 @@ import {tokenDetailsProgressStatuses} from '../../symbols/dashboard-token-genera
 import {TokenAccountDataInfoAmount} from '../../symbols/dashboard-token-rcp-responce.symbols';
 import {UnknownError} from '../../../shared/symbols/errors.symbols';
 import {progressStatuses} from '../../../shared/symbols/statuses.symbols';
+import {Metadata} from '@metaplex-foundation/mpl-token-metadata/dist/src/generated/accounts/metadata';
+import {MetadataJsonFieldsTokenAccountPair} from '../../symbols/dashboard-token-metadata-retrieval.symbols';
+import {MetadataJsonFields} from '../../../rt-solana/symbols';
 
 /** Unique identifier of the dashboard token item state. */
 export const dashboardTokenItemStateId = '_DashboardTokenItem_';
@@ -24,11 +27,20 @@ export interface DashboardTokenItemStateModel {
   /** Contain the supply of the currently loaded token. */
   supply: Nullable<string>;
 
+  /** Contain the public key string of the account with the token owner for the currently loaded token. */
+  tokenOwner: Nullable<PublicKey>;
+
   /** Contain the public key string of the account with the mint authority for the currently loaded token. */
   mintAuthority: Nullable<PublicKey>;
 
   /** Contain the public key string of the account with the freeze authority for the currently loaded token. */
   freezeAuthority: Nullable<PublicKey>;
+
+  /** Contain the token metadata for the currently loaded token. */
+  tokenMetadata: Nullable<Metadata>;
+
+  /** Contain the token metadata JSON fields for the currently loaded token. */
+  tokenMetadataJson: MetadataJsonFieldsTokenAccountPair<Nullable<MetadataJsonFields>>;
 
   /** Contain the last error that occurred during the token details loading. */
   lastLoadTokenDetailsError: Nullable<UnknownError>;
@@ -54,8 +66,11 @@ export const defaultDashboardTokenItemState: DashboardTokenItemStateModel = {
   associatedTokenAccount: null,
   tokenAmount: null,
   supply: null,
+  tokenOwner: null,
   mintAuthority: null,
   freezeAuthority: null,
+  tokenMetadata: null,
+  tokenMetadataJson: {jsonMetadata: null, tokenAccount: ''},
 
   lastLoadTokenDetailsError: null,
 

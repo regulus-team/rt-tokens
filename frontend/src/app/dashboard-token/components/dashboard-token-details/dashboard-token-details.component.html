@@ -4,36 +4,105 @@
   associatedTokenAccount: associatedTokenAccount$ | async,
   tokenAmount: tokenAmount$ | async,
   supply: supply$ | async,
+  tokenOwner: tokenOwner$ | async,
   mintAuthority: mintAuthority$ | async,
   freezeAuthority: freezeAuthority$ | async,
+  tokenMetadata: tokenMetadata$ | async,
+  tokenMetadataJson: tokenMetadataJson$ | async,
+  showItemCopiedIcon: showItemCopiedIcon$ | async,
   lastLoadTokenDetailsError: lastLoadTokenDetailsError$ | async,
 }; as extracted) {
-  <div class="mb-4">
-    <div class="py-4">
-      <h6 class="pre-title">Token: {{ extracted.tokenAccount }}</h6>
-      <h2 class="title">Retrieve status: {{ extracted.loadTokenDetailsProcess }}</h2>
-    </div>
-    <mat-divider></mat-divider>
-  </div>
-
   @if (extracted.loadTokenDetailsProcess === tokenDetailsProgressStatuses.succeed) {
     <mat-card class="token-details">
-      <mat-card-content>
-        <div class="token-details__content">
-          <div class="token-details__associatedTokenAccount">
-            Associated token account: {{ extracted.associatedTokenAccount }}
+      <mat-card-content class="token-details__card">
+        <div class="token-details__item-general-data">
+          <div class="token-details__item-image-wrap">
+            @if (extracted.tokenMetadataJson?.jsonMetadata?.image; as image) {
+              <img [src]="image" class="token-details__item-image" alt="token image">
+            } @else {
+              <svg class="token-details__item-image token-details__item-image_not-found" height="16" width="16">
+                <use xlink:href="#not-found"></use>
+              </svg>
+            }
           </div>
-          <div class="token-details__token-amount">
-            Token amount: {{ extracted.tokenAmount?.uiAmountString }}
+
+          <div class="token-details__item-content-wrap">
+            <div class="token-details__item-header">
+              <a class="token-details__item-name">
+                {{ extracted.tokenMetadataJson?.jsonMetadata?.name || extracted?.tokenMetadata?.name || 'Name Not Found' }}
+              </a>
+
+              <div class="token-details__item-short-address">
+                @if (extracted.tokenAccount; as tokenAccount) {
+                  (
+                  <div class="token-details__item-short-address-content">
+                    {{ tokenAccount }}
+                  </div>
+                  <div
+                    class="token-details__item-short-address-copy"
+                    [cdkCopyToClipboard]="tokenAccount.toString()"
+                    (click)="tokenAddressCopiedToClipboard($event)"
+                  >
+                    @if (extracted.showItemCopiedIcon) {
+                      <svg class="token-details__item-short-address-copy-icon" height="16" width="16" matTooltip="Copied to clipboard">
+                        <use xlink:href="#check"></use>
+                      </svg>
+                    } @else {
+                      <svg class="token-details__item-short-address-copy-icon" height="16" width="16">
+                        <use xlink:href="#copy"></use>
+                      </svg>
+                    }
+                  </div>
+                  )
+                }
+              </div>
+            </div>
+
+            <div class="token-details__item-balance">
+              <div class="token-details__item-amount">
+                {{ extracted.tokenAmount?.uiAmountString }}
+              </div>
+
+              @if (extracted.tokenMetadataJson?.jsonMetadata?.symbol || extracted?.tokenMetadata?.symbol; as symbol) {
+                <div class="token-details__item-symbol">
+                  {{ symbol }}
+                </div>
+              } @else {
+                <div class="token-details__item-symbol token-details__item-symbol_not-found">
+                  [symbol not found]
+                </div>
+              }
+
+            </div>
+
+            @if (extracted.tokenMetadataJson?.jsonMetadata?.description; as description) {
+              <div class="token-details__item-description">
+                {{ description }}
+              </div>
+            } @else {
+              <div class="token-details__item-description token-details__item-description_not-found">
+                No description provided
+              </div>
+            }
           </div>
-          <div class="token-details__supply">
-            Supply: {{ extracted.supply }}
+        </div>
+
+        <div class="token-details__authorities">
+          <div class="token-details__authority-item token-details__associated-token-account">
+            <div class="token-details__authority-item-description">Mint</div>
+            <div class="token-details__authority-item-content">{{ extracted.associatedTokenAccount }}</div>
           </div>
-          <div class="token-details__mint-authority">
-            Mint authority: {{ extracted.mintAuthority }}
+          <div class="token-details__authority-item token-details__mint-authority">
+            <div class="token-details__authority-item-description">Owner</div>
+            <div class="token-details__authority-item-content">{{ extracted.tokenOwner }}</div>
           </div>
-          <div class="token-details__freeze-authority">
-            Freeze authority: {{ extracted.freezeAuthority }}
+          <div class="token-details__authority-item token-details__mint-authority">
+            <div class="token-details__authority-item-description">Mint authority</div>
+            <div class="token-details__authority-item-content">{{ extracted.mintAuthority }}</div>
+          </div>
+          <div class="token-details__authority-item token-details__authority-item_last token-details__freeze-authority">
+            <div class="token-details__authority-item-description">Freeze authority</div>
+            <div class="token-details__authority-item-content">{{ extracted.freezeAuthority }}</div>
           </div>
 
           <div class="token-details__actions">

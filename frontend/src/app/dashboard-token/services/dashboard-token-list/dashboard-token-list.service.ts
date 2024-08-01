@@ -49,13 +49,13 @@ export class DashboardTokenListService {
   }
 
   /**
-   * Load the token image URL by the token metadata & account pair.
-   * @param jsonUrlTokenAccountPair - The list of JSON URL and token account pairs.
+   * Load the list of token metadata JSON files by their URLs.
+   * @param jsonUrlTokenAccountPairs - The list of JSON URL and token account pairs.
    */
-  public loadListTokenImageUrlByJsonUrl(
-    jsonUrlTokenAccountPair: JsonUrlTokenAccountPair[],
+  public loadListTokenMetadataJsonByUrl(
+    jsonUrlTokenAccountPairs: JsonUrlTokenAccountPair[],
   ): Observable<MetadataJsonFieldsTokenAccountPair[]> {
-    const loadRequests = jsonUrlTokenAccountPair.map(pairData =>
+    const loadRequests = jsonUrlTokenAccountPairs.map(pairData =>
       this.http.get<MetadataJsonFields>(pairData.jsonUrl).pipe(
         // Provide an empty value in case of an error to avoid breaking the whole forkJoin request.
         catchError(() => of(null)),

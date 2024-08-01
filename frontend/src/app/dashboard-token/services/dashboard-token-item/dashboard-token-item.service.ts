@@ -1,13 +1,17 @@
+import {catchError, map, Observable, of} from 'rxjs';
 import {HttpClient} from '@angular/common/http';
 import {Injectable} from '@angular/core';
 import {createMintToInstruction} from '@solana/spl-token';
 import {AccountInfo, PublicKey, RpcResponseAndContext, Transaction} from '@solana/web3.js';
-import {createAndMint, mplTokenMetadata, TokenStandard} from '@metaplex-foundation/mpl-token-metadata';
+import {createAndMint, mplTokenMetadata, safeFetchMetadata, TokenStandard} from '@metaplex-foundation/mpl-token-metadata';
+import {Metadata} from '@metaplex-foundation/mpl-token-metadata/dist/src/generated/accounts/metadata';
 import {walletAdapterIdentity} from '@metaplex-foundation/umi-signer-wallet-adapters';
 import {generateSigner, percentAmount, some} from '@metaplex-foundation/umi';
 import {RpcResponseAssociatedTokenAccount, RpcResponseTokenAccount} from '../../symbols/dashboard-token-rcp-responce.symbols';
 import {MintTokenActionData} from '../../symbols/dashboard-token-action-data.symbols';
+import {JsonUrlTokenAccountPair, MetadataJsonFieldsTokenAccountPair} from '../../symbols/dashboard-token-metadata-retrieval.symbols';
 import {RtSolanaService} from '../../../rt-solana/services/rt-solana/rt-solana.service';
+import {MetadataJsonFields, UmiPublicKey} from '../../../rt-solana/symbols';
 
 @Injectable()
 export class DashboardTokenItemService {
@@ -53,6 +57,37 @@ export class DashboardTokenItemService {
     return this.currentClusterConnection.getParsedAccountInfo(associatedTokenAccount) as Promise<
       RpcResponseAndContext<AccountInfo<RpcResponseAssociatedTokenAccount>>
     >;
+  }
+
+  /**
+   * Load the list of token metadata by their mint accounts.
+   * @param metadataAccount - The address of Metaplex token metadata account.
+   */
+  public loadTokenMetadata(metadataAccount: UmiPublicKey): Promise<Nullable<Metadata>> {
+    // Get a new UMI instance for the current network cluster.
+    const umi = this.rtSolana.getNewUmiInstance();
+
+    // Update the UMI instance with the current RPC URL and the Metaplex token metadata plugin.
+    umi.use(mplTokenMetadata()).use(walletAdapterIdentity(this.rtSolana.currentWalletAdapter));
+
+    // Fetch the metadata.
+    return safeFetchMetadata(umi, metadataAccount);
+  }
+
+  /**
+   * Load the token metadata JSON files by its URL.
+   * @param jsonUrlTokenAccountPair - The list of JSON URL and token account pairs.
+   */
+  public loadTokenMetadataJsonByUrl(
+    jsonUrlTokenAccountPair: JsonUrlTokenAccountPair,
+  ): Observable<MetadataJsonFieldsTokenAccountPair<Nullable<MetadataJsonFields>>> {
+    return this.http.get<MetadataJsonFields>(jsonUrlTokenAccountPair.jsonUrl).pipe(
+      // Provide an empty value in case of an error to avoid breaking the whole forkJoin request.
+      catchError(() => of(null)),
+
+      // Map the JSON metadata to the token account.
+      map(jsonMetadata => ({jsonMetadata, tokenAccount: jsonUrlTokenAccountPair.tokenAccount})),
+    );
   }
 
   /**

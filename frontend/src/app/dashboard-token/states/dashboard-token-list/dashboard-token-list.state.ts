@@ -13,7 +13,7 @@ import {JsonUrlTokenAccountPair, MetadataJsonFieldsTokenAccountPair} from '../..
 import {DashboardTokenListService} from '../../services/dashboard-token-list/dashboard-token-list.service';
 import {progressStatuses} from '../../../shared/symbols/statuses.symbols';
 import {RtSolanaService} from '../../../rt-solana/services/rt-solana/rt-solana.service';
-import {PiledTokenData, solToUmiPublicKey} from '../../../rt-solana/symbols';
+import {PiledTokenData, toUmiPublicKey} from '../../../rt-solana/symbols';
 
 @State<DashboardTokenListStateModel>({
   name: dashboardTokenListStateId,
@@ -73,7 +73,7 @@ export class DashboardTokenListState {
     });
 
     // Extract the metadata accounts from the piled token data.
-    const metadataAccounts = tokenListPiledData.map(piledTokenData => solToUmiPublicKey(piledTokenData.metadataAccountAddress));
+    const metadataAccounts = tokenListPiledData.map(piledTokenData => toUmiPublicKey(piledTokenData.metadataAccountAddress));
 
     // Load the token metadata for each mint account.
     this.dashboardTokenList
@@ -116,7 +116,7 @@ export class DashboardTokenListState {
       }));
 
     // Load the token metadata for each mint account.
-    this.dashboardTokenList.loadListTokenImageUrlByJsonUrl(jsonUrlTokenAccountPair).subscribe({
+    this.dashboardTokenList.loadListTokenMetadataJsonByUrl(jsonUrlTokenAccountPair).subscribe({
       next: tokenMetadataListJson => ctx.dispatch(new LoadTokenListSuccess(tokenMetadataListJson)),
       error: error => ctx.dispatch(new LoadTokenListFail(error)),
     });

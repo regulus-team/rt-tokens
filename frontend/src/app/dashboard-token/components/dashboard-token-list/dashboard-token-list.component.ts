@@ -2,9 +2,12 @@ import {BehaviorSubject, filter, Subject, Subscription, switchMap, take, timer} 
 import {ChangeDetectionStrategy, Component, OnDestroy, OnInit} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
 import {Store} from '@ngxs/store';
+import {PublicKey} from '@solana/web3.js';
 import {DashboardTokenDialogAddNewComponent} from '../dashboard-token-dialog-add-new/dashboard-token-dialog-add-new.component';
 import {progressStatuses} from '../../../shared/symbols/statuses.symbols';
 import {DashboardTokenListState} from '../../states/dashboard-token-list/dashboard-token-list.state';
+import {RtSolanaService} from '../../../rt-solana/services/rt-solana/rt-solana.service';
+import {LoadTokenList} from '../../states/dashboard-token-list/dashboard-token-list.actions';
 
 @Component({
   selector: 'app-dashboard-token-list',
@@ -35,9 +38,17 @@ export class DashboardTokenListComponent implements OnInit, OnDestroy {
   constructor(
     private dialog: MatDialog,
     private store: Store,
+    private rtSolana: RtSolanaService,
   ) {}
 
   ngOnInit(): void {
+    // Extract the public key from the wallet adapter.
+    // It can be null as the page is protected by the router guard.
+    const currentAccount: PublicKey = this.rtSolana.currentWalletAdapter.publicKey as PublicKey;
+
+    // Initialize the token list loading process.
+    this.store.dispatch(new LoadTokenList(currentAccount));
+
     // Reset the latest copied token address after a delay.
     this.subscription.add(
       this.resetLatestCopiedAddressAfterDelay$.pipe(switchMap(() => timer(this.resetLatestCopiedAddressDelay))).subscribe({

@@ -17,6 +17,12 @@ export enum tokenDetailsProgressStatuses {
   /** The associated token account is loading. */
   loadingAssociatedTokenAccount = 'loadingAssociatedTokenAccount',
 
+  /** The metadata account is loading. */
+  loadingMetadataAccount = 'loadingMetadataAccount',
+
+  /** The metadata JSON file is loading. */
+  loadingMetadataJson = 'loadingMetadataJson',
+
   /** The token details are loaded. */
   succeed = 'succeed',
 

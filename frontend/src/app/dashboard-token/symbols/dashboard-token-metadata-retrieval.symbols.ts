@@ -16,9 +16,9 @@ export interface JsonUrlTokenAccountPair {
  * Interface for a JSON metadata and token account pair.
  * Used for correct assignment of the JSON metadata to the token account.
  */
-export interface MetadataJsonFieldsTokenAccountPair {
+export interface MetadataJsonFieldsTokenAccountPair<T = MetadataJsonFields> {
   /** The JSON metadata fields. */
-  jsonMetadata: MetadataJsonFields;
+  jsonMetadata: T;
 
   /** The token account public key. */
   tokenAccount: string;
