@@ -1,4 +1,4 @@
-import {BehaviorSubject, filter, map, Subject, Subscription, switchMap, take, timer} from 'rxjs';
+import {filter, map, Subscription, take} from 'rxjs';
 import {ChangeDetectionStrategy, Component, OnDestroy, OnInit} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import {MatDialog} from '@angular/material/dialog';
@@ -44,15 +44,6 @@ export class DashboardTokenDetailsComponent implements OnInit, OnDestroy {
   /** Progress statuses of the token details loading. */
   public readonly tokenDetailsProgressStatuses = tokenDetailsProgressStatuses;
 
-  /** Indicates whether the item copied icon should be shown. */
-  public showItemCopiedIcon$ = new BehaviorSubject(false);
-
-  /** Subject for resetting the latest copied token address after a delay. */
-  public resetLatestCopiedAddressAfterDelay$ = new Subject<void>();
-
-  /** Delay before resetting the latest copied token address (ms). */
-  public readonly resetLatestCopiedAddressDelay = 3000;
-
   /** Component's subscriptions. Will be unsubscribed when the component is destroyed. */
   private readonly subscription = new Subscription();
 
@@ -80,31 +71,10 @@ export class DashboardTokenDetailsComponent implements OnInit, OnDestroy {
           this.store.dispatch(new LoadTokenDetails(tokenPublicKey));
         }),
     );
-
-    // Reset the latest copied token address after a delay.
-    this.subscription.add(
-      this.resetLatestCopiedAddressAfterDelay$.pipe(switchMap(() => timer(this.resetLatestCopiedAddressDelay))).subscribe({
-        next: () => {
-          this.showItemCopiedIcon$.next(false);
-        },
-      }),
-    );
   }
 
   ngOnDestroy(): void {
     this.subscription.unsubscribe();
-  }
-
-  /**
-   * Copy the token address to the clipboard.
-   */
-  public tokenAddressCopiedToClipboard($event: MouseEvent): void {
-    // Prevent the click event from bubbling up.
-    $event.stopPropagation();
-
-    // Store the latest copied token address.
-    this.showItemCopiedIcon$.next(true);
-    this.resetLatestCopiedAddressAfterDelay$.next();
   }
 
   /**

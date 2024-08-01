@@ -9,7 +9,6 @@
   freezeAuthority: freezeAuthority$ | async,
   tokenMetadata: tokenMetadata$ | async,
   tokenMetadataJson: tokenMetadataJson$ | async,
-  showItemCopiedIcon: showItemCopiedIcon$ | async,
   lastLoadTokenDetailsError: lastLoadTokenDetailsError$ | async,
 }; as extracted) {
   @if (extracted.loadTokenDetailsProcess === tokenDetailsProgressStatuses.succeed) {
@@ -27,36 +26,9 @@
           </div>
 
           <div class="token-details__item-content-wrap">
-            <div class="token-details__item-header">
-              <a class="token-details__item-name">
-                {{ extracted.tokenMetadataJson?.jsonMetadata?.name || extracted?.tokenMetadata?.name || 'Name Not Found' }}
-              </a>
-
-              <div class="token-details__item-short-address">
-                @if (extracted.tokenAccount; as tokenAccount) {
-                  (
-                  <div class="token-details__item-short-address-content">
-                    {{ tokenAccount }}
-                  </div>
-                  <div
-                    class="token-details__item-short-address-copy"
-                    [cdkCopyToClipboard]="tokenAccount.toString()"
-                    (click)="tokenAddressCopiedToClipboard($event)"
-                  >
-                    @if (extracted.showItemCopiedIcon) {
-                      <svg class="token-details__item-short-address-copy-icon" height="16" width="16" matTooltip="Copied to clipboard">
-                        <use xlink:href="#check"></use>
-                      </svg>
-                    } @else {
-                      <svg class="token-details__item-short-address-copy-icon" height="16" width="16">
-                        <use xlink:href="#copy"></use>
-                      </svg>
-                    }
-                  </div>
-                  )
-                }
-              </div>
-            </div>
+            <a class="token-details__item-name">
+              {{ extracted.tokenMetadataJson?.jsonMetadata?.name || extracted?.tokenMetadata?.name || 'Name Not Found' }}
+            </a>
 
             <div class="token-details__item-balance">
               <div class="token-details__item-amount">
@@ -72,7 +44,6 @@
                   [symbol not found]
                 </div>
               }
-
             </div>
 
             @if (extracted.tokenMetadataJson?.jsonMetadata?.description; as description) {
@@ -88,26 +59,63 @@
         </div>
 
         <div class="token-details__authorities">
-          <div class="token-details__authority-item token-details__associated-token-account">
-            <div class="token-details__authority-item-description">Mint</div>
-            <div class="token-details__authority-item-content">{{ extracted.associatedTokenAccount }}</div>
-          </div>
-          <div class="token-details__authority-item token-details__mint-authority">
-            <div class="token-details__authority-item-description">Owner</div>
-            <div class="token-details__authority-item-content">{{ extracted.tokenOwner }}</div>
-          </div>
-          <div class="token-details__authority-item token-details__mint-authority">
-            <div class="token-details__authority-item-description">Mint authority</div>
-            <div class="token-details__authority-item-content">{{ extracted.mintAuthority }}</div>
-          </div>
-          <div class="token-details__authority-item token-details__authority-item_last token-details__freeze-authority">
-            <div class="token-details__authority-item-description">Freeze authority</div>
-            <div class="token-details__authority-item-content">{{ extracted.freezeAuthority }}</div>
-          </div>
+          @if (extracted.tokenAccount; as tokenAccount) {
+            <div class="token-details__authority-item token-details__token-address">
+              <div class="token-details__authority-item-description">Token address</div>
+              <div class="token-details__authority-item-content">
+                <app-shared-copy-action [contentToCopy]="tokenAccount.toString()"></app-shared-copy-action>
+                <div class="token-details__authority-item-address">{{ extracted.tokenAccount }}</div>
+              </div>
+            </div>
+          }
+
+          @if (extracted.associatedTokenAccount; as associatedTokenAccount) {
+            <div class="token-details__authority-item token-details__associated-token-account">
+              <div class="token-details__authority-item-description">Mint</div>
+              <div class="token-details__authority-item-content">
+                <app-shared-copy-action [contentToCopy]="associatedTokenAccount.toString()"></app-shared-copy-action>
+                <div class="token-details__authority-item-address">{{ extracted.associatedTokenAccount }}</div>
+              </div>
+            </div>
+          }
+
+          @if (extracted.tokenOwner; as tokenOwner) {
+            <div class="token-details__authority-item token-details__mint-authority">
+              <div class="token-details__authority-item-description">Owner</div>
+              <div class="token-details__authority-item-content">
+                <app-shared-copy-action [contentToCopy]="tokenOwner.toString()"></app-shared-copy-action>
+                <div class="token-details__authority-item-address">{{ extracted.tokenOwner }}</div>
+              </div>
+            </div>
+          }
+
+          @if (extracted.mintAuthority; as mintAuthority) {
+            <div class="token-details__authority-item token-details__mint-authority">
+              <div class="token-details__authority-item-description">Mint authority</div>
+              <div class="token-details__authority-item-content">
+                <app-shared-copy-action [contentToCopy]="mintAuthority.toString()"></app-shared-copy-action>
+                <div class="token-details__authority-item-address">{{ extracted.mintAuthority }}</div>
+              </div>
+            </div>
+          }
+
+          @if (extracted.freezeAuthority; as freezeAuthority) {
+            <div class="token-details__authority-item token-details__authority-item_last token-details__freeze-authority">
+              <div class="token-details__authority-item-description">Freeze authority</div>
+              <div class="token-details__authority-item-content">
+                <app-shared-copy-action [contentToCopy]="freezeAuthority.toString()"></app-shared-copy-action>
+                <div class="token-details__authority-item-address">{{ extracted.freezeAuthority }}</div>
+              </div>
+            </div>
+          }
 
           <div class="token-details__actions">
             @if (extracted.mintAuthority?.equals(currentUserPublicKey)) {
-              <button mat-raised-button color="primary" (click)="openMintTokenDialog(extracted.tokenAccount, extracted.associatedTokenAccount)">
+              <button
+                mat-raised-button
+                color="primary"
+                (click)="openMintTokenDialog(extracted.tokenAccount, extracted.associatedTokenAccount)"
+              >
                 Mint token
               </button>
             }

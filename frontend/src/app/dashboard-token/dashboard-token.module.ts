@@ -3,7 +3,9 @@ import {CommonModule, NgOptimizedImage} from '@angular/common';
 import {MatCardModule} from '@angular/material/card';
 import {MatDividerModule} from '@angular/material/divider';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {CdkCopyToClipboard} from '@angular/cdk/clipboard';
 import {MatButton} from '@angular/material/button';
+import {MatTooltip} from '@angular/material/tooltip';
 import {NgxsModule} from '@ngxs/store';
 import {DashboardTokenRootComponent} from './components/dashboard-token-root/dashboard-token-root.component';
 import {DashboardTokenRoutingModule} from './dashboard-token-routing.module';
@@ -12,15 +14,14 @@ import {DashboardTokenItemService} from './services/dashboard-token-item/dashboa
 import {DashboardTokenItemState} from './states/dashboard-token-item/dashboard-token-item.state';
 import {DashboardTokenDetailsComponent} from './components/dashboard-token-details/dashboard-token-details.component';
 import {DashboardTokenDialogMintTokenComponent} from './components/dashboard-token-dialog-mint-token/dashboard-token-dialog-mint-token.component';
+import {DashboardTokenListState} from './states/dashboard-token-list/dashboard-token-list.state';
+import {DashboardTokenListService} from './services/dashboard-token-list/dashboard-token-list.service';
 import {RtWalletModule} from '../rt-wallet/rt-wallet.module';
 import {RtFormsModule} from '../rt-forms/rt-forms.module';
 import {RtLoadingModule} from '../rt-loading/rt-loading.module';
 import {RtIpfsModule} from '../rt-ipfs/rt-ipfs.module';
+import {SharedCopyActionComponent} from '../shared/components/shared-copy-action/shared-copy-action.component';
 import {settings} from '../../environments/environment.dev';
-import {CdkCopyToClipboard} from '@angular/cdk/clipboard';
-import {MatTooltip} from '@angular/material/tooltip';
-import {DashboardTokenListState} from './states/dashboard-token-list/dashboard-token-list.state';
-import {DashboardTokenListService} from './services/dashboard-token-list/dashboard-token-list.service';
 
 @NgModule({
   declarations: [
@@ -50,6 +51,7 @@ import {DashboardTokenListService} from './services/dashboard-token-list/dashboa
     NgOptimizedImage,
     CdkCopyToClipboard,
     MatTooltip,
+    SharedCopyActionComponent,
   ],
   providers: [DashboardTokenItemService, DashboardTokenListService],
 })

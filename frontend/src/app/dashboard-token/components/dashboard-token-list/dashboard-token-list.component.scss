@@ -78,12 +78,7 @@
 }
 
 .token-list__item-short-address-copy {
-  cursor: pointer;
-  color: var(--common-gray-100);
-
-  &:hover {
-    color: var(--common-gray-600);
-  }
+  margin-left: 2px;
 }
 
 .token-list__item-balance {

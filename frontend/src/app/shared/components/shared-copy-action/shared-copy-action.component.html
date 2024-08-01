@@ -1,0 +1,20 @@
+@if ({
+  isItemCopiedStatus: isItemCopiedStatus$ | async,
+}; as extracted) {
+  <div
+    class="shared-copy-action"
+    [cdkCopyToClipboard]="contentToCopy"
+    (click)="copiedToClipboard($event)"
+  >
+    @if (extracted.isItemCopiedStatus) {
+      <svg class="shared-copy-action__icon shared-copy-action__icon_copy" height="16" width="16" [matTooltip]="tooltipCopiedText">
+        <use xlink:href="#check"></use>
+      </svg>
+    } @else {
+      <svg class="shared-copy-action__icon shared-copy-action__icon_copied" height="16" width="16" [matTooltip]="tooltipText">
+        <use xlink:href="#copy"></use>
+      </svg>
+    }
+  </div>
+}
+

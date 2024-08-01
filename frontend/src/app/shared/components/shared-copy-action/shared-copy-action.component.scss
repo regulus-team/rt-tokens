@@ -1,0 +1,9 @@
+
+.shared-copy-action {
+  cursor: pointer;
+  color: var(--light-green);
+
+  &:hover {
+    color: var(--common-gray-600);
+  }
+}

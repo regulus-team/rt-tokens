@@ -1,7 +1,6 @@
 @if ({
   loadTokenListProcess: loadTokenListProcess$ | async,
   tokenList: tokenListPiledData$ | async,
-  latestCopiedAddress: latestCopiedAddress$ | async,
   lastLoadTokenListError: lastLoadTokenListError$ | async,
 }; as extracted) {
   <div class="mb-4">
@@ -41,20 +40,8 @@
                     <div class="token-list__item-short-address-content">
                       {{ token?.tokenAccount }}
                     </div>
-                    <div
-                      class="token-list__item-short-address-copy"
-                      [cdkCopyToClipboard]="token.tokenAccount"
-                      (click)="tokenAddressCopiedToClipboard($event, token.tokenAccount)"
-                    >
-                      @if (extracted.latestCopiedAddress === token.tokenAccount) {
-                        <svg class="token-list__item-short-address-copy-icon" height="16" width="16" matTooltip="Copied to clipboard">
-                          <use xlink:href="#check"></use>
-                        </svg>
-                      } @else {
-                        <svg class="token-list__item-short-address-copy-icon" height="16" width="16">
-                          <use xlink:href="#copy"></use>
-                        </svg>
-                      }
+                    <div class="token-list__item-short-address-copy">
+                      <app-shared-copy-action [contentToCopy]="token.tokenAccount"></app-shared-copy-action>
                     </div>
                     )
                   </div>
