@@ -17,7 +17,7 @@ import {
 } from './dashboard-token-item-actions.model';
 import {DashboardTokenItemState} from '../dashboard-token-item/dashboard-token-item.state';
 import {ReloadCurrentTokenDetails} from '../dashboard-token-item/dashboard-token-item.actions';
-import {DashboardTokenItemService} from '../../services/dashboard-token-item/dashboard-token-item.service';
+import {DashboardTokenItemActionsService} from '../../services/dashboard-token-item-actions/dashboard-token-item-actions.service';
 import {progressStatuses} from '../../../shared/symbols/statuses.symbols';
 import {RtSolanaService} from '../../../rt-solana/services/rt-solana/rt-solana.service';
 import {RtIpfsService} from '../../../rt-ipfs/services/rt-ipfs/rt-ipfs.service';
@@ -30,7 +30,7 @@ import {RtIpfsService} from '../../../rt-ipfs/services/rt-ipfs/rt-ipfs.service';
 export class DashboardTokenItemActionsState {
   constructor(
     private store: Store,
-    private dashboardTokenItem: DashboardTokenItemService,
+    private dashboardTokenItemActions: DashboardTokenItemActionsService,
     private rtSolana: RtSolanaService,
     private rtIpfs: RtIpfsService,
   ) {}
@@ -56,7 +56,7 @@ export class DashboardTokenItemActionsState {
       .uploadTokenMetadata(tokenMetadata)
       .pipe(
         switchMap(tokenMetadataIpfsUrl =>
-          this.dashboardTokenItem.createFungibleToken(tokenMetadata.name, tokenMetadata.decimals, tokenMetadataIpfsUrl),
+          this.dashboardTokenItemActions.createFungibleToken(tokenMetadata.name, tokenMetadata.decimals, tokenMetadataIpfsUrl),
         ),
       )
       .subscribe({
@@ -87,7 +87,7 @@ export class DashboardTokenItemActionsState {
       lastMintTokenError: null,
     });
 
-    this.dashboardTokenItem
+    this.dashboardTokenItemActions
       .mintSpecificToken(mintTokenData)
       .then(signature => {
         ctx.dispatch(new MintTokenSuccess(signature, mintTokenData));

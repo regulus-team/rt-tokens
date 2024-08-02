@@ -11,8 +11,8 @@ import {
 import {LoadTokenDetails} from '../../states/dashboard-token-item/dashboard-token-item.actions';
 import {DashboardTokenItemState} from '../../states/dashboard-token-item/dashboard-token-item.state';
 import {tokenDetailsProgressStatuses, TokenItemState} from '../../symbols/dashboard-token-general.symbols';
-import {DashboardTokenItemService} from '../../services/dashboard-token-item/dashboard-token-item.service';
 import {FreezeOrThawTokenActionData} from '../../symbols/dashboard-token-action-data.symbols';
+import {DashboardTokenItemActionsService} from '../../services/dashboard-token-item-actions/dashboard-token-item-actions.service';
 import {RtSolanaService} from '../../../rt-solana/services/rt-solana/rt-solana.service';
 
 @Component({
@@ -58,7 +58,7 @@ export class DashboardTokenDetailsComponent implements OnInit, OnDestroy {
     private dialog: MatDialog,
     private store: Store,
     private rtSolana: RtSolanaService,
-    private dashboardTokenItem: DashboardTokenItemService,
+    private dashboardTokenItemActions: DashboardTokenItemActionsService,
   ) {}
 
   ngOnInit(): void {
@@ -111,7 +111,7 @@ export class DashboardTokenDetailsComponent implements OnInit, OnDestroy {
    * Frozen token cannot be transferred, burned, or minted until it is thawed.
    */
   public confirmFreezeToken(freezeTokenActionData: FreezeOrThawTokenActionData): void {
-    this.dashboardTokenItem.freezeSpecificToken(freezeTokenActionData);
+    this.dashboardTokenItemActions.freezeSpecificToken(freezeTokenActionData);
   }
 
   /**
@@ -120,6 +120,6 @@ export class DashboardTokenDetailsComponent implements OnInit, OnDestroy {
    * Thawed token restores the possibility to be transferred, burned, or minted after being frozen.
    */
   public confirmThawToken(thawTokenActionData: FreezeOrThawTokenActionData): void {
-    this.dashboardTokenItem.thawSpecificToken(thawTokenActionData);
+    this.dashboardTokenItemActions.thawSpecificToken(thawTokenActionData);
   }
 }
