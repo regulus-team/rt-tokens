@@ -16,6 +16,8 @@ import {DashboardTokenDetailsComponent} from './components/dashboard-token-detai
 import {DashboardTokenDialogMintTokenComponent} from './components/dashboard-token-dialog-mint-token/dashboard-token-dialog-mint-token.component';
 import {DashboardTokenListState} from './states/dashboard-token-list/dashboard-token-list.state';
 import {DashboardTokenListService} from './services/dashboard-token-list/dashboard-token-list.service';
+import {DashboardTokenItemActionsService} from './services/dashboard-token-item-actions/dashboard-token-item-actions.service';
+import {DashboardTokenItemActionsState} from './states/dashboard-token-item-actions/dashboard-token-item-actions.state';
 import {RtWalletModule} from '../rt-wallet/rt-wallet.module';
 import {RtFormsModule} from '../rt-forms/rt-forms.module';
 import {RtLoadingModule} from '../rt-loading/rt-loading.module';
@@ -33,7 +35,7 @@ import {settings} from '../../environments/environment.dev';
   imports: [
     CommonModule,
     DashboardTokenRoutingModule,
-    NgxsModule.forFeature([DashboardTokenItemState, DashboardTokenListState]),
+    NgxsModule.forFeature([DashboardTokenItemState, DashboardTokenItemActionsState, DashboardTokenListState]),
     RtWalletModule,
     MatCardModule,
     MatDividerModule,
@@ -53,6 +55,6 @@ import {settings} from '../../environments/environment.dev';
     MatTooltip,
     SharedCopyActionComponent,
   ],
-  providers: [DashboardTokenItemService, DashboardTokenListService],
+  providers: [DashboardTokenItemService, DashboardTokenListService, DashboardTokenItemActionsService],
 })
 export class DashboardTokenModule {}
