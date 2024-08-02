@@ -1,6 +1,10 @@
 import {TransactionSignature} from '@solana/web3.js';
 import {dashboardTokenItemActionsStateId} from './dashboard-token-item-actions.model';
-import {CreateFungibleTokenActionData, MintTokenActionData} from '../../symbols/dashboard-token-action-data.symbols';
+import {
+  CreateFungibleTokenActionData,
+  FreezeOrThawTokenActionData,
+  MintTokenActionData,
+} from '../../symbols/dashboard-token-action-data.symbols';
 import {UnknownError} from '../../../shared/symbols/errors.symbols';
 
 export class CreateFungibleToken {
@@ -44,4 +48,54 @@ export class MintTokenFail {
 
 export class ResetMintTokenProcess {
   static type = `${dashboardTokenItemActionsStateId} ${ResetMintTokenProcess.name}`;
+}
+
+export class FreezeToken {
+  static type = `${dashboardTokenItemActionsStateId} ${FreezeToken.name}`;
+
+  constructor(public freezeTokenData: FreezeOrThawTokenActionData) {}
+}
+
+export class FreezeTokenSuccess {
+  static type = `${dashboardTokenItemActionsStateId} ${FreezeTokenSuccess.name}`;
+
+  constructor(
+    public transactionSignature: TransactionSignature,
+    public freezeTokenData: FreezeOrThawTokenActionData,
+  ) {}
+}
+
+export class FreezeTokenFail {
+  static type = `${dashboardTokenItemActionsStateId} ${FreezeTokenFail.name}`;
+
+  constructor(public error: UnknownError) {}
+}
+
+export class ResetFreezeTokenProcess {
+  static type = `${dashboardTokenItemActionsStateId} ${ResetFreezeTokenProcess.name}`;
+}
+
+export class ThawToken {
+  static type = `${dashboardTokenItemActionsStateId} ${ThawToken.name}`;
+
+  constructor(public thawTokenData: FreezeOrThawTokenActionData) {}
+}
+
+export class ThawTokenSuccess {
+  static type = `${dashboardTokenItemActionsStateId} ${ThawTokenSuccess.name}`;
+
+  constructor(
+    public transactionSignature: TransactionSignature,
+    public thawTokenData: FreezeOrThawTokenActionData,
+  ) {}
+}
+
+export class ThawTokenFail {
+  static type = `${dashboardTokenItemActionsStateId} ${ThawTokenFail.name}`;
+
+  constructor(public error: UnknownError) {}
+}
+
+export class ResetThawTokenProcess {
+  static type = `${dashboardTokenItemActionsStateId} ${ResetThawTokenProcess.name}`;
 }

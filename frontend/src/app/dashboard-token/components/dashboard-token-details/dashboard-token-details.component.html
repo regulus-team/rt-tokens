@@ -11,9 +11,22 @@
   tokenMetadata: tokenMetadata$ | async,
   tokenMetadataJson: tokenMetadataJson$ | async,
   lastLoadTokenDetailsError: lastLoadTokenDetailsError$ | async,
+  mintTokenProcess: mintTokenProcess$ | async,
+  freezeTokenProcess: freezeTokenProcess$ | async,
+  lastFreezeTokenError: lastFreezeTokenError$ | async,
+  thawTokenProcess: thawTokenProcess$ | async,
+  lastThawTokenError: lastThawTokenError$ | async,
 }; as extracted) {
-  @if (extracted.loadTokenDetailsProcess === tokenDetailsProgressStatuses.succeed) {
-    <mat-card class="token-details">
+  <mat-card class="token-details">
+    <rt-loading
+      [while]="
+        extracted.loadTokenDetailsProcess === progressStatuses.inProgress
+        || extracted.mintTokenProcess === progressStatuses.inProgress
+        || extracted.freezeTokenProcess === progressStatuses.inProgress
+        || extracted.thawTokenProcess === progressStatuses.inProgress
+      "
+      [until]="false"
+    >
       <mat-card-content class="token-details__card">
         <div class="token-details__item-general-data">
           <div class="token-details__item-image-wrap">
@@ -159,10 +172,14 @@
           </div>
         </div>
       </mat-card-content>
-    </mat-card>
-  }
+    </rt-loading>
+  </mat-card>
 
-  @if (extracted.lastLoadTokenDetailsError) {
-    <p>Error occurred: {{ extracted.lastLoadTokenDetailsError }}</p>
-  }
+    @if (
+      extracted.loadTokenDetailsProcess === progressStatuses.interrupted
+      || extracted.freezeTokenProcess === progressStatuses.interrupted
+      || extracted.thawTokenProcess === progressStatuses.interrupted
+    ) {
+      <p>Error occurred: {{ extracted.lastLoadTokenDetailsError || extracted.lastFreezeTokenError || extracted.lastThawTokenError }}</p>
+    }
 }

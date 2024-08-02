@@ -17,6 +17,18 @@ export interface DashboardTokenItemActionsStateModel {
 
   /** Contain the last error that occurred during the minting token process. */
   lastMintTokenError: Nullable<UnknownError>;
+
+  /** Contain current process status of the freeze token process. */
+  freezeTokenProcess: progressStatuses;
+
+  /** Contain the last error that occurred during the freezing token process. */
+  lastFreezeTokenError: Nullable<UnknownError>;
+
+  /** Contain current process status of the thaw token process. */
+  thawTokenProcess: progressStatuses;
+
+  /** Contain the last error that occurred during the thawing token process. */
+  lastThawTokenError: Nullable<UnknownError>;
 }
 
 /** Default data for state initialization & reset. */
@@ -26,4 +38,10 @@ export const defaultDashboardTokenItemActionsState: DashboardTokenItemActionsSta
 
   mintTokenProcess: progressStatuses.notInitialized,
   lastMintTokenError: null,
+
+  freezeTokenProcess: progressStatuses.notInitialized,
+  lastFreezeTokenError: null,
+
+  thawTokenProcess: progressStatuses.notInitialized,
+  lastThawTokenError: null,
 };

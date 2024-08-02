@@ -5,10 +5,18 @@ import {
   CreateFungibleToken,
   CreateFungibleTokenFail,
   CreateFungibleTokenSuccess,
+  FreezeToken,
+  FreezeTokenFail,
+  FreezeTokenSuccess,
   MintToken,
   MintTokenFail,
   MintTokenSuccess,
+  ResetFreezeTokenProcess,
   ResetMintTokenProcess,
+  ResetThawTokenProcess,
+  ThawToken,
+  ThawTokenFail,
+  ThawTokenSuccess,
 } from './dashboard-token-item-actions.actions';
 import {
   dashboardTokenItemActionsStateId,
@@ -43,6 +51,26 @@ export class DashboardTokenItemActionsState {
   @Selector()
   static lastMintTokenError(state: DashboardTokenItemActionsStateModel): DashboardTokenItemActionsStateModel['lastMintTokenError'] {
     return state.lastMintTokenError;
+  }
+
+  @Selector()
+  static freezeTokenProcess(state: DashboardTokenItemActionsStateModel): DashboardTokenItemActionsStateModel['freezeTokenProcess'] {
+    return state.freezeTokenProcess;
+  }
+
+  @Selector()
+  static lastFreezeTokenError(state: DashboardTokenItemActionsStateModel): DashboardTokenItemActionsStateModel['lastFreezeTokenError'] {
+    return state.lastFreezeTokenError;
+  }
+
+  @Selector()
+  static thawTokenProcess(state: DashboardTokenItemActionsStateModel): DashboardTokenItemActionsStateModel['thawTokenProcess'] {
+    return state.thawTokenProcess;
+  }
+
+  @Selector()
+  static lastThawTokenError(state: DashboardTokenItemActionsStateModel): DashboardTokenItemActionsStateModel['lastThawTokenError'] {
+    return state.lastThawTokenError;
   }
 
   @Action(CreateFungibleToken)
@@ -126,6 +154,107 @@ export class DashboardTokenItemActionsState {
     ctx.patchState({
       mintTokenProcess: progressStatuses.notInitialized,
       lastMintTokenError: null,
+    });
+  }
+
+  @Action(FreezeToken)
+  freezeToken(ctx: StateContext<DashboardTokenItemActionsStateModel>, {freezeTokenData}: FreezeToken): void {
+    ctx.patchState({
+      freezeTokenProcess: progressStatuses.inProgress,
+      lastFreezeTokenError: null,
+    });
+
+    this.dashboardTokenItemActions
+      .freezeSpecificToken(freezeTokenData)
+      .then(signature => {
+        ctx.dispatch(new FreezeTokenSuccess(signature, freezeTokenData));
+      })
+      .catch(error => ctx.dispatch(new FreezeTokenFail(error)));
+  }
+
+  @Action(FreezeTokenSuccess)
+  freezeTokenSuccess(
+    ctx: StateContext<DashboardTokenItemActionsStateModel>,
+    {transactionSignature, freezeTokenData}: FreezeTokenSuccess,
+  ): void {
+    const storedTokenAccount = this.store.selectSnapshot(DashboardTokenItemState.tokenAccount);
+
+    // Reload current token details if the frozen token is the currently selected token.
+    if (storedTokenAccount?.equals(freezeTokenData.tokenAccountPublicKey)) {
+      this.rtSolana.waitForTransactionBySignature(transactionSignature).then(isConfirmed => {
+        if (isConfirmed) {
+          ctx.dispatch(new ReloadCurrentTokenDetails());
+        }
+      });
+    }
+
+    ctx.patchState({
+      freezeTokenProcess: progressStatuses.succeed,
+    });
+  }
+
+  @Action(FreezeTokenFail)
+  freezeTokenFail(ctx: StateContext<DashboardTokenItemActionsStateModel>, {error}: FreezeTokenFail): void {
+    ctx.patchState({
+      freezeTokenProcess: progressStatuses.interrupted,
+      lastFreezeTokenError: error,
+    });
+  }
+
+  @Action(ResetFreezeTokenProcess)
+  resetFreezeTokenProcess(ctx: StateContext<DashboardTokenItemActionsStateModel>): void {
+    ctx.patchState({
+      freezeTokenProcess: progressStatuses.notInitialized,
+      lastFreezeTokenError: null,
+    });
+  }
+
+  @Action(ThawToken)
+  thawToken(ctx: StateContext<DashboardTokenItemActionsStateModel>, {thawTokenData}: ThawToken): void {
+    ctx.patchState({
+      thawTokenProcess: progressStatuses.inProgress,
+      lastThawTokenError: null,
+    });
+
+    this.dashboardTokenItemActions
+      .thawSpecificToken(thawTokenData)
+      .then(signature => {
+        ctx.dispatch(new ThawTokenSuccess(signature, thawTokenData));
+      })
+      .catch(error => ctx.dispatch(new ThawTokenFail(error)));
+  }
+
+  @Action(ThawTokenSuccess)
+  thawTokenSuccess(ctx: StateContext<DashboardTokenItemActionsStateModel>, {transactionSignature, thawTokenData}: ThawTokenSuccess): void {
+    const storedTokenAccount = this.store.selectSnapshot(DashboardTokenItemState.tokenAccount);
+
+    // Reload current token details if the thawed token is the currently selected token.
+    if (storedTokenAccount?.equals(thawTokenData.tokenAccountPublicKey)) {
+      this.rtSolana.waitForTransactionBySignature(transactionSignature).then(isConfirmed => {
+        if (isConfirmed) {
+          ctx.dispatch(new ReloadCurrentTokenDetails());
+        }
+      });
+    }
+
+    ctx.patchState({
+      thawTokenProcess: progressStatuses.succeed,
+    });
+  }
+
+  @Action(ThawTokenFail)
+  thawTokenFail(ctx: StateContext<DashboardTokenItemActionsStateModel>, {error}: ThawTokenFail): void {
+    ctx.patchState({
+      thawTokenProcess: progressStatuses.interrupted,
+      lastThawTokenError: error,
+    });
+  }
+
+  @Action(ResetThawTokenProcess)
+  resetThawTokenProcess(ctx: StateContext<DashboardTokenItemActionsStateModel>): void {
+    ctx.patchState({
+      thawTokenProcess: progressStatuses.notInitialized,
+      lastThawTokenError: null,
     });
   }
 }

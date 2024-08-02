@@ -1,4 +1,4 @@
-import {filter, map, Subscription} from 'rxjs';
+import {filter, map, Subscription, take} from 'rxjs';
 import {ChangeDetectionStrategy, Component, OnDestroy, OnInit} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import {MatDialog} from '@angular/material/dialog';
@@ -10,10 +10,16 @@ import {
 } from '../dashboard-token-dialog-mint-token/dashboard-token-dialog-mint-token.component';
 import {LoadTokenDetails} from '../../states/dashboard-token-item/dashboard-token-item.actions';
 import {DashboardTokenItemState} from '../../states/dashboard-token-item/dashboard-token-item.state';
-import {tokenDetailsProgressStatuses, TokenItemState} from '../../symbols/dashboard-token-general.symbols';
+import {TokenItemState} from '../../symbols/dashboard-token-general.symbols';
 import {FreezeOrThawTokenActionData} from '../../symbols/dashboard-token-action-data.symbols';
-import {DashboardTokenItemActionsService} from '../../services/dashboard-token-item-actions/dashboard-token-item-actions.service';
+import {FreezeToken, ThawToken} from '../../states/dashboard-token-item-actions/dashboard-token-item-actions.actions';
 import {RtSolanaService} from '../../../rt-solana/services/rt-solana/rt-solana.service';
+import {
+  ConfirmDialogData,
+  SharedConfirmDialogComponent,
+} from '../../../shared/components/shared-confirm-dialog/shared-confirm-dialog.component';
+import {progressStatuses} from '../../../shared/symbols/statuses.symbols';
+import {DashboardTokenItemActionsState} from '../../states/dashboard-token-item-actions/dashboard-token-item-actions.state';
 
 @Component({
   selector: 'app-dashboard-token-details',
@@ -34,6 +40,11 @@ export class DashboardTokenDetailsComponent implements OnInit, OnDestroy {
   public readonly tokenMetadata$ = this.store.select(DashboardTokenItemState.tokenMetadata);
   public readonly tokenMetadataJson$ = this.store.select(DashboardTokenItemState.tokenMetadataJson);
   public readonly lastLoadTokenDetailsError$ = this.store.select(DashboardTokenItemState.lastLoadTokenDetailsError);
+  public readonly mintTokenProcess$ = this.store.select(DashboardTokenItemActionsState.mintTokenProcess);
+  public readonly freezeTokenProcess$ = this.store.select(DashboardTokenItemActionsState.freezeTokenProcess);
+  public readonly lastFreezeTokenError$ = this.store.select(DashboardTokenItemActionsState.lastFreezeTokenError);
+  public readonly thawTokenProcess$ = this.store.select(DashboardTokenItemActionsState.thawTokenProcess);
+  public readonly lastThawTokenError$ = this.store.select(DashboardTokenItemActionsState.lastThawTokenError);
 
   /**
    * The current wallet adapter.
@@ -44,8 +55,8 @@ export class DashboardTokenDetailsComponent implements OnInit, OnDestroy {
   /** Current user's public key. */
   public readonly currentUserPublicKey: PublicKey = this.currentWalletAdapter.publicKey as PublicKey;
 
-  /** Progress statuses of the token details loading. */
-  public readonly tokenDetailsProgressStatuses = tokenDetailsProgressStatuses;
+  /** Available statuses for common progress processes. */
+  public readonly progressStatuses = progressStatuses;
 
   /** Token item states. */
   public readonly TokenItemState = TokenItemState;
@@ -58,7 +69,6 @@ export class DashboardTokenDetailsComponent implements OnInit, OnDestroy {
     private dialog: MatDialog,
     private store: Store,
     private rtSolana: RtSolanaService,
-    private dashboardTokenItemActions: DashboardTokenItemActionsService,
   ) {}
 
   ngOnInit(): void {
@@ -111,7 +121,23 @@ export class DashboardTokenDetailsComponent implements OnInit, OnDestroy {
    * Frozen token cannot be transferred, burned, or minted until it is thawed.
    */
   public confirmFreezeToken(freezeTokenActionData: FreezeOrThawTokenActionData): void {
-    this.dashboardTokenItemActions.freezeSpecificToken(freezeTokenActionData);
+    this.dialog
+      .open<SharedConfirmDialogComponent, ConfirmDialogData>(SharedConfirmDialogComponent, {
+        data: {
+          caption: 'Are you sure you want to freeze the token?',
+          detailsText: 'Frozen token cannot be transferred, burned, or minted until it is thawed',
+        },
+        backdropClass: ['rt-dialog'],
+        hasBackdrop: true,
+      })
+      .afterClosed()
+      .pipe(
+        take(1),
+        filter(data => !!data),
+      )
+      .subscribe({
+        next: () => this.store.dispatch(new FreezeToken(freezeTokenActionData)),
+      });
   }
 
   /**
@@ -120,6 +146,22 @@ export class DashboardTokenDetailsComponent implements OnInit, OnDestroy {
    * Thawed token restores the possibility to be transferred, burned, or minted after being frozen.
    */
   public confirmThawToken(thawTokenActionData: FreezeOrThawTokenActionData): void {
-    this.dashboardTokenItemActions.thawSpecificToken(thawTokenActionData);
+    this.dialog
+      .open<SharedConfirmDialogComponent, ConfirmDialogData>(SharedConfirmDialogComponent, {
+        data: {
+          caption: 'Are you sure you want to thaw the token?',
+          detailsText: 'Thawed token restores the possibility to be transferred, burned, or minted after being frozen',
+        },
+        backdropClass: ['rt-dialog'],
+        hasBackdrop: true,
+      })
+      .afterClosed()
+      .pipe(
+        take(1),
+        filter(data => !!data),
+      )
+      .subscribe({
+        next: () => this.store.dispatch(new ThawToken(thawTokenActionData)),
+      });
   }
 }

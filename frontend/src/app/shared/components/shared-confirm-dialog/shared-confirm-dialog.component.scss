@@ -1,0 +1,54 @@
+.shared-confirm-dialog {
+  max-width: 600px;
+  padding: 40px 20px 5px 20px;
+}
+
+.shared-confirm-dialog__question {
+  font-family: 'Montserrat', sans-serif;
+  text-align: center;
+  font-weight: 600;
+  font-size: 18px;
+  line-height: 1;
+}
+
+.shared-confirm-dialog__details {
+  margin-top: 15px;
+  text-align: center;
+  font-weight: 400;
+  font-size: 15px;
+  line-height: 1;
+  color: var(--common-gray-400);
+}
+
+.shared-confirm-dialog__controls {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+}
+
+.shared-confirm-dialog__separator {
+  height: 1px;
+  width: 100%;
+  border: none;
+  background-color: var(--text-border-light);
+}
+
+.shared-confirm-dialog__close-link {
+  padding: 13px 40px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 26px;
+  text-align: center;
+}
+
+.shared-confirm-dialog__separator {
+  background-color: var(--common-gray-50);
+  margin-top: 25px;
+  margin-bottom: 5px;
+}
+
+.shared-confirm-dialog__button_cancel {
+  margin-right: 10px;
+}

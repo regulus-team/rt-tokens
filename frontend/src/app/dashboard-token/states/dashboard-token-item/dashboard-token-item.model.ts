@@ -1,10 +1,11 @@
 import {PublicKey} from '@solana/web3.js';
 import {Metadata} from '@metaplex-foundation/mpl-token-metadata/dist/src/generated/accounts/metadata';
-import {tokenDetailsProgressStatuses, TokenItemState} from '../../symbols/dashboard-token-general.symbols';
+import {TokenItemState} from '../../symbols/dashboard-token-general.symbols';
 import {TokenAccountDataInfoAmount} from '../../symbols/dashboard-token-rcp-responce.symbols';
 import {MetadataJsonFieldsTokenAccountPair} from '../../symbols/dashboard-token-metadata-retrieval.symbols';
 import {UnknownError} from '../../../shared/symbols/errors.symbols';
 import {MetadataJsonFields} from '../../../rt-solana/symbols';
+import {progressStatuses} from '../../../shared/symbols/statuses.symbols';
 
 /** Unique identifier of the dashboard token item state. */
 export const dashboardTokenItemStateId = '_DashboardTokenItem_';
@@ -12,7 +13,7 @@ export const dashboardTokenItemStateId = '_DashboardTokenItem_';
 /** Describes dashboard token item state model. */
 export interface DashboardTokenItemStateModel {
   /** Contain current process status of the token details loading. */
-  loadTokenDetailsProcess: tokenDetailsProgressStatuses;
+  loadTokenDetailsProcess: progressStatuses;
 
   /** Contain the public key string of the token account for the currently loaded token. */
   tokenAccount: Nullable<PublicKey>;
@@ -50,7 +51,7 @@ export interface DashboardTokenItemStateModel {
 
 /** Default data for state initialization & reset. */
 export const defaultDashboardTokenItemState: DashboardTokenItemStateModel = {
-  loadTokenDetailsProcess: tokenDetailsProgressStatuses.notInitialized,
+  loadTokenDetailsProcess: progressStatuses.notInitialized,
 
   tokenAccount: null,
   associatedTokenAccount: null,

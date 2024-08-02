@@ -1,0 +1,21 @@
+<div class="shared-confirm-dialog">
+  <div class="shared-confirm-dialog__question">{{config.caption}}</div>
+  <div class="shared-confirm-dialog__details">{{config.detailsText}}</div>
+  <hr class="shared-confirm-dialog__separator">
+  <div class="shared-confirm-dialog__controls">
+    <button
+      (click)="closeDialog(true)"
+      mat-raised-button
+      class="mat-primary shared-confirm-dialog__button"
+    >
+      {{config.confirm}}
+    </button>
+
+    <a
+      (click)="closeDialog(false)"
+      class="shared-confirm-dialog__close-link"
+    >
+      {{config.cancel}}
+    </a>
+  </div>
+</div>

@@ -12,10 +12,10 @@ import {
 } from './dashboard-token-item.actions';
 import {dashboardTokenItemStateId, DashboardTokenItemStateModel, defaultDashboardTokenItemState} from './dashboard-token-item.model';
 import {DashboardTokenItemService} from '../../services/dashboard-token-item/dashboard-token-item.service';
-import {tokenDetailsProgressStatuses} from '../../symbols/dashboard-token-general.symbols';
 import {JsonUrlTokenAccountPair, MetadataJsonFieldsTokenAccountPair} from '../../symbols/dashboard-token-metadata-retrieval.symbols';
 import {RtSolanaService} from '../../../rt-solana/services/rt-solana/rt-solana.service';
 import {MetadataJsonFields, toUmiPublicKey} from '../../../rt-solana/symbols';
+import {progressStatuses} from '../../../shared/symbols/statuses.symbols';
 
 @State<DashboardTokenItemStateModel>({
   name: dashboardTokenItemStateId,
@@ -105,7 +105,7 @@ export class DashboardTokenItemState {
   @Action(LoadTokenDetails)
   loadTokenDetails(ctx: StateContext<DashboardTokenItemStateModel>, {publicKey}: LoadTokenDetails): void {
     ctx.patchState({
-      loadTokenDetailsProcess: tokenDetailsProgressStatuses.loadingTokenAccount,
+      loadTokenDetailsProcess: progressStatuses.inProgress,
       tokenAccount: publicKey,
       lastLoadTokenDetailsError: null,
     });
@@ -119,7 +119,7 @@ export class DashboardTokenItemState {
   @Action(LoadAssociatedTokenAccount)
   loadAssociatedTokenAccount(ctx: StateContext<DashboardTokenItemStateModel>, {tokenAccountData}: LoadAssociatedTokenAccount): void {
     ctx.patchState({
-      loadTokenDetailsProcess: tokenDetailsProgressStatuses.loadingAssociatedTokenAccount,
+      loadTokenDetailsProcess: progressStatuses.inProgress,
       associatedTokenAccount: new PublicKey(tokenAccountData.value.data.parsed.info.mint),
       tokenOwner: new PublicKey(tokenAccountData.value.data.parsed.info.owner),
       tokenAmount: tokenAccountData.value.data.parsed.info.tokenAmount,
@@ -136,7 +136,7 @@ export class DashboardTokenItemState {
   @Action(LoadMetadataTokenAccount)
   loadMetadataTokenAccount(ctx: StateContext<DashboardTokenItemStateModel>, {associatedTokenAccount}: LoadMetadataTokenAccount): void {
     ctx.patchState({
-      loadTokenDetailsProcess: tokenDetailsProgressStatuses.loadingMetadataAccount,
+      loadTokenDetailsProcess: progressStatuses.inProgress,
       supply: associatedTokenAccount.value.data.parsed.info.supply,
       mintAuthority: new PublicKey(associatedTokenAccount.value.data.parsed.info.mintAuthority),
       freezeAuthority: new PublicKey(associatedTokenAccount.value.data.parsed.info.freezeAuthority),
@@ -158,7 +158,7 @@ export class DashboardTokenItemState {
   loadMetadataTokenJson(ctx: StateContext<DashboardTokenItemStateModel>, {tokenMetadata}: LoadMetadataTokenJson): void {
     ctx.patchState({
       tokenMetadata,
-      loadTokenDetailsProcess: tokenDetailsProgressStatuses.loadingMetadataJson,
+      loadTokenDetailsProcess: progressStatuses.inProgress,
     });
 
     // Select the associated token account.
@@ -188,14 +188,14 @@ export class DashboardTokenItemState {
   loadTokenDetailsSuccess(ctx: StateContext<DashboardTokenItemStateModel>, {tokenMetadataJson}: LoadTokenDetailsSuccess): void {
     ctx.patchState({
       tokenMetadataJson,
-      loadTokenDetailsProcess: tokenDetailsProgressStatuses.succeed,
+      loadTokenDetailsProcess: progressStatuses.succeed,
     });
   }
 
   @Action(LoadTokenDetailsFail)
   loadTokenDetailsFail(ctx: StateContext<DashboardTokenItemStateModel>, {error}: LoadTokenDetailsFail): void {
     ctx.patchState({
-      loadTokenDetailsProcess: tokenDetailsProgressStatuses.interrupted,
+      loadTokenDetailsProcess: progressStatuses.interrupted,
       lastLoadTokenDetailsError: error,
     });
   }
