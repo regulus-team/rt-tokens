@@ -1,4 +1,4 @@
-import {filter, Subscription} from 'rxjs';
+import {filter, map, Observable, startWith, Subscription} from 'rxjs';
 import {ChangeDetectionStrategy, Component, Inject, OnDestroy, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {FormControl} from '@angular/forms';
@@ -20,6 +20,12 @@ export interface DialogMintTokenData {
 
   /** Public key of the account with the mint authority. */
   mintAuthorityPublicKey: PublicKey;
+
+  /** Current number of tokens on the user's balance. */
+  currentBalance: string;
+
+  /** Number of decimals in the token. */
+  tokenDecimals: number;
 }
 
 @Component({
@@ -41,6 +47,9 @@ export class DashboardTokenDialogMintTokenComponent implements OnInit, OnDestroy
   /** Component subscriptions. Will be unsubscribed on component destroy. */
   public readonly subscription = new Subscription();
 
+  /** The estimated balance after minting the specified number of tokens. */
+  public estimatedBalanceAfterMint$: Observable<number>;
+
   constructor(
     private store: Store,
     private dialogRef: MatDialogRef<DashboardTokenDialogMintTokenComponent>,
@@ -52,6 +61,28 @@ export class DashboardTokenDialogMintTokenComponent implements OnInit, OnDestroy
     this.subscription.add(
       this.mintTokenProcess$.pipe(filter(process => process === progressStatuses.succeed)).subscribe(() => {
         this.dialogRef.close();
+      }),
+    );
+
+    // Define the observable for the estimated balance after minting the specified number of tokens.
+    this.estimatedBalanceAfterMint$ = this.tokenAmountControl.valueChanges.pipe(
+      // Start with the current value of the token amount control.
+      startWith(this.tokenAmountControl.value),
+
+      // Apply the calculations.
+      map(value => {
+        // Extract the token decimals and balance from the injected data.
+        const tokenDecimals = +this.injectedData.tokenDecimals;
+        const tokenBalance = +this.injectedData.currentBalance;
+
+        // Calculate the applied decimals.
+        const appliedDecimals = Math.pow(10, -this.injectedData.tokenDecimals);
+
+        // Ensure the input value is a number and is greater than 0.
+        const safeInputValue = value && +value > 0 ? +value : 0;
+
+        // Calculate the estimated balance after minting the specified number of tokens.
+        return +(safeInputValue * appliedDecimals + tokenBalance).toFixed(tokenDecimals);
       }),
     );
   }

@@ -9,6 +9,7 @@ export class RtIpfsService {
   private readonly ipfsPublicDataGatewayUrl = this.config.ipfsPublicDataGatewayUrl;
 
   /** IPFS API URL. */
+  // Todo: update the IPFS API URL.
   // private readonly ipfsApiUrl = this.config.ipfsApiUrl;
   private readonly ipfsApiUrl = 'magenta-automatic-anglerfish-836.mypinata.cloud';
 
@@ -72,6 +73,7 @@ export class RtIpfsService {
 
     // Add authorization headers.
     const headers = new HttpHeaders({
+      // Todo: provide one-time secret retrieved from the Firebase.
       // pinata_api_key: this.ipfsApiKey,
       // pinata_secret_api_key: this.ipfsApiKeySecret,
       'x-pinata-gateway-token': this.ipfsApiKeySecret,
@@ -97,6 +99,7 @@ export class RtIpfsService {
 
     // Add authorization headers.
     const headers = new HttpHeaders({
+      // Todo: provide one-time secret retrieved from the Firebase.
       // pinata_api_key: this.ipfsApiKey,
       // pinata_secret_api_key: this.ipfsApiKeySecret,
       'x-pinata-gateway-token': this.ipfsApiKeySecret,

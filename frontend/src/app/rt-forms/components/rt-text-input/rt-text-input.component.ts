@@ -18,6 +18,12 @@ export class RtTextInputComponent implements OnInit, OnDestroy, ControlValueAcce
   /** Type of the input field. */
   @Input() inputType = 'text';
 
+  /** Minimal value for the input field; applied only for numeric fields. */
+  @Input() minimalValue: Nullable<number> = null;
+
+  /** Maximal value for the input field; applied only for numeric fields. */
+  @Input() maximalValue: Nullable<number> = null;
+
   /** Error message to be displayed. */
   @Input() errorMessage: Nullable<string | undefined>;
 
@@ -27,6 +33,7 @@ export class RtTextInputComponent implements OnInit, OnDestroy, ControlValueAcce
   /** Triggered whether the control is touched. Will be overwritten by Angular forms. */
   public onTouched?: () => void;
 
+  /** Form control for the input field. */
   public readonly textInputControl = new FormControl<string>('');
 
   /** Component subscriptions. Will be unsubscribed on component destroy. */
@@ -44,12 +51,15 @@ export class RtTextInputComponent implements OnInit, OnDestroy, ControlValueAcce
   }
 
   ngOnInit(): void {
+    // Notify the value accessor about the changes in the input field.
     this.subscription.add(
       this.textInputControl.valueChanges.subscribe(value => {
+        // Notify the value accessor about the changes in the input field.
         if (this.onChange) {
           this.onChange(value);
         }
 
+        // Notify the value accessor about the touch events in the input field.
         if (this.onTouched) {
           this.onTouched();
         }

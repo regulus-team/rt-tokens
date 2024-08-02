@@ -3,6 +3,8 @@
     <input
       #textInputElement
       matInput
+      [min]="minimalValue"
+      [max]="maximalValue"
       [type]="inputType"
       [formControl]="textInputControl"
       [placeholder]="placeholder || ''"

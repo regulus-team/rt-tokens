@@ -110,11 +110,22 @@
           }
 
           <div class="token-details__actions">
-            @if (extracted.mintAuthority?.equals(currentUserPublicKey)) {
+            @if (
+              extracted.mintAuthority?.equals(currentUserPublicKey)
+               && extracted.tokenAccount
+               && extracted.associatedTokenAccount
+               && extracted.mintAuthority
+              ) {
               <button
                 mat-raised-button
                 color="primary"
-                (click)="openMintTokenDialog(extracted.tokenAccount, extracted.associatedTokenAccount)"
+                (click)="openMintTokenDialog({
+                  tokenAccountPublicKey: extracted.tokenAccount,
+                  associatedTokenAccountPublicKey: extracted.associatedTokenAccount,
+                  mintAuthorityPublicKey: extracted.mintAuthority,
+                  currentBalance: extracted.tokenAmount?.uiAmountString,
+                  tokenDecimals: extracted.tokenAmount?.decimals,
+                })"
               >
                 Mint token
               </button>

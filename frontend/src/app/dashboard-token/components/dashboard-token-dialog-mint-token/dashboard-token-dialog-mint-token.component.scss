@@ -1,5 +1,7 @@
 .mint-token-dialog {
-  padding: 20px 10px;
+  min-width: 360px;
+  max-width: 360px;
+  padding: 20px;
   display: flex;
   flex-direction: column;
 }
@@ -10,12 +12,55 @@
 }
 
 .mint-token-dialog__input {
+  width: 100%;
+}
+
+.mint-token-dialog__meta {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
+  gap: 15px;
+  padding: 10px 5px;
+  border-top: 1px solid var(--common-gray-50);
+}
+
+.mint-token-dialog__meta_last {
+  border-bottom: 1px solid var(--common-gray-50);
+}
+
+.mint-token-dialog__meta-description {
+  font-weight: 500;
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--common-gray-700);
+}
+
+.mint-token-dialog__meta-value {
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.mint-token-dialog__meta-value_balance {
+  color: var(--light-green);
+}
+
+.mint-token-dialog__meta-value_decimals {
+  transform: skew(-5deg);
+}
+
+.mint-token-dialog__meta-value_estimated {
+  color: var(--light-green);
 }
 
 .mint-token-dialog__error {
-  max-width: 329px;
+  max-width: 310px;
+  padding: 10px 5px;
   color: var(--mat-form-field-error-text-color);
+}
+
+.mint-token-dialog__action {
+  padding: 10px 5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }

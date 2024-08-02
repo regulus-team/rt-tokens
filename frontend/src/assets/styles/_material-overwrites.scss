@@ -16,6 +16,12 @@ html, .dark-theme {
   //--mat-form-field-disabled-input-text-placeholder-color: var(--color-gray3);
 }
 
+// Set the width of the form field to 100% for most form fields.
 .mat-mdc-form-field {
+  width: 100%;
+}
+
+// Set the width of the infix to 100% for most form fields.
+.mat-mdc-form-field-flex .mat-mdc-form-field-infix {
   width: 100%;
 }

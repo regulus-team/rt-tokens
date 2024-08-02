@@ -80,35 +80,21 @@ export class DashboardTokenDetailsComponent implements OnInit, OnDestroy {
   /**
    * Open the dialog window for minting a new token.
    */
-  public openMintTokenDialog(tokenAccountPublicKey: Nullable<PublicKey>, associatedTokenAccountPublicKey: Nullable<PublicKey>): void {
-    // Mint dialog button is available only if it has mint authority, so consider the current wallet as mint authority.
-    const mintAuthorityPublicKey = this.currentWalletAdapter.publicKey;
-
+  public openMintTokenDialog(dialogMintTokenData: Partial<DialogMintTokenData>): void {
     // If any of the required public keys is not set, do nothing.
-    if (!tokenAccountPublicKey || !associatedTokenAccountPublicKey || !mintAuthorityPublicKey) {
+    if (
+      !dialogMintTokenData?.tokenAccountPublicKey ||
+      !dialogMintTokenData?.associatedTokenAccountPublicKey ||
+      !dialogMintTokenData?.mintAuthorityPublicKey
+    ) {
       return;
     }
 
-    this.dialog
-      .open<DashboardTokenDialogMintTokenComponent, DialogMintTokenData>(DashboardTokenDialogMintTokenComponent, {
-        data: {
-          tokenAccountPublicKey,
-          associatedTokenAccountPublicKey,
-          mintAuthorityPublicKey,
-        },
-        backdropClass: ['rt-dialog'],
-        hasBackdrop: true,
-      })
-      .afterClosed()
-      .pipe(
-        take(1),
-        filter(data => !!data),
-      )
-      .subscribe({
-        next: data => {
-          console.log('Data received from the dialog window: ');
-          console.log(data);
-        },
-      });
+    // Open the dialog window.
+    this.dialog.open<DashboardTokenDialogMintTokenComponent, DialogMintTokenData>(DashboardTokenDialogMintTokenComponent, {
+      data: dialogMintTokenData as DialogMintTokenData,
+      backdropClass: ['rt-dialog'],
+      hasBackdrop: true,
+    });
   }
 }

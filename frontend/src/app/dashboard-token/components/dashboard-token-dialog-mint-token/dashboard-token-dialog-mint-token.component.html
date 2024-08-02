@@ -1,5 +1,6 @@
 @if ({
   mintTokenProcess: mintTokenProcess$ | async,
+  estimatedBalanceAfterMint: estimatedBalanceAfterMint$ | async,
   lastMintTokenError: lastMintTokenError$ | async,
 }; as extracted) {
   <rt-loading
@@ -7,10 +8,25 @@
     [until]="extracted.mintTokenProcess !== progressStatuses.inProgress"
   >
     <div class="mint-token-dialog">
-      <h2 class="mint-token-dialog__title title">Choose amount of tokens to be minted</h2>
+      <h2 class="mint-token-dialog__title title">Token Mint</h2>
 
       <div class="mint-token-dialog__input">
-        <app-rt-text-input inputType="number" [formControl]="tokenAmountControl"></app-rt-text-input>
+        <app-rt-text-input inputType="number" [formControl]="tokenAmountControl" [minimalValue]="0"></app-rt-text-input>
+      </div>
+
+      <div class="mint-token-dialog__meta">
+        <div class="mint-token-dialog__meta-description">Balance:</div>
+        <div class="mint-token-dialog__meta-value mint-token-dialog__meta-value_balance">{{ injectedData.currentBalance }}</div>
+      </div>
+
+      <div class="mint-token-dialog__meta">
+        <div class="mint-token-dialog__meta-description">Token decimals:</div>
+        <div class="mint-token-dialog__meta-value mint-token-dialog__meta-value_decimals">{{ injectedData.tokenDecimals }}</div>
+      </div>
+
+      <div class="mint-token-dialog__meta mint-token-dialog__meta_last">
+        <div class="mint-token-dialog__meta-description">Estimated balance after mint:</div>
+        <div class="mint-token-dialog__meta-value mint-token-dialog__meta-value_estimated">{{ extracted.estimatedBalanceAfterMint }}</div>
       </div>
 
       @if (extracted.mintTokenProcess === progressStatuses.interrupted) {
@@ -19,9 +35,15 @@
         </div>
       }
 
-      <button mat-button (click)="mintToken(extracted.mintTokenProcess !== progressStatuses.inProgress, tokenAmountControl.value)">
-        Mint token
-      </button>
+      <div class="mint-token-dialog__action">
+        <button
+          mat-raised-button
+          class="mat-primary mat-background-primary"
+          (click)="mintToken(extracted.mintTokenProcess !== progressStatuses.inProgress, tokenAmountControl.value)"
+        >
+          Apply
+        </button>
+      </div>
     </div>
   </rt-loading>
 }
