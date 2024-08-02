@@ -29,3 +29,20 @@ export enum tokenDetailsProgressStatuses {
   /** The token details loading failed. */
   interrupted = 'interrupted',
 }
+
+/**
+ * Describes possible token state in SPL Token Program.
+ */
+export enum TokenItemState {
+  /**
+   * The token account is active and can participate in token-related activities, such as transfers, minting,
+   * and burning, depending on the permissions set.
+   */
+  Initialized = 'initialized',
+
+  /**
+   * The token account is restricted from performing certain actions, such as transfers,
+   * due to it being frozen by the designated freeze authority.
+   */
+  Frozen = 'frozen',
+}

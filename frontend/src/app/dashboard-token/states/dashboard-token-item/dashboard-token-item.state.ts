@@ -1,30 +1,20 @@
-import {switchMap} from 'rxjs';
 import {Injectable} from '@angular/core';
 import {Action, Selector, State, StateContext} from '@ngxs/store';
 import {PublicKey} from '@solana/web3.js';
 import {
-  CreateFungibleToken,
-  CreateFungibleTokenFail,
-  CreateFungibleTokenSuccess,
   LoadAssociatedTokenAccount,
   LoadMetadataTokenAccount,
   LoadMetadataTokenJson,
   LoadTokenDetails,
   LoadTokenDetailsFail,
   LoadTokenDetailsSuccess,
-  MintToken,
-  MintTokenFail,
-  MintTokenSuccess,
   ReloadCurrentTokenDetails,
-  ResetMintTokenProcess,
 } from './dashboard-token-item.actions';
 import {dashboardTokenItemStateId, DashboardTokenItemStateModel, defaultDashboardTokenItemState} from './dashboard-token-item.model';
 import {DashboardTokenItemService} from '../../services/dashboard-token-item/dashboard-token-item.service';
 import {tokenDetailsProgressStatuses} from '../../symbols/dashboard-token-general.symbols';
 import {JsonUrlTokenAccountPair, MetadataJsonFieldsTokenAccountPair} from '../../symbols/dashboard-token-metadata-retrieval.symbols';
-import {progressStatuses} from '../../../shared/symbols/statuses.symbols';
 import {RtSolanaService} from '../../../rt-solana/services/rt-solana/rt-solana.service';
-import {RtIpfsService} from '../../../rt-ipfs/services/rt-ipfs/rt-ipfs.service';
 import {MetadataJsonFields, toUmiPublicKey} from '../../../rt-solana/symbols';
 
 @State<DashboardTokenItemStateModel>({
@@ -36,7 +26,6 @@ export class DashboardTokenItemState {
   constructor(
     private dashboardTokenItem: DashboardTokenItemService,
     private rtSolana: RtSolanaService,
-    private rtIpfs: RtIpfsService,
   ) {}
 
   @Selector()
@@ -62,6 +51,11 @@ export class DashboardTokenItemState {
   @Selector()
   static supply(state: DashboardTokenItemStateModel): DashboardTokenItemStateModel['supply'] {
     return state.supply;
+  }
+
+  @Selector()
+  static tokenState(state: DashboardTokenItemStateModel): DashboardTokenItemStateModel['tokenState'] {
+    return state.tokenState;
   }
 
   @Selector()
@@ -92,16 +86,6 @@ export class DashboardTokenItemState {
   @Selector()
   static lastLoadTokenDetailsError(state: DashboardTokenItemStateModel): DashboardTokenItemStateModel['lastLoadTokenDetailsError'] {
     return state.lastLoadTokenDetailsError;
-  }
-
-  @Selector()
-  static mintTokenProcess(state: DashboardTokenItemStateModel): DashboardTokenItemStateModel['mintTokenProcess'] {
-    return state.mintTokenProcess;
-  }
-
-  @Selector()
-  static lastMintTokenError(state: DashboardTokenItemStateModel): DashboardTokenItemStateModel['lastMintTokenError'] {
-    return state.lastMintTokenError;
   }
 
   @Action(ReloadCurrentTokenDetails)
@@ -139,6 +123,7 @@ export class DashboardTokenItemState {
       associatedTokenAccount: new PublicKey(tokenAccountData.value.data.parsed.info.mint),
       tokenOwner: new PublicKey(tokenAccountData.value.data.parsed.info.owner),
       tokenAmount: tokenAccountData.value.data.parsed.info.tokenAmount,
+      tokenState: tokenAccountData.value.data.parsed.info.state,
     });
 
     const associatedTokenAccountPublicKey = new PublicKey(tokenAccountData.value.data.parsed.info.mint);
@@ -212,90 +197,6 @@ export class DashboardTokenItemState {
     ctx.patchState({
       loadTokenDetailsProcess: tokenDetailsProgressStatuses.interrupted,
       lastLoadTokenDetailsError: error,
-    });
-  }
-
-  @Action(CreateFungibleToken)
-  createFungibleToken(ctx: StateContext<DashboardTokenItemStateModel>, {tokenMetadata}: CreateFungibleToken): void {
-    ctx.patchState({
-      createTokenProcess: progressStatuses.inProgress,
-      lastCreateTokenError: null,
-    });
-
-    this.rtIpfs
-      .uploadTokenMetadata(tokenMetadata)
-      .pipe(
-        switchMap(tokenMetadataIpfsUrl =>
-          this.dashboardTokenItem.createFungibleToken(tokenMetadata.name, tokenMetadata.decimals, tokenMetadataIpfsUrl),
-        ),
-      )
-      .subscribe({
-        next: () => ctx.dispatch(new CreateFungibleTokenSuccess()),
-        error: error => ctx.dispatch(new CreateFungibleTokenFail(error)),
-      });
-  }
-
-  @Action(CreateFungibleTokenSuccess)
-  createFungibleTokenSuccess(ctx: StateContext<DashboardTokenItemStateModel>): void {
-    ctx.patchState({
-      createTokenProcess: progressStatuses.succeed,
-    });
-  }
-
-  @Action(CreateFungibleTokenFail)
-  createFungibleTokenFail(ctx: StateContext<DashboardTokenItemStateModel>, {error}: CreateFungibleTokenFail): void {
-    ctx.patchState({
-      createTokenProcess: progressStatuses.interrupted,
-      lastCreateTokenError: error,
-    });
-  }
-
-  @Action(MintToken)
-  mintToken(ctx: StateContext<DashboardTokenItemStateModel>, {mintTokenData}: MintToken): void {
-    ctx.patchState({
-      mintTokenProcess: progressStatuses.inProgress,
-      lastMintTokenError: null,
-    });
-
-    this.dashboardTokenItem
-      .mintSpecificToken(mintTokenData)
-      .then(signature => {
-        ctx.dispatch(new MintTokenSuccess(signature, mintTokenData));
-      })
-      .catch(error => ctx.dispatch(new MintTokenFail(error)));
-  }
-
-  @Action(MintTokenSuccess)
-  mintTokenSuccess(ctx: StateContext<DashboardTokenItemStateModel>, {transactionSignature, mintTokenData}: MintTokenSuccess): void {
-    const storedTokenAccount = ctx.getState().tokenAccount;
-
-    // Reload current token details if the minted token is the currently selected token.
-    if (storedTokenAccount?.equals(mintTokenData.tokenAccountPublicKey)) {
-      this.rtSolana.waitForTransactionBySignature(transactionSignature).then(isConfirmed => {
-        if (isConfirmed) {
-          ctx.dispatch(new ReloadCurrentTokenDetails());
-        }
-      });
-    }
-
-    ctx.patchState({
-      mintTokenProcess: progressStatuses.succeed,
-    });
-  }
-
-  @Action(MintTokenFail)
-  mintTokenFail(ctx: StateContext<DashboardTokenItemStateModel>, {error}: MintTokenFail): void {
-    ctx.patchState({
-      mintTokenProcess: progressStatuses.interrupted,
-      lastMintTokenError: error,
-    });
-  }
-
-  @Action(ResetMintTokenProcess)
-  resetMintTokenProgress(ctx: StateContext<DashboardTokenItemStateModel>): void {
-    ctx.patchState({
-      mintTokenProcess: progressStatuses.notInitialized,
-      lastMintTokenError: null,
     });
   }
 }

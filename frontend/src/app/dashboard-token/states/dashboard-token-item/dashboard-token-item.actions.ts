@@ -1,10 +1,9 @@
-import {AccountInfo, PublicKey, RpcResponseAndContext, TransactionSignature} from '@solana/web3.js';
+import {AccountInfo, PublicKey, RpcResponseAndContext} from '@solana/web3.js';
 import {Metadata} from '@metaplex-foundation/mpl-token-metadata/dist/src/generated/accounts/metadata';
 import {dashboardTokenItemStateId} from './dashboard-token-item.model';
 import {RpcResponseAssociatedTokenAccount, RpcResponseTokenAccount} from '../../symbols/dashboard-token-rcp-responce.symbols';
-import {CreateFungibleTokenActionData, MintTokenActionData} from '../../symbols/dashboard-token-action-data.symbols';
-import {UnknownError} from '../../../shared/symbols/errors.symbols';
 import {MetadataJsonFieldsTokenAccountPair} from '../../symbols/dashboard-token-metadata-retrieval.symbols';
+import {UnknownError} from '../../../shared/symbols/errors.symbols';
 import {MetadataJsonFields} from '../../../rt-solana/symbols';
 
 export class ReloadCurrentTokenDetails {
@@ -45,47 +44,4 @@ export class LoadTokenDetailsFail {
   static type = `${dashboardTokenItemStateId} ${LoadTokenDetailsFail.name}`;
 
   constructor(public error: UnknownError) {}
-}
-
-export class CreateFungibleToken {
-  static type = `${dashboardTokenItemStateId} ${CreateFungibleToken.name}`;
-
-  constructor(public tokenMetadata: CreateFungibleTokenActionData) {}
-}
-
-export class CreateFungibleTokenSuccess {
-  static type = `${dashboardTokenItemStateId} ${CreateFungibleTokenSuccess.name}`;
-
-  constructor() {}
-}
-
-export class CreateFungibleTokenFail {
-  static type = `${dashboardTokenItemStateId} ${CreateFungibleTokenFail.name}`;
-
-  constructor(public error: UnknownError) {}
-}
-
-export class MintToken {
-  static type = `${dashboardTokenItemStateId} ${MintToken.name}`;
-
-  constructor(public mintTokenData: MintTokenActionData) {}
-}
-
-export class MintTokenSuccess {
-  static type = `${dashboardTokenItemStateId} ${MintTokenSuccess.name}`;
-
-  constructor(
-    public transactionSignature: TransactionSignature,
-    public mintTokenData: MintTokenActionData,
-  ) {}
-}
-
-export class MintTokenFail {
-  static type = `${dashboardTokenItemStateId} ${MintTokenFail.name}`;
-
-  constructor(public error: UnknownError) {}
-}
-
-export class ResetMintTokenProcess {
-  static type = `${dashboardTokenItemStateId} ${ResetMintTokenProcess.name}`;
 }

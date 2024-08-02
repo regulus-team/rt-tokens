@@ -1,4 +1,4 @@
-import {filter, map, Subscription, take} from 'rxjs';
+import {filter, map, Subscription} from 'rxjs';
 import {ChangeDetectionStrategy, Component, OnDestroy, OnInit} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import {MatDialog} from '@angular/material/dialog';
@@ -10,7 +10,9 @@ import {
 } from '../dashboard-token-dialog-mint-token/dashboard-token-dialog-mint-token.component';
 import {LoadTokenDetails} from '../../states/dashboard-token-item/dashboard-token-item.actions';
 import {DashboardTokenItemState} from '../../states/dashboard-token-item/dashboard-token-item.state';
-import {tokenDetailsProgressStatuses} from '../../symbols/dashboard-token-general.symbols';
+import {tokenDetailsProgressStatuses, TokenItemState} from '../../symbols/dashboard-token-general.symbols';
+import {DashboardTokenItemService} from '../../services/dashboard-token-item/dashboard-token-item.service';
+import {FreezeOrThawTokenActionData} from '../../symbols/dashboard-token-action-data.symbols';
 import {RtSolanaService} from '../../../rt-solana/services/rt-solana/rt-solana.service';
 
 @Component({
@@ -25,6 +27,7 @@ export class DashboardTokenDetailsComponent implements OnInit, OnDestroy {
   public readonly associatedTokenAccount$ = this.store.select(DashboardTokenItemState.associatedTokenAccount);
   public readonly tokenAmount$ = this.store.select(DashboardTokenItemState.tokenAmount);
   public readonly supply$ = this.store.select(DashboardTokenItemState.supply);
+  public readonly tokenState$ = this.store.select(DashboardTokenItemState.tokenState);
   public readonly tokenOwner$ = this.store.select(DashboardTokenItemState.tokenOwner);
   public readonly mintAuthority$ = this.store.select(DashboardTokenItemState.mintAuthority);
   public readonly freezeAuthority$ = this.store.select(DashboardTokenItemState.freezeAuthority);
@@ -44,6 +47,9 @@ export class DashboardTokenDetailsComponent implements OnInit, OnDestroy {
   /** Progress statuses of the token details loading. */
   public readonly tokenDetailsProgressStatuses = tokenDetailsProgressStatuses;
 
+  /** Token item states. */
+  public readonly TokenItemState = TokenItemState;
+
   /** Component's subscriptions. Will be unsubscribed when the component is destroyed. */
   private readonly subscription = new Subscription();
 
@@ -52,6 +58,7 @@ export class DashboardTokenDetailsComponent implements OnInit, OnDestroy {
     private dialog: MatDialog,
     private store: Store,
     private rtSolana: RtSolanaService,
+    private dashboardTokenItem: DashboardTokenItemService,
   ) {}
 
   ngOnInit(): void {
@@ -96,5 +103,23 @@ export class DashboardTokenDetailsComponent implements OnInit, OnDestroy {
       backdropClass: ['rt-dialog'],
       hasBackdrop: true,
     });
+  }
+
+  /**
+   * Freeze the token.
+   * Confirm the action before freezing the token.
+   * Frozen token cannot be transferred, burned, or minted until it is thawed.
+   */
+  public confirmFreezeToken(freezeTokenActionData: FreezeOrThawTokenActionData): void {
+    this.dashboardTokenItem.freezeSpecificToken(freezeTokenActionData);
+  }
+
+  /**
+   * Thaw the token.
+   * Confirm the action before thawing the token.
+   * Thawed token restores the possibility to be transferred, burned, or minted after being frozen.
+   */
+  public confirmThawToken(thawTokenActionData: FreezeOrThawTokenActionData): void {
+    this.dashboardTokenItem.thawSpecificToken(thawTokenActionData);
   }
 }

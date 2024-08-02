@@ -4,6 +4,7 @@
   associatedTokenAccount: associatedTokenAccount$ | async,
   tokenAmount: tokenAmount$ | async,
   supply: supply$ | async,
+  tokenState: tokenState$ | async,
   tokenOwner: tokenOwner$ | async,
   mintAuthority: mintAuthority$ | async,
   freezeAuthority: freezeAuthority$ | async,
@@ -110,25 +111,50 @@
           }
 
           <div class="token-details__actions">
-            @if (
-              extracted.mintAuthority?.equals(currentUserPublicKey)
-               && extracted.tokenAccount
-               && extracted.associatedTokenAccount
-               && extracted.mintAuthority
-              ) {
-              <button
-                mat-raised-button
-                color="primary"
-                (click)="openMintTokenDialog({
+            @if (extracted.tokenAccount && extracted.associatedTokenAccount) {
+              @if (extracted.mintAuthority && extracted.mintAuthority.equals(currentUserPublicKey)) {
+                <button
+                  mat-raised-button
+                  color="primary"
+                  (click)="openMintTokenDialog({
                   tokenAccountPublicKey: extracted.tokenAccount,
                   associatedTokenAccountPublicKey: extracted.associatedTokenAccount,
                   mintAuthorityPublicKey: extracted.mintAuthority,
                   currentBalance: extracted.tokenAmount?.uiAmountString,
                   tokenDecimals: extracted.tokenAmount?.decimals,
                 })"
-              >
-                Mint token
-              </button>
+                >
+                  Mint token
+                </button>
+              }
+
+              @if (extracted.freezeAuthority && extracted.freezeAuthority.equals(currentUserPublicKey)) {
+                @if (extracted.tokenState === TokenItemState.Frozen) {
+                  <button
+                    mat-raised-button
+                    color="primary"
+                    (click)="confirmThawToken({
+                      tokenAccountPublicKey: extracted.tokenAccount,
+                      associatedTokenAccountPublicKey: extracted.associatedTokenAccount,
+                      freezeAuthorityPublicKey: extracted.freezeAuthority,
+                    })"
+                  >
+                    Thaw token
+                  </button>
+                } @else {
+                  <button
+                    mat-raised-button
+                    color="primary"
+                    (click)="confirmFreezeToken({
+                      tokenAccountPublicKey: extracted.tokenAccount,
+                      associatedTokenAccountPublicKey: extracted.associatedTokenAccount,
+                      freezeAuthorityPublicKey: extracted.freezeAuthority,
+                    })"
+                  >
+                    Freeze token
+                  </button>
+                }
+              }
             }
           </div>
         </div>

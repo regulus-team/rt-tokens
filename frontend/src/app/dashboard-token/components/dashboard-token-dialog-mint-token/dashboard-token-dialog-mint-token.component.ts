@@ -4,8 +4,8 @@ import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {FormControl} from '@angular/forms';
 import {Store} from '@ngxs/store';
 import {PublicKey} from '@solana/web3.js';
-import {MintToken, ResetMintTokenProcess} from '../../states/dashboard-token-item/dashboard-token-item.actions';
-import {DashboardTokenItemState} from '../../states/dashboard-token-item/dashboard-token-item.state';
+import {DashboardTokenItemActionsState} from '../../states/dashboard-token-item-actions/dashboard-token-item-actions.state';
+import {MintToken, ResetMintTokenProcess} from '../../states/dashboard-token-item-actions/dashboard-token-item-actions.actions';
 import {progressStatuses} from '../../../shared/symbols/statuses.symbols';
 
 /**
@@ -35,8 +35,8 @@ export interface DialogMintTokenData {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DashboardTokenDialogMintTokenComponent implements OnInit, OnDestroy {
-  public readonly mintTokenProcess$ = this.store.select(DashboardTokenItemState.mintTokenProcess);
-  public readonly lastMintTokenError$ = this.store.select(DashboardTokenItemState.lastMintTokenError);
+  public readonly mintTokenProcess$ = this.store.select(DashboardTokenItemActionsState.mintTokenProcess);
+  public readonly lastMintTokenError$ = this.store.select(DashboardTokenItemActionsState.lastMintTokenError);
 
   /** Control for the token amount input. */
   public readonly tokenAmountControl = new FormControl<number>(0);

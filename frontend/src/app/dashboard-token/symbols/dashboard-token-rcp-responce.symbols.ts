@@ -1,4 +1,5 @@
 import {AccountInfo, ParsedAccountData, PublicKey} from '@solana/web3.js';
+import {TokenItemState} from './dashboard-token-general.symbols';
 
 /**
  * The RPC response token data.
@@ -72,8 +73,8 @@ export interface TokenAccountDataInfo {
   /** The address of the account owner. */
   owner: PublicKeyString;
 
-  /** Some account state status (todo: add additional info once it is available). */
-  state: string;
+  /** Token state in SPL Token Program. */
+  state: TokenItemState;
 
   /** The amount of the token in the account. */
   tokenAmount: TokenAccountDataInfoAmount;

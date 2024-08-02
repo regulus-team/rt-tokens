@@ -1,14 +1,14 @@
 import {catchError, map, Observable, of} from 'rxjs';
 import {HttpClient} from '@angular/common/http';
 import {Injectable} from '@angular/core';
-import {createMintToInstruction} from '@solana/spl-token';
+import {createFreezeAccountInstruction, createMintToInstruction, createThawAccountInstruction} from '@solana/spl-token';
 import {AccountInfo, PublicKey, RpcResponseAndContext, Transaction} from '@solana/web3.js';
 import {createAndMint, mplTokenMetadata, safeFetchMetadata, TokenStandard} from '@metaplex-foundation/mpl-token-metadata';
 import {Metadata} from '@metaplex-foundation/mpl-token-metadata/dist/src/generated/accounts/metadata';
 import {walletAdapterIdentity} from '@metaplex-foundation/umi-signer-wallet-adapters';
 import {generateSigner, percentAmount, some} from '@metaplex-foundation/umi';
 import {RpcResponseAssociatedTokenAccount, RpcResponseTokenAccount} from '../../symbols/dashboard-token-rcp-responce.symbols';
-import {MintTokenActionData} from '../../symbols/dashboard-token-action-data.symbols';
+import {FreezeOrThawTokenActionData, MintTokenActionData} from '../../symbols/dashboard-token-action-data.symbols';
 import {JsonUrlTokenAccountPair, MetadataJsonFieldsTokenAccountPair} from '../../symbols/dashboard-token-metadata-retrieval.symbols';
 import {RtSolanaService} from '../../../rt-solana/services/rt-solana/rt-solana.service';
 import {MetadataJsonFields, UmiPublicKey} from '../../../rt-solana/symbols';
@@ -134,6 +134,42 @@ export class DashboardTokenItemService {
         mintTokenActionData.tokenAccountPublicKey,
         mintTokenActionData.mintAuthorityPublicKey,
         mintTokenActionData.tokenNumber,
+      ),
+    );
+
+    // Request the wallet to sign the transaction and send it to the cluster.
+    return this.currentWalletAdapter.sendTransaction(transaction, this.currentClusterConnection);
+  }
+
+  /**
+   * Freeze a specific token.
+   * @param freezeTokenActionData - Data required to freeze token.
+   */
+  public freezeSpecificToken(freezeTokenActionData: FreezeOrThawTokenActionData): Promise<string> {
+    // Create a transaction that freezes the token.
+    const transaction = new Transaction().add(
+      createFreezeAccountInstruction(
+        freezeTokenActionData.tokenAccountPublicKey,
+        freezeTokenActionData.associatedTokenAccountPublicKey,
+        freezeTokenActionData.freezeAuthorityPublicKey,
+      ),
+    );
+
+    // Request the wallet to sign the transaction and send it to the cluster.
+    return this.currentWalletAdapter.sendTransaction(transaction, this.currentClusterConnection);
+  }
+
+  /**
+   * Thaw a specific token.
+   * @param thawTokenActionData - Data required to thaw token.
+   */
+  public thawSpecificToken(thawTokenActionData: FreezeOrThawTokenActionData): Promise<string> {
+    // Create a transaction that freezes the token.
+    const transaction = new Transaction().add(
+      createThawAccountInstruction(
+        thawTokenActionData.tokenAccountPublicKey,
+        thawTokenActionData.associatedTokenAccountPublicKey,
+        thawTokenActionData.freezeAuthorityPublicKey,
       ),
     );
 

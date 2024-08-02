@@ -1,10 +1,9 @@
 import {PublicKey} from '@solana/web3.js';
-import {tokenDetailsProgressStatuses} from '../../symbols/dashboard-token-general.symbols';
-import {TokenAccountDataInfoAmount} from '../../symbols/dashboard-token-rcp-responce.symbols';
-import {UnknownError} from '../../../shared/symbols/errors.symbols';
-import {progressStatuses} from '../../../shared/symbols/statuses.symbols';
 import {Metadata} from '@metaplex-foundation/mpl-token-metadata/dist/src/generated/accounts/metadata';
+import {tokenDetailsProgressStatuses, TokenItemState} from '../../symbols/dashboard-token-general.symbols';
+import {TokenAccountDataInfoAmount} from '../../symbols/dashboard-token-rcp-responce.symbols';
 import {MetadataJsonFieldsTokenAccountPair} from '../../symbols/dashboard-token-metadata-retrieval.symbols';
+import {UnknownError} from '../../../shared/symbols/errors.symbols';
 import {MetadataJsonFields} from '../../../rt-solana/symbols';
 
 /** Unique identifier of the dashboard token item state. */
@@ -27,6 +26,9 @@ export interface DashboardTokenItemStateModel {
   /** Contain the supply of the currently loaded token. */
   supply: Nullable<string>;
 
+  /** Contain the state of the token for the currently loaded token. */
+  tokenState: Nullable<TokenItemState>;
+
   /** Contain the public key string of the account with the token owner for the currently loaded token. */
   tokenOwner: Nullable<PublicKey>;
 
@@ -44,18 +46,6 @@ export interface DashboardTokenItemStateModel {
 
   /** Contain the last error that occurred during the token details loading. */
   lastLoadTokenDetailsError: Nullable<UnknownError>;
-
-  /** Contain current process status of the creating token process. */
-  createTokenProcess: progressStatuses;
-
-  /** Contain the last error that occurred during the creating token process. */
-  lastCreateTokenError: Nullable<UnknownError>;
-
-  /** Contain current process status of the mint token process. */
-  mintTokenProcess: progressStatuses;
-
-  /** Contain the last error that occurred during the minting token process. */
-  lastMintTokenError: Nullable<UnknownError>;
 }
 
 /** Default data for state initialization & reset. */
@@ -66,6 +56,7 @@ export const defaultDashboardTokenItemState: DashboardTokenItemStateModel = {
   associatedTokenAccount: null,
   tokenAmount: null,
   supply: null,
+  tokenState: null,
   tokenOwner: null,
   mintAuthority: null,
   freezeAuthority: null,
@@ -73,10 +64,4 @@ export const defaultDashboardTokenItemState: DashboardTokenItemStateModel = {
   tokenMetadataJson: {jsonMetadata: null, tokenAccount: ''},
 
   lastLoadTokenDetailsError: null,
-
-  createTokenProcess: progressStatuses.notInitialized,
-  lastCreateTokenError: null,
-
-  mintTokenProcess: progressStatuses.notInitialized,
-  lastMintTokenError: null,
 };

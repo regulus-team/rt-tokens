@@ -1,10 +1,9 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Inject, OnInit, ViewChild} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {Store} from '@ngxs/store';
-import {CreateFungibleToken} from '../../states/dashboard-token-item/dashboard-token-item.actions';
-import {CreateFungibleTokenActionData} from '../../symbols/dashboard-token-action-data.symbols';
-import {RtFormValidationComponent} from '../../../rt-forms/rt-form-validation.component';
+import {MatButton} from '@angular/material/button';
 import {ReactiveFormsModule, UntypedFormBuilder, Validators} from '@angular/forms';
+import {CreateFungibleTokenActionData} from '../../symbols/dashboard-token-action-data.symbols';
 import {
   RtControlNames,
   RtFormFields,
@@ -12,10 +11,11 @@ import {
   RtFormPlaceholders,
   RtValidationMessages,
 } from '../../../rt-forms/symbols/rt-forms-types.symbols';
+import {RtFormValidationComponent} from '../../../rt-forms/rt-form-validation.component';
 import {markAsTouchedRecursive} from '../../../rt-forms/symbols/rt-forms-utils.symbols';
 import {RtFormsModule} from '../../../rt-forms/rt-forms.module';
-import {MatButton} from '@angular/material/button';
 import {RtValidators} from '../../../rt-forms/symbols/rt-forms-validators.symbols';
+import {CreateFungibleToken} from '../../states/dashboard-token-item-actions/dashboard-token-item-actions.actions';
 
 @Component({
   selector: 'app-dashboard-token-dialog-add-new',

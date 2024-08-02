@@ -19,6 +19,20 @@ export interface MintTokenActionData {
 }
 
 /**
+ * Data for the freeze token action.
+ */
+export interface FreezeOrThawTokenActionData {
+  /** Public key of the token account (holds tokens). */
+  tokenAccountPublicKey: PublicKey;
+
+  /** Public key of the associated token account (holds token metadata). */
+  associatedTokenAccountPublicKey: PublicKey;
+
+  /** Public key of the account with the freeze authority. */
+  freezeAuthorityPublicKey: PublicKey;
+}
+
+/**
  * Data for create fungible token action.
  */
 export interface CreateFungibleTokenActionData extends RtTokenMetadata {
