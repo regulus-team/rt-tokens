@@ -1,6 +1,7 @@
 import {TransactionSignature} from '@solana/web3.js';
 import {dashboardTokenItemActionsStateId} from './dashboard-token-item-actions.model';
 import {
+  BurnTokenActionData,
   CreateFungibleTokenActionData,
   FreezeOrThawTokenActionData,
   MintTokenActionData,
@@ -50,6 +51,31 @@ export class ResetMintTokenProcess {
   static type = `${dashboardTokenItemActionsStateId} ${ResetMintTokenProcess.name}`;
 }
 
+export class BurnToken {
+  static type = `${dashboardTokenItemActionsStateId} ${BurnToken.name}`;
+
+  constructor(public burnTokenData: BurnTokenActionData) {}
+}
+
+export class BurnTokenSuccess {
+  static type = `${dashboardTokenItemActionsStateId} ${BurnTokenSuccess.name}`;
+
+  constructor(
+    public transactionSignature: TransactionSignature,
+    public burnTokenData: BurnTokenActionData,
+  ) {}
+}
+
+export class BurnTokenFail {
+  static type = `${dashboardTokenItemActionsStateId} ${BurnTokenFail.name}`;
+
+  constructor(public error: UnknownError) {}
+}
+
+export class ResetBurnTokenProcess {
+  static type = `${dashboardTokenItemActionsStateId} ${ResetBurnTokenProcess.name}`;
+}
+
 export class FreezeToken {
   static type = `${dashboardTokenItemActionsStateId} ${FreezeToken.name}`;
 
@@ -71,10 +97,6 @@ export class FreezeTokenFail {
   constructor(public error: UnknownError) {}
 }
 
-export class ResetFreezeTokenProcess {
-  static type = `${dashboardTokenItemActionsStateId} ${ResetFreezeTokenProcess.name}`;
-}
-
 export class ThawToken {
   static type = `${dashboardTokenItemActionsStateId} ${ThawToken.name}`;
 
@@ -94,8 +116,4 @@ export class ThawTokenFail {
   static type = `${dashboardTokenItemActionsStateId} ${ThawTokenFail.name}`;
 
   constructor(public error: UnknownError) {}
-}
-
-export class ResetThawTokenProcess {
-  static type = `${dashboardTokenItemActionsStateId} ${ResetThawTokenProcess.name}`;
 }

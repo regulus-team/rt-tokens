@@ -1,7 +1,7 @@
 import {filter, map, Observable, startWith, Subscription} from 'rxjs';
 import {ChangeDetectionStrategy, Component, Inject, OnDestroy, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
-import {FormControl} from '@angular/forms';
+import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {Store} from '@ngxs/store';
 import {PublicKey} from '@solana/web3.js';
 import {DashboardTokenItemActionsState} from '../../states/dashboard-token-item-actions/dashboard-token-item-actions.state';
@@ -38,14 +38,23 @@ export class DashboardTokenDialogMintTokenComponent implements OnInit, OnDestroy
   public readonly mintTokenProcess$ = this.store.select(DashboardTokenItemActionsState.mintTokenProcess);
   public readonly lastMintTokenError$ = this.store.select(DashboardTokenItemActionsState.lastMintTokenError);
 
-  /** Control for the token amount input. */
-  public readonly tokenAmountControl = new FormControl<number>(0);
-
   /** Available statuses for common progress processes. */
   public readonly progressStatuses = progressStatuses;
 
   /** Component subscriptions. Will be unsubscribed on component destroy. */
   public readonly subscription = new Subscription();
+
+  /** Form for burning tokens. */
+  public readonly mintTokenForm = new FormGroup({
+    tokenAmount: new FormControl<number>(0, [Validators.min(0), Validators.pattern('^[0-9]*$')]),
+  });
+
+  /** Validation messages for the mint token amount control. */
+  public readonly mintTokenAmountValidationMessages = {
+    required: 'This field is required',
+    min: 'The value must be greater than or equal to 0',
+    pattern: 'The value must be an integer',
+  };
 
   /** The estimated balance after minting the specified number of tokens. */
   public estimatedBalanceAfterMint$: Observable<number>;
@@ -65,9 +74,9 @@ export class DashboardTokenDialogMintTokenComponent implements OnInit, OnDestroy
     );
 
     // Define the observable for the estimated balance after minting the specified number of tokens.
-    this.estimatedBalanceAfterMint$ = this.tokenAmountControl.valueChanges.pipe(
+    this.estimatedBalanceAfterMint$ = this.mintTokenForm.controls.tokenAmount.valueChanges.pipe(
       // Start with the current value of the token amount control.
-      startWith(this.tokenAmountControl.value),
+      startWith(this.mintTokenForm.controls.tokenAmount.value),
 
       // Apply the calculations.
       map(value => {
@@ -101,7 +110,7 @@ export class DashboardTokenDialogMintTokenComponent implements OnInit, OnDestroy
    */
   public async mintToken(isActive: boolean, tokenNumber: Nullable<number>): Promise<void> {
     // Avoid minting if the button is disabled.
-    if (!isActive || !tokenNumber) {
+    if (!isActive || !tokenNumber || this.mintTokenForm.invalid) {
       return;
     }
 

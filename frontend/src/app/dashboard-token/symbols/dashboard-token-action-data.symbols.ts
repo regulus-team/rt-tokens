@@ -19,6 +19,23 @@ export interface MintTokenActionData {
 }
 
 /**
+ * Data for the mint token action.
+ */
+export interface BurnTokenActionData {
+  /** Public key of the token account (holds tokens). */
+  tokenAccountPublicKey: PublicKey;
+
+  /** Public key of the associated token account (holds token metadata). */
+  associatedTokenAccountPublicKey: PublicKey;
+
+  /** Public key of the account with the ownership authority over the token account. */
+  tokenAccountOwnerPublicKey: PublicKey;
+
+  /** Number of tokens to mint. */
+  tokenNumber: number;
+}
+
+/**
  * Data for the freeze token action.
  */
 export interface FreezeOrThawTokenActionData {

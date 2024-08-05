@@ -116,6 +116,10 @@
   transform: skewX(-5deg);
 }
 
+.token-details__actions_burn {
+  background-color: red;
+}
+
 @media screen and (max-width: 580px) {
   .token-details__authority-item {
     align-items: flex-start;

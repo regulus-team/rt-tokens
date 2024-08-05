@@ -2,6 +2,9 @@ import {switchMap} from 'rxjs';
 import {Injectable} from '@angular/core';
 import {Action, Selector, State, StateContext, Store} from '@ngxs/store';
 import {
+  BurnToken,
+  BurnTokenFail,
+  BurnTokenSuccess,
   CreateFungibleToken,
   CreateFungibleTokenFail,
   CreateFungibleTokenSuccess,
@@ -11,9 +14,8 @@ import {
   MintToken,
   MintTokenFail,
   MintTokenSuccess,
-  ResetFreezeTokenProcess,
+  ResetBurnTokenProcess,
   ResetMintTokenProcess,
-  ResetThawTokenProcess,
   ThawToken,
   ThawTokenFail,
   ThawTokenSuccess,
@@ -51,6 +53,16 @@ export class DashboardTokenItemActionsState {
   @Selector()
   static lastMintTokenError(state: DashboardTokenItemActionsStateModel): DashboardTokenItemActionsStateModel['lastMintTokenError'] {
     return state.lastMintTokenError;
+  }
+
+  @Selector()
+  static burnTokenProcess(state: DashboardTokenItemActionsStateModel): DashboardTokenItemActionsStateModel['burnTokenProcess'] {
+    return state.burnTokenProcess;
+  }
+
+  @Selector()
+  static lastBurnTokenError(state: DashboardTokenItemActionsStateModel): DashboardTokenItemActionsStateModel['lastBurnTokenError'] {
+    return state.lastBurnTokenError;
   }
 
   @Selector()
@@ -157,6 +169,55 @@ export class DashboardTokenItemActionsState {
     });
   }
 
+  @Action(BurnToken)
+  burnToken(ctx: StateContext<DashboardTokenItemActionsStateModel>, {burnTokenData}: BurnToken): void {
+    ctx.patchState({
+      burnTokenProcess: progressStatuses.inProgress,
+      lastBurnTokenError: null,
+    });
+
+    this.dashboardTokenItemActions
+      .burnSpecificToken(burnTokenData)
+      .then(signature => {
+        ctx.dispatch(new BurnTokenSuccess(signature, burnTokenData));
+      })
+      .catch(error => ctx.dispatch(new BurnTokenFail(error)));
+  }
+
+  @Action(BurnTokenSuccess)
+  burnTokenSuccess(ctx: StateContext<DashboardTokenItemActionsStateModel>, {transactionSignature, burnTokenData}: BurnTokenSuccess): void {
+    const storedTokenAccount = this.store.selectSnapshot(DashboardTokenItemState.tokenAccount);
+
+    // Reload current token details if the burned token is the currently selected token.
+    if (storedTokenAccount?.equals(burnTokenData.tokenAccountPublicKey)) {
+      this.rtSolana.waitForTransactionBySignature(transactionSignature).then(isConfirmed => {
+        if (isConfirmed) {
+          ctx.dispatch(new ReloadCurrentTokenDetails());
+        }
+      });
+    }
+
+    ctx.patchState({
+      burnTokenProcess: progressStatuses.succeed,
+    });
+  }
+
+  @Action(BurnTokenFail)
+  burnTokenFail(ctx: StateContext<DashboardTokenItemActionsStateModel>, {error}: BurnTokenFail): void {
+    ctx.patchState({
+      burnTokenProcess: progressStatuses.interrupted,
+      lastBurnTokenError: error,
+    });
+  }
+
+  @Action(ResetBurnTokenProcess)
+  resetBurnTokenProcess(ctx: StateContext<DashboardTokenItemActionsStateModel>): void {
+    ctx.patchState({
+      burnTokenProcess: progressStatuses.notInitialized,
+      lastBurnTokenError: null,
+    });
+  }
+
   @Action(FreezeToken)
   freezeToken(ctx: StateContext<DashboardTokenItemActionsStateModel>, {freezeTokenData}: FreezeToken): void {
     ctx.patchState({
@@ -201,14 +262,6 @@ export class DashboardTokenItemActionsState {
     });
   }
 
-  @Action(ResetFreezeTokenProcess)
-  resetFreezeTokenProcess(ctx: StateContext<DashboardTokenItemActionsStateModel>): void {
-    ctx.patchState({
-      freezeTokenProcess: progressStatuses.notInitialized,
-      lastFreezeTokenError: null,
-    });
-  }
-
   @Action(ThawToken)
   thawToken(ctx: StateContext<DashboardTokenItemActionsStateModel>, {thawTokenData}: ThawToken): void {
     ctx.patchState({
@@ -247,14 +300,6 @@ export class DashboardTokenItemActionsState {
     ctx.patchState({
       thawTokenProcess: progressStatuses.interrupted,
       lastThawTokenError: error,
-    });
-  }
-
-  @Action(ResetThawTokenProcess)
-  resetThawTokenProcess(ctx: StateContext<DashboardTokenItemActionsStateModel>): void {
-    ctx.patchState({
-      thawTokenProcess: progressStatuses.notInitialized,
-      lastThawTokenError: null,
     });
   }
 }

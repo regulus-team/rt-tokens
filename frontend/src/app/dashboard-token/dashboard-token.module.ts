@@ -24,6 +24,8 @@ import {RtLoadingModule} from '../rt-loading/rt-loading.module';
 import {RtIpfsModule} from '../rt-ipfs/rt-ipfs.module';
 import {SharedCopyActionComponent} from '../shared/components/shared-copy-action/shared-copy-action.component';
 import {settings} from '../../environments/environment.dev';
+import {DashboardTokenDialogBurnTokenComponent} from './components/dashboard-token-dialog-burn-token/dashboard-token-dialog-burn-token.component';
+import {RtTextInputComponent} from '../rt-forms/components/rt-text-input/rt-text-input.component';
 
 @NgModule({
   declarations: [
@@ -31,6 +33,7 @@ import {settings} from '../../environments/environment.dev';
     DashboardTokenListComponent,
     DashboardTokenDetailsComponent,
     DashboardTokenDialogMintTokenComponent,
+    DashboardTokenDialogBurnTokenComponent,
   ],
   imports: [
     CommonModule,
@@ -54,6 +57,7 @@ import {settings} from '../../environments/environment.dev';
     CdkCopyToClipboard,
     MatTooltip,
     SharedCopyActionComponent,
+    RtTextInputComponent,
   ],
   providers: [DashboardTokenItemService, DashboardTokenListService, DashboardTokenItemActionsService],
 })

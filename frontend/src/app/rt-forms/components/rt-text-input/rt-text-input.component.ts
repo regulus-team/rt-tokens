@@ -1,13 +1,51 @@
-import {Subscription} from 'rxjs';
-import {ChangeDetectionStrategy, Component, ElementRef, HostBinding, Input, OnDestroy, OnInit, Renderer2, ViewChild} from '@angular/core';
-import {ControlValueAccessor, FormControl, NgControl} from '@angular/forms';
+import {BehaviorSubject, Subscription} from 'rxjs';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  HostBinding,
+  Input,
+  OnDestroy,
+  OnInit,
+  Optional,
+  Renderer2,
+  ViewChild,
+} from '@angular/core';
+import {
+  ControlContainer,
+  ControlValueAccessor,
+  FormControl,
+  FormGroupDirective,
+  NgControl,
+  NgForm,
+  ReactiveFormsModule,
+} from '@angular/forms';
+import {MatError, MatFormField} from '@angular/material/form-field';
+import {MatInput} from '@angular/material/input';
+import {AsyncPipe, JsonPipe} from '@angular/common';
+import {RtFormsModule} from '../../rt-forms.module';
+import {RtValidationErrorHandleStrategy} from '../../symbols/rt-forms-types.symbols';
+import {RtFormsDefineErrorMessagePipe} from '../../pipes/rt-forms-define-error-message/rt-forms-define-error-message';
+import {RtFormsShouldDisplayValidationPipe} from '../../pipes/rt-forms-should-display-validation/rt-forms-should-display-validation';
 
 @Component({
-  selector: 'app-rt-text-input',
+  selector: 'rt-text-input',
   templateUrl: './rt-text-input.component.html',
   styleUrls: ['./rt-text-input.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  // No providers here, as the `NG_VALUE_ACCESSOR` provider is assigned manually in the abstract class constructor.
+  standalone: true,
+  providers: [NgForm],
+  imports: [
+    MatFormField,
+    MatError,
+    ReactiveFormsModule,
+    RtFormsModule,
+    MatInput,
+    JsonPipe,
+    RtFormsDefineErrorMessagePipe,
+    AsyncPipe,
+    RtFormsShouldDisplayValidationPipe,
+  ],
 })
 export class RtTextInputComponent implements OnInit, OnDestroy, ControlValueAccessor {
   @ViewChild('textInputElement') public textInputElement?: ElementRef<HTMLInputElement>;
@@ -18,14 +56,11 @@ export class RtTextInputComponent implements OnInit, OnDestroy, ControlValueAcce
   /** Type of the input field. */
   @Input() inputType = 'text';
 
-  /** Minimal value for the input field; applied only for numeric fields. */
-  @Input() minimalValue: Nullable<number> = null;
+  /** Error handle strategy. */
+  @Input() errorHandleStrategy: RtValidationErrorHandleStrategy = RtValidationErrorHandleStrategy.afterSubmit;
 
-  /** Maximal value for the input field; applied only for numeric fields. */
-  @Input() maximalValue: Nullable<number> = null;
-
-  /** Error message to be displayed. */
-  @Input() errorMessage: Nullable<string | undefined>;
+  /** Relation between the error name imposed by Validators and the error message. */
+  @Input() validationMessages: Nullable<{[key: string]: string}>;
 
   /** Triggered whether the value is changed. Will be overwritten by Angular forms. */
   public onChange?: (value: Nullable<string>) => void;
@@ -39,15 +74,40 @@ export class RtTextInputComponent implements OnInit, OnDestroy, ControlValueAcce
   /** Component subscriptions. Will be unsubscribed on component destroy. */
   public readonly subscription = new Subscription();
 
+  /** Indicates whether the control container is submitted. */
+  public readonly isControlContainerSubmitted$ = new BehaviorSubject(false);
+
   @HostBinding('class.disabled') protected isDisabled = false;
 
   constructor(
     protected renderer: Renderer2,
     public ngControl: NgControl,
+    @Optional() public controlContainer: ControlContainer,
   ) {
     // Use the `ngControl` to access the related form control.
-    // The `NG_VALUE_ACCESSOR` provider was removed from the component, as it is assigned here directly.
     ngControl.valueAccessor = this;
+
+    // Observe the form submit event if the related strategy is set.
+    if (this.errorHandleStrategy === RtValidationErrorHandleStrategy.afterSubmit) {
+      if (!controlContainer) {
+        throw new Error(
+          `The controlContainer is not found.
+           It is impossible to show validation on form submit event if no form is provided.
+           The ${RtTextInputComponent.name} should be used within a <form>.
+           If this is intended, change the errorHandleStrategy to the different value.`,
+        );
+      }
+
+      if (controlContainer instanceof NgForm) {
+        controlContainer.ngSubmit.subscribe(() => {
+          this.isControlContainerSubmitted$.next(true);
+        });
+      } else if (controlContainer instanceof FormGroupDirective) {
+        controlContainer.ngSubmit.subscribe(() => {
+          this.isControlContainerSubmitted$.next(true);
+        });
+      }
+    }
   }
 
   ngOnInit(): void {

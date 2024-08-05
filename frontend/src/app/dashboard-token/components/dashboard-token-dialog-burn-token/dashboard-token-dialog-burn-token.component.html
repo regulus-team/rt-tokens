@@ -1,0 +1,60 @@
+@if ({
+  burnTokenProcess: burnTokenProcess$ | async,
+  estimatedBalanceAfterBurn: estimatedBalanceAfterBurn$ | async,
+  lastBurnTokenError: lastBurnTokenError$ | async,
+}; as extracted) {
+  <rt-loading
+    [while]="extracted.burnTokenProcess === progressStatuses.inProgress"
+    [until]="extracted.burnTokenProcess !== progressStatuses.inProgress"
+  >
+    <form
+      [formGroup]="burnTokenForm"
+      class="burn-token-dialog"
+      (ngSubmit)="burnToken(extracted.burnTokenProcess !== progressStatuses.inProgress, burnTokenForm.controls.tokenAmount.value)"
+    >
+      <h2 class="burn-token-dialog__title title">Token Burn</h2>
+
+      <div class="burn-token-dialog__input">
+        <rt-text-input
+          inputType="number"
+          [formControl]="burnTokenForm.controls.tokenAmount"
+          [validationMessages]="rtValidationMessages.tokenAmount"
+        ></rt-text-input>
+      </div>
+
+      <div class="burn-token-dialog__meta">
+        <div class="burn-token-dialog__meta-description">Balance:</div>
+        <div class="burn-token-dialog__meta-value burn-token-dialog__meta-value_balance">{{ injectedData.currentBalance }}</div>
+      </div>
+
+      <div class="burn-token-dialog__meta">
+        <div class="burn-token-dialog__meta-description">Token decimals:</div>
+        <div class="burn-token-dialog__meta-value burn-token-dialog__meta-value_decimals">{{ injectedData.tokenDecimals }}</div>
+      </div>
+
+      <div class="burn-token-dialog__meta burn-token-dialog__meta_last">
+        <div class="burn-token-dialog__meta-description">Estimated balance after burn:</div>
+        <div class="burn-token-dialog__meta-value burn-token-dialog__meta-value_estimated">{{ extracted.estimatedBalanceAfterBurn }}</div>
+      </div>
+
+      @if (extracted.burnTokenProcess === progressStatuses.interrupted) {
+        <div class="burn-token-dialog__error">
+          {{ extracted.lastBurnTokenError }}
+        </div>
+      }
+
+      <div class="burn-token-dialog__action">
+        <button
+          mat-raised-button
+          class="mat-primary mat-background-primary"
+          type="submit"
+        >
+          Apply
+        </button>
+      </div>
+    </form>
+  </rt-loading>
+}
+
+
+

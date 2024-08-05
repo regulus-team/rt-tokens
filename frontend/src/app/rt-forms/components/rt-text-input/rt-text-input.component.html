@@ -1,19 +1,28 @@
-<div class="rt-text-input">
-  <mat-form-field appearance="outline">
-    <input
-      #textInputElement
-      matInput
-      [min]="minimalValue"
-      [max]="maximalValue"
-      [type]="inputType"
-      [formControl]="textInputControl"
-      [placeholder]="placeholder || ''"
-    >
-  </mat-form-field>
+<!-- Todo: probably change to ngControl.events after Angular migration to v18. -->
+@if ({
+  shouldDisplayValidation:
+    ngControl.invalid | rtFormsShouldDisplayValidation
+      : ngControl.dirty
+      : ngControl.touched
+      : errorHandleStrategy
+      : (isControlContainerSubmitted$ | async),
+}; as extracted) {
+  <div class="rt-text-input">
+    <mat-form-field appearance="outline">
+      <input
+        #textInputElement
+        matInput
+        [type]="inputType"
+        [formControl]="textInputControl"
+        [placeholder]="placeholder || ''"
+      >
+    </mat-form-field>
 
-  @if (errorMessage && ngControl.invalid && (ngControl.dirty || ngControl.touched)) {
-    <mat-error class="rt-input-error">
-      {{ errorMessage }}
-    </mat-error>
-  }
-</div>
+    @if (extracted.shouldDisplayValidation) {
+      <mat-error class="rt-input-error">
+        {{ validationMessages | rtFormsDefineErrorMessage : ngControl.errors }}
+      </mat-error>
+    }
+  </div>
+}
+

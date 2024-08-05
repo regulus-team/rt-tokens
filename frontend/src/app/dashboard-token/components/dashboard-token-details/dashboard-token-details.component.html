@@ -125,17 +125,17 @@
 
           <div class="token-details__actions">
             @if (extracted.tokenAccount && extracted.associatedTokenAccount) {
-              @if (extracted.mintAuthority && extracted.mintAuthority.equals(currentUserPublicKey)) {
+              @if (extracted.tokenAmount && extracted.mintAuthority && extracted.mintAuthority.equals(currentUserPublicKey)) {
                 <button
                   mat-raised-button
                   color="primary"
                   (click)="openMintTokenDialog({
-                  tokenAccountPublicKey: extracted.tokenAccount,
-                  associatedTokenAccountPublicKey: extracted.associatedTokenAccount,
-                  mintAuthorityPublicKey: extracted.mintAuthority,
-                  currentBalance: extracted.tokenAmount?.uiAmountString,
-                  tokenDecimals: extracted.tokenAmount?.decimals,
-                })"
+                    tokenAccountPublicKey: extracted.tokenAccount,
+                    associatedTokenAccountPublicKey: extracted.associatedTokenAccount,
+                    mintAuthorityPublicKey: extracted.mintAuthority,
+                    currentBalance: extracted.tokenAmount.uiAmountString,
+                    tokenDecimals: extracted.tokenAmount.decimals,
+                  })"
                 >
                   Mint token
                 </button>
@@ -167,6 +167,23 @@
                     Freeze token
                   </button>
                 }
+              }
+
+              @if (extracted.tokenOwner && extracted.tokenAmount && extracted.tokenAmount.amount && !!+extracted.tokenAmount.amount) {
+                <button
+                  mat-raised-button
+                  class="mat-primary token-details__actions_burn"
+                  (click)="openBurnTokenDialog({
+                    tokenAccountPublicKey: extracted.tokenAccount,
+                    associatedTokenAccountPublicKey: extracted.associatedTokenAccount,
+                    tokenAccountOwnerPublicKey: extracted.tokenOwner,
+                    currentBalance: extracted.tokenAmount.uiAmountString,
+                    currentBalanceWithoutDecimals: extracted.tokenAmount.amount,
+                    tokenDecimals: extracted.tokenAmount.decimals,
+                  })"
+                >
+                  Burn tokens
+                </button>
               }
             }
           </div>

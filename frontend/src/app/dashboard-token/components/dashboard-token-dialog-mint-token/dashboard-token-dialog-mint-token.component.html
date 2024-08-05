@@ -7,11 +7,19 @@
     [while]="extracted.mintTokenProcess === progressStatuses.inProgress"
     [until]="extracted.mintTokenProcess !== progressStatuses.inProgress"
   >
-    <div class="mint-token-dialog">
+    <form
+      [formGroup]="mintTokenForm"
+      class="mint-token-dialog"
+      (ngSubmit)="mintToken(extracted.mintTokenProcess !== progressStatuses.inProgress, mintTokenForm.controls.tokenAmount.value)"
+    >
       <h2 class="mint-token-dialog__title title">Token Mint</h2>
 
       <div class="mint-token-dialog__input">
-        <app-rt-text-input inputType="number" [formControl]="tokenAmountControl" [minimalValue]="0"></app-rt-text-input>
+        <rt-text-input
+          inputType="number"
+          [formControl]="mintTokenForm.controls.tokenAmount"
+          [validationMessages]="mintTokenAmountValidationMessages"
+        ></rt-text-input>
       </div>
 
       <div class="mint-token-dialog__meta">
@@ -39,12 +47,12 @@
         <button
           mat-raised-button
           class="mat-primary mat-background-primary"
-          (click)="mintToken(extracted.mintTokenProcess !== progressStatuses.inProgress, tokenAmountControl.value)"
+          type="submit"
         >
           Apply
         </button>
       </div>
-    </div>
+    </form>
   </rt-loading>
 }
 

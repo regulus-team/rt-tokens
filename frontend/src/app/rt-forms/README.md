@@ -107,7 +107,7 @@ Form controls implement `ControlValueAccessor` interface and can be used in any 
 Check the `components` directory for the available form controls and their properties.
 
 ```html
-<app-rt-text-input inputType="number" [formControl]="myControl"></app-rt-text-input>
+<rt-text-input inputType="number" [formControl]="myControl"></rt-text-input>
 ```
 
 

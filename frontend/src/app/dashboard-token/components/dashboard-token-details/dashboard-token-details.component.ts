@@ -20,6 +20,10 @@ import {
 } from '../../../shared/components/shared-confirm-dialog/shared-confirm-dialog.component';
 import {progressStatuses} from '../../../shared/symbols/statuses.symbols';
 import {DashboardTokenItemActionsState} from '../../states/dashboard-token-item-actions/dashboard-token-item-actions.state';
+import {
+  DashboardTokenDialogBurnTokenComponent,
+  DialogBurnTokenData,
+} from '../dashboard-token-dialog-burn-token/dashboard-token-dialog-burn-token.component';
 
 @Component({
   selector: 'app-dashboard-token-details',
@@ -95,9 +99,9 @@ export class DashboardTokenDetailsComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Open the dialog window for minting a new token.
+   * Open the dialog window for minting new tokens.
    */
-  public openMintTokenDialog(dialogMintTokenData: Partial<DialogMintTokenData>): void {
+  public openMintTokenDialog(dialogMintTokenData: DialogMintTokenData): void {
     // If any of the required public keys is not set, do nothing.
     if (
       !dialogMintTokenData?.tokenAccountPublicKey ||
@@ -110,6 +114,27 @@ export class DashboardTokenDetailsComponent implements OnInit, OnDestroy {
     // Open the dialog window.
     this.dialog.open<DashboardTokenDialogMintTokenComponent, DialogMintTokenData>(DashboardTokenDialogMintTokenComponent, {
       data: dialogMintTokenData as DialogMintTokenData,
+      backdropClass: ['rt-dialog'],
+      hasBackdrop: true,
+    });
+  }
+
+  /**
+   * Open the dialog window for burning tokens.
+   */
+  public openBurnTokenDialog(dialogBurnTokenData: DialogBurnTokenData): void {
+    // If any of the required public keys is not set, do nothing.
+    if (
+      !dialogBurnTokenData?.tokenAccountPublicKey ||
+      !dialogBurnTokenData?.associatedTokenAccountPublicKey ||
+      !dialogBurnTokenData?.tokenAccountOwnerPublicKey
+    ) {
+      return;
+    }
+
+    // Open the dialog window.
+    this.dialog.open<DashboardTokenDialogBurnTokenComponent, DialogBurnTokenData>(DashboardTokenDialogBurnTokenComponent, {
+      data: dialogBurnTokenData,
       backdropClass: ['rt-dialog'],
       hasBackdrop: true,
     });

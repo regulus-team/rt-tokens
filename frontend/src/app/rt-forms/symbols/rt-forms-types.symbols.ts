@@ -1,24 +1,24 @@
-import {AbstractControl, ValidatorFn} from '@angular/forms';
+import {FormArray, FormGroup} from '@angular/forms';
 
-/** Describes a type for form errors. Errors will be used for assigning error messages. */
-export type RtFormErrorMessages<T> = {
-  [P in keyof T]: string;
-};
-
-/** Describes a type for form labels. Labels will be used in html template. */
+/** Describes a type for form labels. Labels will be used in HTML template. */
 export type RtFormLabels<T> = {
   [P in keyof T]: string;
 };
 
-/** Describes a type for form placeholders. Placeholders will be used in html template. */
+/**
+ * Transform FormGroup or FormArray to RtFormLabels type.
+ */
+export type RtFormLabelsFromForm<T extends FormGroup | FormArray> = RtFormLabels<T['controls']>;
+
+/** Describes a type for form placeholders. Placeholders will be used in HTML template. */
 export type RtFormPlaceholders<T> = {
   [P in keyof T]: string;
 };
 
-/** Describes a type for form validators. Each key will create control with validators provided to it. */
-export type RtFormFields<T> = {
-  [P in keyof T]: ValidatorFn | ValidatorFn[];
-};
+/**
+ * Transform FormGroup or FormArray to RtFormLabels type.
+ */
+export type RtFormPlaceholdersFromForm<T extends FormGroup | FormArray> = RtFormPlaceholders<T['controls']>;
 
 /**
  * Describes a type for validation messages.
@@ -30,6 +30,11 @@ export type RtValidationMessages<T> = {
 };
 
 /**
+ * Transform FormGroup or FormArray to RtValidationMessages type.
+ */
+export type RtValidationMessagesFromForm<T extends FormGroup | FormArray> = RtValidationMessages<T['controls']>;
+
+/**
  * Options model for choice. Set up relation between id and its view value.
  * T is a unique identifier on the backend for specific choice.
  * V is view value for this specific choice (what should be displayed for user).
@@ -37,35 +42,22 @@ export type RtValidationMessages<T> = {
 export type RtChoice<T, V> = [T, V];
 
 /**
- * Options for rt choice expand group.
+ * Describes possible strategies for handling validation errors.
  */
-export type RtChoiceExpandGroup<T, V> = {title: T; choice: V[]; expand: boolean};
+export enum RtValidationErrorHandleStrategy {
+  /**
+   * Disable the error messages completely.
+   */
+  disabled = 'disabled',
 
-/**
- * Transform the provided type to type with the same fields changed to strings.
- * Supposed to be used for extract control names from its type.
- */
-export type RtControlNames<T> = {
-  [K in keyof T]: K;
-};
+  /**
+   * Instantly show an error message once they occur.
+   * This will highlight the field with an error message as soon as it is invalid.
+   */
+  instant = 'instant',
 
-/**
- * Describes server error item model.
- */
-export interface RtServerError<T> {
-  /** Contain name of the control. */
-  controlName: keyof T;
-
-  /** Contain form field name. */
-  control: AbstractControl<keyof T>;
-
-  /** Contain the related error message. */
-  error: string;
+  /**
+   * Show an error message only after the user has interacted with the field or submitted the form.
+   */
+  afterSubmit = 'afterSubmit',
 }
-
-/**
- * Transform simple interface to typed form (wrap each value with `AbstractControl`).
- */
-export type TransformToTypedForm<T> = {
-  [K in keyof T]: AbstractControl<T[K]>;
-};

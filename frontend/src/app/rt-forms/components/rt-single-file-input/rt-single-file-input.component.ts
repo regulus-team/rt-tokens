@@ -35,7 +35,7 @@ interface FilePreview {
 }
 
 @Component({
-  selector: 'app-rt-single-file-input',
+  selector: 'rt-single-file-input',
   templateUrl: './rt-single-file-input.component.html',
   styleUrls: ['./rt-single-file-input.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,

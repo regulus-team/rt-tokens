@@ -1,10 +1,15 @@
 import {Injectable} from '@angular/core';
-import {createFreezeAccountInstruction, createMintToInstruction, createThawAccountInstruction} from '@solana/spl-token';
+import {
+  createBurnInstruction,
+  createFreezeAccountInstruction,
+  createMintToInstruction,
+  createThawAccountInstruction,
+} from '@solana/spl-token';
 import {Transaction} from '@solana/web3.js';
 import {createAndMint, mplTokenMetadata, TokenStandard} from '@metaplex-foundation/mpl-token-metadata';
 import {walletAdapterIdentity} from '@metaplex-foundation/umi-signer-wallet-adapters';
 import {generateSigner, percentAmount, some} from '@metaplex-foundation/umi';
-import {FreezeOrThawTokenActionData, MintTokenActionData} from '../../symbols/dashboard-token-action-data.symbols';
+import {BurnTokenActionData, FreezeOrThawTokenActionData, MintTokenActionData} from '../../symbols/dashboard-token-action-data.symbols';
 import {RtSolanaService} from '../../../rt-solana/services/rt-solana/rt-solana.service';
 
 @Injectable()
@@ -74,6 +79,25 @@ export class DashboardTokenItemActionsService {
   }
 
   /**
+   * Burn a specific number of tokens.
+   * @param burnTokenActionData - Data required to burn tokens.
+   */
+  public burnSpecificToken(burnTokenActionData: BurnTokenActionData): Promise<string> {
+    // Create a transaction that burns tokens.
+    const transaction = new Transaction().add(
+      createBurnInstruction(
+        burnTokenActionData.tokenAccountPublicKey,
+        burnTokenActionData.associatedTokenAccountPublicKey,
+        burnTokenActionData.tokenAccountOwnerPublicKey,
+        burnTokenActionData.tokenNumber,
+      ),
+    );
+
+    // Request the wallet to sign the transaction and send it to the cluster.
+    return this.currentWalletAdapter.sendTransaction(transaction, this.currentClusterConnection);
+  }
+
+  /**
    * Freeze a specific token.
    * @param freezeTokenActionData - Data required to freeze token.
    */
@@ -96,7 +120,7 @@ export class DashboardTokenItemActionsService {
    * @param thawTokenActionData - Data required to thaw token.
    */
   public thawSpecificToken(thawTokenActionData: FreezeOrThawTokenActionData): Promise<string> {
-    // Create a transaction that freezes the token.
+    // Create a transaction that thaws the token.
     const transaction = new Transaction().add(
       createThawAccountInstruction(
         thawTokenActionData.tokenAccountPublicKey,
