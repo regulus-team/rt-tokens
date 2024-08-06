@@ -1,8 +1,9 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {HttpClientTestingModule} from '@angular/common/http/testing';
+import {provideHttpClientTesting} from '@angular/common/http/testing';
 import {DomSanitizer} from '@angular/platform-browser';
 
 import {RtSvgSpriteComponent} from './rt-svg-sprite.component';
+import {provideHttpClient, withInterceptorsFromDi} from '@angular/common/http';
 
 class DomSanitizerMock {}
 
@@ -13,8 +14,15 @@ describe('IconsComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [RtSvgSpriteComponent],
-      imports: [HttpClientTestingModule],
-      providers: [{provide: DomSanitizer, useValue: DomSanitizerMock}],
+      imports: [],
+      providers: [
+        {
+          provide: DomSanitizer,
+          useValue: DomSanitizerMock,
+        },
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting(),
+      ],
     }).compileComponents();
   });
 
