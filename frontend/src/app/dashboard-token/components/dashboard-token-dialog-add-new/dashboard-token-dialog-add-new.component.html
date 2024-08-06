@@ -46,6 +46,7 @@
       <rt-single-file-input
         [formControl]="createTokenForm.controls.image"
         [acceptableFileTypes]="acceptableTypesForImage"
+        [validationMessages]="validationMessages.image"
         dropFileLabel="Drop the image here"
         actionButtonLabel="Select the image"
       ></rt-single-file-input>

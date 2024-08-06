@@ -9,16 +9,16 @@ import {
   RtFormPlaceholdersFromForm,
   RtValidationMessagesFromForm,
 } from '../../../rt-forms/symbols/rt-forms-types.symbols';
-import {RtFormsModule} from '../../../rt-forms/rt-forms.module';
 import {RtValidators} from '../../../rt-forms/symbols/rt-forms-validators.symbols';
 import {RtTextInputComponent} from '../../../rt-forms/components/rt-text-input/rt-text-input.component';
+import {RtSingleFileInputComponent} from '../../../rt-forms/components/rt-single-file-input/rt-single-file-input.component';
 
 @Component({
   selector: 'app-dashboard-token-dialog-add-new',
   templateUrl: './dashboard-token-dialog-add-new.component.html',
   styleUrls: ['./dashboard-token-dialog-add-new.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ReactiveFormsModule, RtFormsModule, MatButton, RtTextInputComponent],
+  imports: [ReactiveFormsModule, MatButton, RtTextInputComponent, RtSingleFileInputComponent],
   standalone: true,
 })
 export class DashboardTokenDialogAddNewComponent {

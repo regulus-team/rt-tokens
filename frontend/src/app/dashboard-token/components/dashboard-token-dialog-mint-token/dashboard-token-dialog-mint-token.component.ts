@@ -46,13 +46,13 @@ export class DashboardTokenDialogMintTokenComponent implements OnInit, OnDestroy
 
   /** Form for burning tokens. */
   public readonly mintTokenForm = new FormGroup({
-    tokenAmount: new FormControl<number>(0, [Validators.min(0), Validators.pattern('^[0-9]*$')]),
+    tokenAmount: new FormControl<number>(1, [Validators.min(1), Validators.pattern('^[0-9]*$')]),
   });
 
   /** Validation messages for the mint token amount control. */
   public readonly mintTokenAmountValidationMessages = {
     required: 'This field is required',
-    min: 'The value must be greater than or equal to 0',
+    min: 'The value must be greater than 0',
     pattern: 'The value must be an integer',
   };
 

@@ -1,4 +1,4 @@
-import {from, map, Observable, of, startWith, Subscription, switchMap} from 'rxjs';
+import {BehaviorSubject, from, map, Observable, of, startWith, Subscription, switchMap} from 'rxjs';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -8,17 +8,24 @@ import {
   NgZone,
   OnDestroy,
   OnInit,
+  Optional,
   Renderer2,
   ViewChild,
 } from '@angular/core';
-import {ControlValueAccessor, FormControl, NgControl} from '@angular/forms';
+import {AsyncPipe, NgClass, NgStyle} from '@angular/common';
+import {MatTooltip} from '@angular/material/tooltip';
+import {ControlContainer, ControlValueAccessor, FormControl, FormGroupDirective, NgControl, NgForm} from '@angular/forms';
+import {RtValidationComponent} from '../rt-validation/rt-validation.component';
 import {isFileTypeAcceptable} from '../../symbols/rt-forms-utils.symbols';
+import {RtValidationErrorHandleStrategy} from '../../symbols/rt-forms-types.symbols';
+import {FormControlCombinedStatuses, formControlCombinedStatusesAdapter} from '../../symbols/rt-forms-control-status-adapter.symbols';
+import {RtFormsDefineErrorMessagePipe} from '../../pipes/rt-forms-define-error-message/rt-forms-define-error-message';
 
 /**
  * Describes a file metadata used for generating a preview.
  */
 interface FilePreview {
-  /** Base64 encoded file content (present only if submitted file is image). */
+  /** Base64 encoded file content (present only if a submitted file is image). */
   src: string;
 
   /** File type. */
@@ -39,7 +46,8 @@ interface FilePreview {
   templateUrl: './rt-single-file-input.component.html',
   styleUrls: ['./rt-single-file-input.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  // No providers here, as the `NG_VALUE_ACCESSOR` provider is assigned manually in the abstract class constructor.
+  standalone: true,
+  imports: [AsyncPipe, NgStyle, MatTooltip, NgClass, RtValidationComponent, RtFormsDefineErrorMessagePipe],
 })
 export class RtSingleFileInputComponent implements OnInit, OnDestroy, ControlValueAccessor {
   @ViewChild('dragAndDropArea') public dragAndDropArea?: ElementRef<HTMLDivElement>;
@@ -53,8 +61,11 @@ export class RtSingleFileInputComponent implements OnInit, OnDestroy, ControlVal
   /** Type of the input field. */
   @Input() inputType = 'text';
 
-  /** Error message to be displayed. */
-  @Input() errorMessage: Nullable<string | undefined>;
+  /** Error handle strategy. */
+  @Input() errorHandleStrategy: RtValidationErrorHandleStrategy = RtValidationErrorHandleStrategy.afterSubmit;
+
+  /** Relation between the error name imposed by Validators and the error message. */
+  @Input() validationMessages: Nullable<{[key: string]: string}>;
 
   /** Observable with the preview of the currently selected file. */
   public filePreview$: Observable<Nullable<FilePreview>>;
@@ -82,14 +93,20 @@ export class RtSingleFileInputComponent implements OnInit, OnDestroy, ControlVal
   /** Component subscriptions. Will be unsubscribed on component destroy. */
   public readonly subscription = new Subscription();
 
+  /** Indicates whether the control container is submitted. */
+  public readonly isControlContainerSubmitted$ = new BehaviorSubject(false);
+
+  /** Observable with the combined statuses of the form control. */
+  public providedControlStatuses$: Observable<FormControlCombinedStatuses>;
+
   /** List of acceptable file types as a string. */
   public acceptableFileTypesString = '';
 
-  /** List of acceptable file types. */
-  protected acceptableFileTypesList: string[] = [];
-
   /** Indicates whether the hovered file is valid. */
   public isLastDroppedFileValid = true;
+
+  /** List of acceptable file types. */
+  protected acceptableFileTypesList: string[] = [];
 
   @HostBinding('class.disabled') protected isDisabled = false;
 
@@ -97,10 +114,33 @@ export class RtSingleFileInputComponent implements OnInit, OnDestroy, ControlVal
     private ngZone: NgZone,
     protected renderer: Renderer2,
     public ngControl: NgControl,
+    @Optional() public controlContainer: ControlContainer,
   ) {
     // Use the `ngControl` to access the related form control.
     // The `NG_VALUE_ACCESSOR` provider was removed from the component, as it is assigned here directly.
     ngControl.valueAccessor = this;
+
+    // Observe the form submit event if the related strategy is set.
+    if (this.errorHandleStrategy === RtValidationErrorHandleStrategy.afterSubmit) {
+      if (!controlContainer) {
+        throw new Error(
+          `The controlContainer is not found.
+           It is impossible to show validation on form submit event if no form is provided.
+           The ${RtSingleFileInputComponent.name} should be used within a <form>.
+           If this is intended, change the errorHandleStrategy to the different value.`,
+        );
+      }
+
+      if (controlContainer instanceof NgForm) {
+        controlContainer.ngSubmit.subscribe(() => {
+          this.isControlContainerSubmitted$.next(true);
+        });
+      } else if (controlContainer instanceof FormGroupDirective) {
+        controlContainer.ngSubmit.subscribe(() => {
+          this.isControlContainerSubmitted$.next(true);
+        });
+      }
+    }
   }
 
   /**
@@ -120,6 +160,21 @@ export class RtSingleFileInputComponent implements OnInit, OnDestroy, ControlVal
   }
 
   ngOnInit(): void {
+    // Observe the form control events if the control is provided.
+    if (this.ngControl?.control?.events) {
+      this.providedControlStatuses$ = this.ngControl.control.events.pipe(
+        // Cast the event to the Partial<FormControlCombinedStatuses> type as there is no way to cast it to the exact type.
+        map(event => event as unknown as Partial<FormControlCombinedStatuses>),
+
+        // Combine the statuses into the single object.
+        formControlCombinedStatusesAdapter({
+          pristine: !!this.ngControl.pristine,
+          valid: !!this.ngControl.valid,
+          touched: !!this.ngControl.touched,
+        }),
+      );
+    }
+
     // Generate a preview for the currently selected file.
     this.filePreview$ = this.singleFileInputControl.valueChanges.pipe(
       switchMap(file => {

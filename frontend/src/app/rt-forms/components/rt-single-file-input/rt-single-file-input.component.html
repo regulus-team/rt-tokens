@@ -1,6 +1,7 @@
 @if ({
   singleFileInputCurrentValue: singleFileInputCurrentValue$ | async,
   filePreview: filePreview$ | async,
+  isControlContainerSubmitted: isControlContainerSubmitted$ | async,
 }; as extracted) {
   <div
     class="rt-single-file-input"
@@ -84,11 +85,11 @@
         >
       </div>
 
-      @if (errorMessage && ngControl.invalid && (ngControl.dirty || ngControl.touched)) {
-        <mat-error class="rt-input-error">
-          {{ errorMessage }}
-        </mat-error>
-      }
+      <rt-validation
+        [controlStatuses$]="providedControlStatuses$"
+        [isControlContainerSubmitted]="extracted.isControlContainerSubmitted"
+        [validationMessage]="validationMessages | rtFormsDefineErrorMessage : ngControl.errors"
+      ></rt-validation>
     }
   </div>
 }

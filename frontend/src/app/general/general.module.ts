@@ -7,23 +7,12 @@ import {GeneralNotFoundComponent} from './components/general-not-found/general-n
 import {MatButtonModule} from '@angular/material/button';
 import {RtSvgSpriteModule} from '../rt-svg-sprite/rt-svg-sprite.module';
 import {RtPlatformModule} from '../rt-platform/rt-platform.module';
-import {RtFormsModule} from '../rt-forms/rt-forms.module';
 import {RtLoadingModule} from '../rt-loading/rt-loading.module';
 import {RtSolanaModule} from '../rt-solana/rt-solana.module';
 
 @NgModule({
   declarations: [GeneralFooterComponent, GeneralHeaderComponent, GeneralNotFoundComponent],
-  imports: [
-    CommonModule,
-    RouterLink,
-    MatButtonModule,
-    RouterModule,
-    RtSvgSpriteModule,
-    RtPlatformModule,
-    RtFormsModule,
-    RtLoadingModule,
-    RtSolanaModule,
-  ],
+  imports: [CommonModule, RouterLink, MatButtonModule, RouterModule, RtSvgSpriteModule, RtPlatformModule, RtLoadingModule, RtSolanaModule],
   exports: [GeneralFooterComponent, GeneralHeaderComponent],
 })
 export class GeneralModule {}

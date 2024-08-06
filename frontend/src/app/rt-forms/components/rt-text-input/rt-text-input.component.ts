@@ -1,4 +1,4 @@
-import {BehaviorSubject, Subscription} from 'rxjs';
+import {BehaviorSubject, map, Observable, Subscription} from 'rxjs';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -20,13 +20,13 @@ import {
   NgForm,
   ReactiveFormsModule,
 } from '@angular/forms';
-import {MatError, MatFormField} from '@angular/material/form-field';
+import {MatFormField} from '@angular/material/form-field';
 import {MatInput} from '@angular/material/input';
-import {AsyncPipe, JsonPipe} from '@angular/common';
-import {RtFormsModule} from '../../rt-forms.module';
+import {AsyncPipe} from '@angular/common';
+import {RtValidationComponent} from '../rt-validation/rt-validation.component';
 import {RtValidationErrorHandleStrategy} from '../../symbols/rt-forms-types.symbols';
 import {RtFormsDefineErrorMessagePipe} from '../../pipes/rt-forms-define-error-message/rt-forms-define-error-message';
-import {RtFormsShouldDisplayValidationPipe} from '../../pipes/rt-forms-should-display-validation/rt-forms-should-display-validation';
+import {FormControlCombinedStatuses, formControlCombinedStatusesAdapter} from '../../symbols/rt-forms-control-status-adapter.symbols';
 
 @Component({
   selector: 'rt-text-input',
@@ -34,18 +34,7 @@ import {RtFormsShouldDisplayValidationPipe} from '../../pipes/rt-forms-should-di
   styleUrls: ['./rt-text-input.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
-  providers: [NgForm],
-  imports: [
-    MatFormField,
-    MatError,
-    ReactiveFormsModule,
-    RtFormsModule,
-    MatInput,
-    JsonPipe,
-    RtFormsDefineErrorMessagePipe,
-    AsyncPipe,
-    RtFormsShouldDisplayValidationPipe,
-  ],
+  imports: [MatFormField, AsyncPipe, MatInput, ReactiveFormsModule, RtValidationComponent, RtFormsDefineErrorMessagePipe],
 })
 export class RtTextInputComponent implements OnInit, OnDestroy, ControlValueAccessor {
   @ViewChild('textInputElement') public textInputElement?: ElementRef<HTMLInputElement>;
@@ -67,6 +56,9 @@ export class RtTextInputComponent implements OnInit, OnDestroy, ControlValueAcce
 
   /** Triggered whether the control is touched. Will be overwritten by Angular forms. */
   public onTouched?: () => void;
+
+  /** Observable with the combined statuses of the form control. */
+  public providedControlStatuses$: Observable<FormControlCombinedStatuses>;
 
   /** Form control for the input field. */
   public readonly textInputControl = new FormControl<string>('');
@@ -111,6 +103,21 @@ export class RtTextInputComponent implements OnInit, OnDestroy, ControlValueAcce
   }
 
   ngOnInit(): void {
+    // Observe the form control events if the control is provided.
+    if (this.ngControl?.control?.events) {
+      this.providedControlStatuses$ = this.ngControl.control.events.pipe(
+        // Cast the event to the Partial<FormControlCombinedStatuses> type as there is no way to cast it to the exact type.
+        map(event => event as unknown as Partial<FormControlCombinedStatuses>),
+
+        // Combine the statuses into the single object.
+        formControlCombinedStatusesAdapter({
+          pristine: !!this.ngControl.pristine,
+          valid: !!this.ngControl.valid,
+          touched: !!this.ngControl.touched,
+        }),
+      );
+    }
+
     // Notify the value accessor about the changes in the input field.
     this.subscription.add(
       this.textInputControl.valueChanges.subscribe(value => {

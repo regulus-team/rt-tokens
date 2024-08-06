@@ -44,8 +44,8 @@ export class DashboardTokenDialogBurnTokenComponent implements OnInit, OnDestroy
 
   /** Form for burning tokens. */
   public readonly burnTokenForm = new FormGroup({
-    tokenAmount: new FormControl<number>(0, [
-      Validators.min(0),
+    tokenAmount: new FormControl<number>(1, [
+      Validators.min(1),
       Validators.max(+this.injectedData.currentBalanceWithoutDecimals),
       Validators.pattern('^[0-9]*$'),
     ]),
@@ -54,7 +54,7 @@ export class DashboardTokenDialogBurnTokenComponent implements OnInit, OnDestroy
   public readonly rtValidationMessages: RtValidationMessagesFromForm<typeof this.burnTokenForm> = {
     tokenAmount: {
       required: 'This field is required',
-      min: 'The value must be greater than or equal to 0',
+      min: 'The value must be greater than 0',
       max: 'You cannot burn more tokens than you have',
       pattern: 'The value must be an integer',
     },

@@ -19,7 +19,6 @@ import {DashboardTokenListService} from './services/dashboard-token-list/dashboa
 import {DashboardTokenItemActionsService} from './services/dashboard-token-item-actions/dashboard-token-item-actions.service';
 import {DashboardTokenItemActionsState} from './states/dashboard-token-item-actions/dashboard-token-item-actions.state';
 import {RtWalletModule} from '../rt-wallet/rt-wallet.module';
-import {RtFormsModule} from '../rt-forms/rt-forms.module';
 import {RtLoadingModule} from '../rt-loading/rt-loading.module';
 import {RtIpfsModule} from '../rt-ipfs/rt-ipfs.module';
 import {SharedCopyActionComponent} from '../shared/components/shared-copy-action/shared-copy-action.component';
@@ -44,7 +43,6 @@ import {RtTextInputComponent} from '../rt-forms/components/rt-text-input/rt-text
     MatDividerModule,
     MatButton,
     FormsModule,
-    RtFormsModule,
     ReactiveFormsModule,
     RtLoadingModule,
     RtIpfsModule.forRoot({
