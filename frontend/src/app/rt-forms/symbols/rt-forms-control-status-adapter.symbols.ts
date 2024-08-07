@@ -1,4 +1,5 @@
-import {OperatorFunction, pipe, scan, startWith} from 'rxjs';
+import {distinctUntilChanged, map, OperatorFunction, pipe, scan, startWith} from 'rxjs';
+import {ControlEvent} from '@angular/forms';
 
 /**
  * Possible fields of the original form control event change.
@@ -43,8 +44,11 @@ export const defaultFormControlCombinedStatuses: FormControlCombinedStatuses = {
  */
 export const formControlCombinedStatusesAdapter = (
   startValue: FormControlCombinedStatuses,
-): OperatorFunction<FormControlOriginalEvent, FormControlCombinedStatuses> =>
+): OperatorFunction<ControlEvent, FormControlCombinedStatuses> =>
   pipe(
+    // Cast the event to the Partial<FormControlCombinedStatuses> type as there is no way to cast it to the exact type.
+    map(event => event as unknown as Partial<FormControlCombinedStatuses>),
+
     // Start with the provided value for cases when the form control is not changed yet.
     // The events emitter is based on Subject, so otherwise the first event will be missed.
     startWith({...startValue}),
@@ -84,4 +88,7 @@ export const formControlCombinedStatusesAdapter = (
       return safeAccumulator;
       // We are using safe accumulator, so we always sure that the result contains all fields.
     }) as OperatorFunction<FormControlOriginalEvent, FormControlCombinedStatuses>,
+
+    // Do not emit the same statuses.
+    distinctUntilChanged((prev, curr) => prev.pristine === curr.pristine && prev.valid === curr.valid && prev.touched === curr.touched),
   );

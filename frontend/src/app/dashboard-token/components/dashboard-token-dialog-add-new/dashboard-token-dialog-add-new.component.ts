@@ -29,10 +29,10 @@ export class DashboardTokenDialogAddNewComponent {
 
   /** Form for creating a new fungible token. */
   public readonly createTokenForm = new FormGroup({
-    name: new FormControl<string>('', [Validators.required, Validators.maxLength(16), Validators.pattern(/^[0-9A-Za-z]*$/)]),
-    symbol: new FormControl<string>('', [Validators.required, Validators.maxLength(16), Validators.pattern(/^[0-9A-Za-z$]*$/)]),
-    decimals: new FormControl<number>(0, [Validators.required, Validators.maxLength(2), Validators.pattern('^[0-9]*$')]),
-    description: new FormControl<string>('', [Validators.required, Validators.maxLength(128)]),
+    name: new FormControl('', [Validators.required, Validators.maxLength(16), Validators.pattern(/^[0-9A-Za-z]*$/)]),
+    symbol: new FormControl('', [Validators.required, Validators.maxLength(16), Validators.pattern(/^[0-9A-Za-z$]*$/)]),
+    decimals: new FormControl(0, [Validators.required, Validators.maxLength(2), Validators.min(0), Validators.pattern('^[0-9]*$')]),
+    description: new FormControl('', [Validators.required, Validators.maxLength(128)]),
     image: new FormControl<Nullable<File>>(null, [Validators.required, RtValidators.fileTypeValidator(this.acceptableTypesForImage)]),
   });
 
@@ -69,6 +69,7 @@ export class DashboardTokenDialogAddNewComponent {
       required: `Token decimals is required`,
       maxlength: `Token decimals should not be more than 2 characters`,
       pattern: 'The value must be an integer',
+      min: 'The value must be greater than or equal to 0',
     },
     description: {
       required: `Token description is required`,

@@ -84,3 +84,19 @@
     }
   }
 }
+
+.rt-text-input.rt-text-input_invalid {
+  .mat-mdc-notch-piece {
+    &.mdc-notched-outline__leading {
+      border-color: var(--mat-form-field-error-text-color);
+    }
+
+    &.mdc-notched-outline__notch {
+      border-color: var(--mat-form-field-error-text-color);
+    }
+
+    &.mdc-notched-outline__trailing {
+      border-color: var(--mat-form-field-error-text-color);
+    }
+  }
+}

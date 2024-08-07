@@ -1,7 +1,12 @@
 @if ({
-  isControlContainerSubmitted: isControlContainerSubmitted$ | async,
+  shouldIndicateInvalidity: shouldIndicateInvalidity$ | async,
 }; as extracted) {
-  <div class="rt-text-input">
+  <div
+    class="rt-text-input"
+    [ngClass]="{
+      'rt-text-input_invalid': extracted.shouldIndicateInvalidity,
+    }"
+  >
     <mat-form-field appearance="outline">
       <input
         #textInputElement
@@ -12,11 +17,11 @@
       >
     </mat-form-field>
 
-    <rt-validation
-      [controlStatuses$]="providedControlStatuses$"
-      [isControlContainerSubmitted]="extracted.isControlContainerSubmitted"
-      [validationMessage]="validationMessages | rtFormsDefineErrorMessage : ngControl.errors"
-    ></rt-validation>
+    @if (extracted.shouldIndicateInvalidity) {
+      <mat-error class="rt-input-error">
+        {{ validationMessages | rtFormsDefineErrorMessage : ngControl.errors }}
+      </mat-error>
+    }
   </div>
 }
 

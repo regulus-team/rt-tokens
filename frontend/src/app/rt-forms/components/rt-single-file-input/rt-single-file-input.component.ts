@@ -1,4 +1,4 @@
-import {BehaviorSubject, from, map, Observable, of, startWith, Subscription, switchMap} from 'rxjs';
+import {BehaviorSubject, filter, from, map, Observable, of, startWith, Subscription, switchMap} from 'rxjs';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -15,11 +15,13 @@ import {
 import {AsyncPipe, NgClass, NgStyle} from '@angular/common';
 import {MatTooltip} from '@angular/material/tooltip';
 import {ControlContainer, ControlValueAccessor, FormControl, FormGroupDirective, NgControl, NgForm} from '@angular/forms';
-import {RtValidationComponent} from '../rt-validation/rt-validation.component';
+import {MatError} from '@angular/material/form-field';
+import {MatButton} from '@angular/material/button';
 import {isFileTypeAcceptable} from '../../symbols/rt-forms-utils.symbols';
 import {RtValidationErrorHandleStrategy} from '../../symbols/rt-forms-types.symbols';
 import {FormControlCombinedStatuses, formControlCombinedStatusesAdapter} from '../../symbols/rt-forms-control-status-adapter.symbols';
 import {RtFormsDefineErrorMessagePipe} from '../../pipes/rt-forms-define-error-message/rt-forms-define-error-message';
+import {rtFormsDefineInvalidityObservable} from '../../symbols/rt-forms-validity.symbols';
 
 /**
  * Describes a file metadata used for generating a preview.
@@ -47,7 +49,7 @@ interface FilePreview {
   styleUrls: ['./rt-single-file-input.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
-  imports: [AsyncPipe, NgStyle, MatTooltip, NgClass, RtValidationComponent, RtFormsDefineErrorMessagePipe],
+  imports: [AsyncPipe, NgStyle, MatTooltip, NgClass, RtFormsDefineErrorMessagePipe, MatError, MatButton],
 })
 export class RtSingleFileInputComponent implements OnInit, OnDestroy, ControlValueAccessor {
   @ViewChild('dragAndDropArea') public dragAndDropArea?: ElementRef<HTMLDivElement>;
@@ -57,9 +59,6 @@ export class RtSingleFileInputComponent implements OnInit, OnDestroy, ControlVal
 
   /** Label for the action button. */
   @Input() actionButtonLabel: string;
-
-  /** Type of the input field. */
-  @Input() inputType = 'text';
 
   /** Error handle strategy. */
   @Input() errorHandleStrategy: RtValidationErrorHandleStrategy = RtValidationErrorHandleStrategy.afterSubmit;
@@ -96,8 +95,8 @@ export class RtSingleFileInputComponent implements OnInit, OnDestroy, ControlVal
   /** Indicates whether the control container is submitted. */
   public readonly isControlContainerSubmitted$ = new BehaviorSubject(false);
 
-  /** Observable with the combined statuses of the form control. */
-  public providedControlStatuses$: Observable<FormControlCombinedStatuses>;
+  /** Indicates whether the validation should be displayed. */
+  public shouldIndicateInvalidity$: Observable<boolean>;
 
   /** List of acceptable file types as a string. */
   public acceptableFileTypesString = '';
@@ -160,20 +159,39 @@ export class RtSingleFileInputComponent implements OnInit, OnDestroy, ControlVal
   }
 
   ngOnInit(): void {
-    // Observe the form control events if the control is provided.
+    // Determine whether the control should be displayed as invalid.
     if (this.ngControl?.control?.events) {
-      this.providedControlStatuses$ = this.ngControl.control.events.pipe(
-        // Cast the event to the Partial<FormControlCombinedStatuses> type as there is no way to cast it to the exact type.
-        map(event => event as unknown as Partial<FormControlCombinedStatuses>),
-
-        // Combine the statuses into the single object.
-        formControlCombinedStatusesAdapter({
-          pristine: !!this.ngControl.pristine,
-          valid: !!this.ngControl.valid,
-          touched: !!this.ngControl.touched,
-        }),
+      this.shouldIndicateInvalidity$ = rtFormsDefineInvalidityObservable(
+        // Define the single event object based on the form control events.
+        this.ngControl.control.events.pipe(
+          formControlCombinedStatusesAdapter({
+            pristine: !!this.ngControl.pristine,
+            valid: !!this.ngControl.valid,
+            touched: !!this.ngControl.touched,
+          }),
+        ),
+        this.isControlContainerSubmitted$,
+        this.errorHandleStrategy,
       );
     }
+
+    // Notify the value accessor about the touch events in the input field.
+    this.subscription.add(
+      this.singleFileInputControl.events
+        .pipe(
+          // Cast the event to the Partial<FormControlCombinedStatuses> type as there is no way to cast it to the exact type.
+          map(event => event as unknown as Partial<FormControlCombinedStatuses>),
+
+          // Filter the statuses that are touched.
+          filter(statuses => !!statuses?.touched),
+        )
+        .subscribe(() => {
+          // Notify the value accessor about the touch events in the input field.
+          if (this.onTouched) {
+            this.onTouched();
+          }
+        }),
+    );
 
     // Generate a preview for the currently selected file.
     this.filePreview$ = this.singleFileInputControl.valueChanges.pipe(
@@ -193,10 +211,6 @@ export class RtSingleFileInputComponent implements OnInit, OnDestroy, ControlVal
       this.singleFileInputControl.valueChanges.subscribe(value => {
         if (this.onChange) {
           this.onChange(value);
-        }
-
-        if (this.onTouched) {
-          this.onTouched();
         }
       }),
     );

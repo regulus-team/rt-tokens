@@ -1,4 +1,4 @@
-import {BehaviorSubject, map, Observable, Subscription} from 'rxjs';
+import {BehaviorSubject, filter, map, Observable, Subscription} from 'rxjs';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -20,13 +20,13 @@ import {
   NgForm,
   ReactiveFormsModule,
 } from '@angular/forms';
-import {MatFormField} from '@angular/material/form-field';
+import {MatError, MatFormField} from '@angular/material/form-field';
 import {MatInput} from '@angular/material/input';
-import {AsyncPipe} from '@angular/common';
-import {RtValidationComponent} from '../rt-validation/rt-validation.component';
+import {AsyncPipe, NgClass} from '@angular/common';
 import {RtValidationErrorHandleStrategy} from '../../symbols/rt-forms-types.symbols';
 import {RtFormsDefineErrorMessagePipe} from '../../pipes/rt-forms-define-error-message/rt-forms-define-error-message';
 import {FormControlCombinedStatuses, formControlCombinedStatusesAdapter} from '../../symbols/rt-forms-control-status-adapter.symbols';
+import {rtFormsDefineInvalidityObservable} from '../../symbols/rt-forms-validity.symbols';
 
 @Component({
   selector: 'rt-text-input',
@@ -34,7 +34,7 @@ import {FormControlCombinedStatuses, formControlCombinedStatusesAdapter} from '.
   styleUrls: ['./rt-text-input.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
-  imports: [MatFormField, AsyncPipe, MatInput, ReactiveFormsModule, RtValidationComponent, RtFormsDefineErrorMessagePipe],
+  imports: [MatFormField, AsyncPipe, MatInput, ReactiveFormsModule, RtFormsDefineErrorMessagePipe, MatError, NgClass],
 })
 export class RtTextInputComponent implements OnInit, OnDestroy, ControlValueAccessor {
   @ViewChild('textInputElement') public textInputElement?: ElementRef<HTMLInputElement>;
@@ -57,8 +57,8 @@ export class RtTextInputComponent implements OnInit, OnDestroy, ControlValueAcce
   /** Triggered whether the control is touched. Will be overwritten by Angular forms. */
   public onTouched?: () => void;
 
-  /** Observable with the combined statuses of the form control. */
-  public providedControlStatuses$: Observable<FormControlCombinedStatuses>;
+  /** Indicates whether the validation should be displayed. */
+  public shouldIndicateInvalidity$: Observable<boolean>;
 
   /** Form control for the input field. */
   public readonly textInputControl = new FormControl<string>('');
@@ -103,20 +103,39 @@ export class RtTextInputComponent implements OnInit, OnDestroy, ControlValueAcce
   }
 
   ngOnInit(): void {
-    // Observe the form control events if the control is provided.
+    // Determine whether the control should be displayed as invalid.
     if (this.ngControl?.control?.events) {
-      this.providedControlStatuses$ = this.ngControl.control.events.pipe(
-        // Cast the event to the Partial<FormControlCombinedStatuses> type as there is no way to cast it to the exact type.
-        map(event => event as unknown as Partial<FormControlCombinedStatuses>),
-
-        // Combine the statuses into the single object.
-        formControlCombinedStatusesAdapter({
-          pristine: !!this.ngControl.pristine,
-          valid: !!this.ngControl.valid,
-          touched: !!this.ngControl.touched,
-        }),
+      this.shouldIndicateInvalidity$ = rtFormsDefineInvalidityObservable(
+        // Define the single event object based on the form control events.
+        this.ngControl.control.events.pipe(
+          formControlCombinedStatusesAdapter({
+            pristine: !!this.ngControl.pristine,
+            valid: !!this.ngControl.valid,
+            touched: !!this.ngControl.touched,
+          }),
+        ),
+        this.isControlContainerSubmitted$,
+        this.errorHandleStrategy,
       );
     }
+
+    // Notify the value accessor about the touch events in the input field.
+    this.subscription.add(
+      this.textInputControl.events
+        .pipe(
+          // Cast the event to the Partial<FormControlCombinedStatuses> type as there is no way to cast it to the exact type.
+          map(event => event as unknown as Partial<FormControlCombinedStatuses>),
+
+          // Filter the statuses that are touched.
+          filter(statuses => !!statuses?.touched),
+        )
+        .subscribe(() => {
+          // Notify the value accessor about the touch events in the input field.
+          if (this.onTouched) {
+            this.onTouched();
+          }
+        }),
+    );
 
     // Notify the value accessor about the changes in the input field.
     this.subscription.add(
@@ -124,11 +143,6 @@ export class RtTextInputComponent implements OnInit, OnDestroy, ControlValueAcce
         // Notify the value accessor about the changes in the input field.
         if (this.onChange) {
           this.onChange(value);
-        }
-
-        // Notify the value accessor about the touch events in the input field.
-        if (this.onTouched) {
-          this.onTouched();
         }
       }),
     );
