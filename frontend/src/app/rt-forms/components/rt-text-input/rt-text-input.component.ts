@@ -25,8 +25,12 @@ import {MatInput} from '@angular/material/input';
 import {AsyncPipe, NgClass} from '@angular/common';
 import {RtValidationErrorHandleStrategy} from '../../symbols/rt-forms-types.symbols';
 import {RtFormsDefineErrorMessagePipe} from '../../pipes/rt-forms-define-error-message/rt-forms-define-error-message';
-import {FormControlCombinedStatuses, formControlCombinedStatusesAdapter} from '../../symbols/rt-forms-control-status-adapter.symbols';
-import {rtFormsDefineInvalidityObservable} from '../../symbols/rt-forms-validity.symbols';
+import {
+  extractCombinedStatusesFromFormControl,
+  FormControlCombinedStatuses,
+  formControlCombinedStatusesAdapter,
+} from '../../symbols/rt-forms-control-status-adapter.symbols';
+import {rtFormsDefineInvalidityObservable, rtFormsOverwriteNgControlResetFunction} from '../../symbols/rt-forms-validity.symbols';
 
 @Component({
   selector: 'rt-text-input',
@@ -57,6 +61,9 @@ export class RtTextInputComponent implements OnInit, OnDestroy, ControlValueAcce
   /** Triggered whether the control is touched. Will be overwritten by Angular forms. */
   public onTouched?: () => void;
 
+  /** Observable with the combined statuses of the form control. */
+  public providedControlStatuses$: Observable<FormControlCombinedStatuses>;
+
   /** Indicates whether the validation should be displayed. */
   public shouldIndicateInvalidity$: Observable<boolean>;
 
@@ -66,8 +73,8 @@ export class RtTextInputComponent implements OnInit, OnDestroy, ControlValueAcce
   /** Component subscriptions. Will be unsubscribed on component destroy. */
   public readonly subscription = new Subscription();
 
-  /** Indicates whether the control container is submitted. */
-  public readonly isControlContainerSubmitted$ = new BehaviorSubject(false);
+  /** Indicates whether the control is submitted. */
+  public readonly isControlSubmitted$ = new BehaviorSubject(false);
 
   @HostBinding('class.disabled') protected isDisabled = false;
 
@@ -90,34 +97,59 @@ export class RtTextInputComponent implements OnInit, OnDestroy, ControlValueAcce
         );
       }
 
-      if (controlContainer instanceof NgForm) {
-        controlContainer.ngSubmit.subscribe(() => {
-          this.isControlContainerSubmitted$.next(true);
-        });
-      } else if (controlContainer instanceof FormGroupDirective) {
-        controlContainer.ngSubmit.subscribe(() => {
-          this.isControlContainerSubmitted$.next(true);
-        });
+      // Observe the form submit event to update the submitted state.
+      if (controlContainer instanceof NgForm || controlContainer instanceof FormGroupDirective) {
+        this.subscription.add(
+          controlContainer.ngSubmit.subscribe(() => {
+            this.isControlSubmitted$.next(true);
+          }),
+        );
       }
     }
   }
 
   ngOnInit(): void {
-    // Determine whether the control should be displayed as invalid.
+    // Overwrite the reset function of the control to reset the submitted state.
+    rtFormsOverwriteNgControlResetFunction(this.ngControl, this.isControlSubmitted$);
+
+    // Define the single event object based on the form control events.
     if (this.ngControl?.control?.events) {
-      this.shouldIndicateInvalidity$ = rtFormsDefineInvalidityObservable(
-        // Define the single event object based on the form control events.
-        this.ngControl.control.events.pipe(
-          formControlCombinedStatusesAdapter({
-            pristine: !!this.ngControl.pristine,
-            valid: !!this.ngControl.valid,
-            touched: !!this.ngControl.touched,
-          }),
-        ),
-        this.isControlContainerSubmitted$,
-        this.errorHandleStrategy,
+      this.providedControlStatuses$ = this.ngControl.control.events.pipe(
+        formControlCombinedStatusesAdapter(extractCombinedStatusesFromFormControl(this.ngControl.control)),
       );
     }
+
+    // Determine whether the control should be displayed as invalid.
+    this.shouldIndicateInvalidity$ = rtFormsDefineInvalidityObservable(
+      this.providedControlStatuses$,
+      this.isControlSubmitted$,
+      this.errorHandleStrategy,
+    );
+
+    // Update the control statuses based on the provided statuses.
+    this.subscription.add(
+      this.providedControlStatuses$.subscribe(status => {
+        const currentControlState = extractCombinedStatusesFromFormControl(this.textInputControl);
+
+        // If touched status is not synced, update the control status.
+        if (status.touched !== currentControlState.touched) {
+          if (status.touched) {
+            this.textInputControl.markAsTouched();
+          } else {
+            this.textInputControl.markAsUntouched();
+          }
+        }
+
+        // If pristine status is not synced, update the control status.
+        if (status.pristine !== currentControlState.pristine) {
+          if (status.pristine) {
+            this.textInputControl.markAsPristine();
+          } else {
+            this.textInputControl.markAsDirty();
+          }
+        }
+      }),
+    );
 
     // Notify the value accessor about the touch events in the input field.
     this.subscription.add(

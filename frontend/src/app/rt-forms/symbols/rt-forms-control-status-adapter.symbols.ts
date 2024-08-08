@@ -1,5 +1,5 @@
 import {distinctUntilChanged, map, OperatorFunction, pipe, scan, startWith} from 'rxjs';
-import {ControlEvent} from '@angular/forms';
+import {AbstractControl, ControlEvent} from '@angular/forms';
 
 /**
  * Possible fields of the original form control event change.
@@ -37,6 +37,15 @@ export const defaultFormControlCombinedStatuses: FormControlCombinedStatuses = {
   valid: true,
   touched: false,
 };
+
+/**
+ * Extract combined statuses from the form control.
+ */
+export const extractCombinedStatusesFromFormControl = (control: AbstractControl): FormControlCombinedStatuses => ({
+  pristine: control.pristine,
+  valid: control.valid,
+  touched: control.touched,
+});
 
 /**
  * Custom RxJs operator.

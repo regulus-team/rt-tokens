@@ -1,6 +1,7 @@
 @if ({
   singleFileInputCurrentValue: singleFileInputCurrentValue$ | async,
   filePreview: filePreview$ | async,
+  isControlSubmitted: isControlSubmitted$ | async,
   shouldIndicateInvalidity: shouldIndicateInvalidity$ | async,
 }; as extracted) {
   <div
@@ -49,7 +50,7 @@
         #dragAndDropArea
         [ngClass]="{
           'rt-single-file-input__drag-n-drop-area_drag-over': enterAndLeaveDifference > 0,
-          'rt-single-file-input__drag-n-drop-area_invalid': !isLastDroppedFileValid || extracted.shouldIndicateInvalidity,
+          'rt-single-file-input__drag-n-drop-area_invalid': extracted.shouldIndicateInvalidity,
         }"
         (drop)="elementDropped($event)"
         (dragover)="$event.preventDefault()"
@@ -68,7 +69,7 @@
           <div
             class="rt-single-file-input__acceptable-file-types"
             [ngClass]="{
-              'rt-single-file-input__acceptable-file-types_invalid': !isLastDroppedFileValid,
+              'rt-single-file-input__acceptable-file-types_invalid': extracted.shouldIndicateInvalidity,
               'rt-single-file-input__acceptable-file-types_drag-over': enterAndLeaveDifference > 0,
             }"
           >
