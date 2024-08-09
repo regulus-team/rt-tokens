@@ -5,51 +5,51 @@
     <div class="add-token-dialog__rt-form-label rt-form-label">
       {{ labels.name }}
     </div>
-    <rt-text-input
+    <rt-inputs-inline-text
       [formControl]="createTokenForm.controls.name"
       [placeholder]="placeholders.name"
       [validationMessages]="validationMessages.name"
-    ></rt-text-input>
+    ></rt-inputs-inline-text>
 
     <div class="add-token-dialog__rt-form-label rt-form-label">
       {{ labels.symbol }}
     </div>
-    <rt-text-input
+    <rt-inputs-inline-text
       [formControl]="createTokenForm.controls.symbol"
       [placeholder]="placeholders.symbol"
       [validationMessages]="validationMessages.symbol"
-    ></rt-text-input>
+    ></rt-inputs-inline-text>
 
     <div class="add-token-dialog__rt-form-label rt-form-label">
       {{ labels.decimals }}
     </div>
-    <rt-text-input
+    <rt-inputs-inline-text
       inputType="number"
       [formControl]="createTokenForm.controls.decimals"
       [placeholder]="placeholders.decimals"
       [validationMessages]="validationMessages.decimals"
-    ></rt-text-input>
+    ></rt-inputs-inline-text>
 
     <div class="add-token-dialog__rt-form-label rt-form-label">
       {{ labels.description }}
     </div>
-    <rt-text-input
+    <rt-inputs-inline-text
       [formControl]="createTokenForm.controls.description"
       [placeholder]="placeholders.description"
       [validationMessages]="validationMessages.description"
-    ></rt-text-input>
+    ></rt-inputs-inline-text>
 
     <div class="add-token-dialog__rt-form-label rt-form-label">
       {{ labels.image }}
     </div>
     <div class="add-token-dialog__add-image-wrap">
-      <rt-single-file-input
+      <rt-inputs-single-file
         [formControl]="createTokenForm.controls.image"
         [acceptableFileTypes]="acceptableTypesForImage"
         [validationMessages]="validationMessages.image"
         dropFileLabel="Drop the image here"
         actionButtonLabel="Select the image"
-      ></rt-single-file-input>
+      ></rt-inputs-single-file>
     </div>
 
     <div class="add-token-dialog__actions">

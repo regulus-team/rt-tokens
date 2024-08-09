@@ -17,15 +17,15 @@ import {MatTooltip} from '@angular/material/tooltip';
 import {ControlContainer, ControlValueAccessor, FormControl, FormGroupDirective, NgControl, NgForm} from '@angular/forms';
 import {MatError} from '@angular/material/form-field';
 import {MatButton} from '@angular/material/button';
-import {isFileTypeAcceptable} from '../../symbols/rt-forms-utils.symbols';
-import {RtValidationErrorHandleStrategy} from '../../symbols/rt-forms-types.symbols';
+import {RtValidationErrorHandleStrategy} from '../../symbols/rt-inputs-types.symbols';
 import {
   extractCombinedStatusesFromFormControl,
   FormControlCombinedStatuses,
   formControlCombinedStatusesAdapter,
-} from '../../symbols/rt-forms-control-status-adapter.symbols';
-import {RtFormsDefineErrorMessagePipe} from '../../pipes/rt-forms-define-error-message/rt-forms-define-error-message';
-import {rtFormsDefineInvalidityObservable, rtFormsOverwriteNgControlResetFunction} from '../../symbols/rt-forms-validity.symbols';
+} from '../../symbols/rt-inputs-control-status-adapter.symbols';
+import {RtInputsDefineErrorMessagePipe} from '../../pipes/rt-inputs-define-error-message/rt-inputs-define-error-message';
+import {rtFormsDefineInvalidityObservable, rtFormsOverwriteNgControlResetFunction} from '../../symbols/rt-inputs-validity.symbols';
+import {isFileTypeAcceptable} from '../../symbols/rt-inputs-validators.symbols';
 
 /**
  * Describes a file metadata used for generating a preview.
@@ -48,14 +48,14 @@ interface FilePreview {
 }
 
 @Component({
-  selector: 'rt-single-file-input',
-  templateUrl: './rt-single-file-input.component.html',
-  styleUrls: ['./rt-single-file-input.component.scss'],
+  selector: 'rt-inputs-single-file',
+  templateUrl: './rt-inputs-single-file.component.html',
+  styleUrls: ['./rt-inputs-single-file.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
-  imports: [AsyncPipe, NgStyle, MatTooltip, NgClass, RtFormsDefineErrorMessagePipe, MatError, MatButton],
+  imports: [AsyncPipe, NgStyle, MatTooltip, NgClass, RtInputsDefineErrorMessagePipe, MatError, MatButton],
 })
-export class RtSingleFileInputComponent implements OnInit, OnDestroy, ControlValueAccessor {
+export class RtInputsSingleFileComponent implements OnInit, OnDestroy, ControlValueAccessor {
   @ViewChild('dragAndDropArea') public dragAndDropArea?: ElementRef<HTMLDivElement>;
 
   /** Label for the drop area. */
@@ -65,7 +65,7 @@ export class RtSingleFileInputComponent implements OnInit, OnDestroy, ControlVal
   @Input() actionButtonLabel: string;
 
   /** Error handle strategy. */
-  @Input() errorHandleStrategy: RtValidationErrorHandleStrategy = RtValidationErrorHandleStrategy.afterSubmit;
+  @Input() errorHandleStrategy: RtValidationErrorHandleStrategy = RtValidationErrorHandleStrategy.afterLeft;
 
   /** Relation between the error name imposed by Validators and the error message. */
   @Input() validationMessages: Nullable<{[key: string]: string}>;
@@ -124,12 +124,15 @@ export class RtSingleFileInputComponent implements OnInit, OnDestroy, ControlVal
     ngControl.valueAccessor = this;
 
     // Observe the form submit event if the related strategy is set.
-    if (this.errorHandleStrategy === RtValidationErrorHandleStrategy.afterSubmit) {
+    if (
+      this.errorHandleStrategy === RtValidationErrorHandleStrategy.afterLeft ||
+      this.errorHandleStrategy === RtValidationErrorHandleStrategy.afterEdit
+    ) {
       if (!controlContainer) {
         throw new Error(
           `The controlContainer is not found.
            It is impossible to show validation on form submit event if no form is provided.
-           The ${RtSingleFileInputComponent.name} should be used within a <form>.
+           The ${RtInputsSingleFileComponent.name} should be used within a <form>.
            If this is intended, change the errorHandleStrategy to the different value.`,
         );
       }

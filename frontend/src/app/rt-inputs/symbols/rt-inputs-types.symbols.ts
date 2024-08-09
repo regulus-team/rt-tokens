@@ -46,6 +46,11 @@ export type RtChoice<T, V> = [T, V];
  */
 export enum RtValidationErrorHandleStrategy {
   /**
+   * Show an error message only after the user has left the field or submitted the form.
+   */
+  afterLeft = 'afterLeft',
+
+  /**
    * Disable the error messages completely.
    */
   disabled = 'disabled',
@@ -59,5 +64,5 @@ export enum RtValidationErrorHandleStrategy {
   /**
    * Show an error message only after the user has interacted with the field or submitted the form.
    */
-  afterSubmit = 'afterSubmit',
+  afterEdit = 'afterEdit',
 }

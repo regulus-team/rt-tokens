@@ -24,7 +24,7 @@ import {RtIpfsModule} from '../rt-ipfs/rt-ipfs.module';
 import {SharedCopyActionComponent} from '../shared/components/shared-copy-action/shared-copy-action.component';
 import {settings} from '../../environments/environment.dev';
 import {DashboardTokenDialogBurnTokenComponent} from './components/dashboard-token-dialog-burn-token/dashboard-token-dialog-burn-token.component';
-import {RtTextInputComponent} from '../rt-forms/components/rt-text-input/rt-text-input.component';
+import {RtInputsInlineTextComponent} from '../rt-inputs/components/rt-inputs-inline-text/rt-inputs-inline-text.component';
 
 @NgModule({
   declarations: [
@@ -55,7 +55,7 @@ import {RtTextInputComponent} from '../rt-forms/components/rt-text-input/rt-text
     CdkCopyToClipboard,
     MatTooltip,
     SharedCopyActionComponent,
-    RtTextInputComponent,
+    RtInputsInlineTextComponent,
   ],
   providers: [DashboardTokenItemService, DashboardTokenListService, DashboardTokenItemActionsService],
 })

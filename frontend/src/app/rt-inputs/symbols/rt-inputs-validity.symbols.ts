@@ -1,7 +1,7 @@
 import {BehaviorSubject, combineLatest, map, Observable} from 'rxjs';
 import {AbstractControl, NgControl} from '@angular/forms';
-import {RtValidationErrorHandleStrategy} from './rt-forms-types.symbols';
-import {FormControlCombinedStatuses} from './rt-forms-control-status-adapter.symbols';
+import {RtValidationErrorHandleStrategy} from './rt-inputs-types.symbols';
+import {FormControlCombinedStatuses} from './rt-inputs-control-status-adapter.symbols';
 
 /**
  * Defines whether the validation should be displayed for the control based on the provided strategy.
@@ -14,16 +14,21 @@ export const rtFormsDefineInvalidityObservable = (
   combineLatest([controlStatuses$, isControlContainerSubmitted$]).pipe(
     map(([controlStatuses, isControlContainerSubmitted]) => {
       switch (errorHandleStrategy) {
+        // If the error handle strategy is afterLeft, return true if the control is invalid
+        // and the control container is submitted or left from control.
+        case RtValidationErrorHandleStrategy.afterLeft:
+          return !controlStatuses.valid && !!(isControlContainerSubmitted || controlStatuses.touched);
+
         // If the error handle strategy is disabled, return false.
         case RtValidationErrorHandleStrategy.disabled:
           return false;
-
         // If the error handle strategy is instant, return true if the control is invalid.
+
         case RtValidationErrorHandleStrategy.instant:
           return !controlStatuses.valid;
+        // If the error handle strategy is afterLeft, return true if the control is invalid and the control container is submitted.
 
-        // If the error handle strategy is afterSubmit, return true if the control is invalid and the control container is submitted.
-        case RtValidationErrorHandleStrategy.afterSubmit:
+        case RtValidationErrorHandleStrategy.afterEdit:
           return !controlStatuses.valid && !!(isControlContainerSubmitted || !controlStatuses.pristine || controlStatuses.touched);
       }
     }),

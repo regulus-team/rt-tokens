@@ -19,7 +19,7 @@
 
     @if (extracted.shouldIndicateInvalidity) {
       <mat-error class="rt-input-error">
-        {{ validationMessages | rtFormsDefineErrorMessage : ngControl.errors }}
+        {{ validationMessages | rtInputsDefineErrorMessage : ngControl.errors }}
       </mat-error>
     }
   </div>

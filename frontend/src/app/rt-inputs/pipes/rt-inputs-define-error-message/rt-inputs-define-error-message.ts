@@ -4,10 +4,10 @@ import {Pipe, PipeTransform} from '@angular/core';
  * Extracts the first error message from the validation messages.
  */
 @Pipe({
-  name: 'rtFormsDefineErrorMessage',
+  name: 'rtInputsDefineErrorMessage',
   standalone: true,
 })
-export class RtFormsDefineErrorMessagePipe implements PipeTransform {
+export class RtInputsDefineErrorMessagePipe implements PipeTransform {
   constructor() {}
 
   transform(validationMessages: Nullable<{[key: string]: string}>, formErrors: Nullable<{[key: string]: string}>): Nullable<string> {

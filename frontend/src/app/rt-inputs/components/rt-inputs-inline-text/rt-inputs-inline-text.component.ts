@@ -23,24 +23,24 @@ import {
 import {MatError, MatFormField} from '@angular/material/form-field';
 import {MatInput} from '@angular/material/input';
 import {AsyncPipe, NgClass} from '@angular/common';
-import {RtValidationErrorHandleStrategy} from '../../symbols/rt-forms-types.symbols';
-import {RtFormsDefineErrorMessagePipe} from '../../pipes/rt-forms-define-error-message/rt-forms-define-error-message';
+import {RtValidationErrorHandleStrategy} from '../../symbols/rt-inputs-types.symbols';
+import {RtInputsDefineErrorMessagePipe} from '../../pipes/rt-inputs-define-error-message/rt-inputs-define-error-message';
 import {
   extractCombinedStatusesFromFormControl,
   FormControlCombinedStatuses,
   formControlCombinedStatusesAdapter,
-} from '../../symbols/rt-forms-control-status-adapter.symbols';
-import {rtFormsDefineInvalidityObservable, rtFormsOverwriteNgControlResetFunction} from '../../symbols/rt-forms-validity.symbols';
+} from '../../symbols/rt-inputs-control-status-adapter.symbols';
+import {rtFormsDefineInvalidityObservable, rtFormsOverwriteNgControlResetFunction} from '../../symbols/rt-inputs-validity.symbols';
 
 @Component({
-  selector: 'rt-text-input',
-  templateUrl: './rt-text-input.component.html',
-  styleUrls: ['./rt-text-input.component.scss'],
+  selector: 'rt-inputs-inline-text',
+  templateUrl: './rt-inputs-inline-text.component.html',
+  styleUrls: ['./rt-inputs-inline-text.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
-  imports: [MatFormField, AsyncPipe, MatInput, ReactiveFormsModule, RtFormsDefineErrorMessagePipe, MatError, NgClass],
+  imports: [MatFormField, AsyncPipe, MatInput, ReactiveFormsModule, RtInputsDefineErrorMessagePipe, MatError, NgClass],
 })
-export class RtTextInputComponent implements OnInit, OnDestroy, ControlValueAccessor {
+export class RtInputsInlineTextComponent implements OnInit, OnDestroy, ControlValueAccessor {
   @ViewChild('textInputElement') public textInputElement?: ElementRef<HTMLInputElement>;
 
   /** Placeholder for the input field. */
@@ -50,7 +50,7 @@ export class RtTextInputComponent implements OnInit, OnDestroy, ControlValueAcce
   @Input() inputType = 'text';
 
   /** Error handle strategy. */
-  @Input() errorHandleStrategy: RtValidationErrorHandleStrategy = RtValidationErrorHandleStrategy.afterSubmit;
+  @Input() errorHandleStrategy: RtValidationErrorHandleStrategy = RtValidationErrorHandleStrategy.afterLeft;
 
   /** Relation between the error name imposed by Validators and the error message. */
   @Input() validationMessages: Nullable<{[key: string]: string}>;
@@ -87,12 +87,15 @@ export class RtTextInputComponent implements OnInit, OnDestroy, ControlValueAcce
     ngControl.valueAccessor = this;
 
     // Observe the form submit event if the related strategy is set.
-    if (this.errorHandleStrategy === RtValidationErrorHandleStrategy.afterSubmit) {
+    if (
+      this.errorHandleStrategy === RtValidationErrorHandleStrategy.afterLeft ||
+      this.errorHandleStrategy === RtValidationErrorHandleStrategy.afterEdit
+    ) {
       if (!controlContainer) {
         throw new Error(
           `The controlContainer is not found.
            It is impossible to show validation on form submit event if no form is provided.
-           The ${RtTextInputComponent.name} should be used within a <form>.
+           The ${RtInputsInlineTextComponent.name} should be used within a <form>.
            If this is intended, change the errorHandleStrategy to the different value.`,
         );
       }

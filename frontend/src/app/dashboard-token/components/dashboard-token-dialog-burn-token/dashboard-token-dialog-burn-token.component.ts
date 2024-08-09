@@ -7,7 +7,7 @@ import {PublicKey} from '@solana/web3.js';
 import {BurnToken, ResetBurnTokenProcess} from '../../states/dashboard-token-item-actions/dashboard-token-item-actions.actions';
 import {DashboardTokenItemActionsState} from '../../states/dashboard-token-item-actions/dashboard-token-item-actions.state';
 import {progressStatuses} from '../../../shared/symbols/statuses.symbols';
-import {RtValidationMessagesFromForm} from '../../../rt-forms/symbols/rt-forms-types.symbols';
+import {RtValidationMessagesFromForm} from '../../../rt-inputs/symbols/rt-inputs-types.symbols';
 
 /**
  * Data for the mint token dialog.

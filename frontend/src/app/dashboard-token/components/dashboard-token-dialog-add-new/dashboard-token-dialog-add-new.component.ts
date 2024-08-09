@@ -8,17 +8,17 @@ import {
   RtFormLabelsFromForm,
   RtFormPlaceholdersFromForm,
   RtValidationMessagesFromForm,
-} from '../../../rt-forms/symbols/rt-forms-types.symbols';
-import {RtValidators} from '../../../rt-forms/symbols/rt-forms-validators.symbols';
-import {RtTextInputComponent} from '../../../rt-forms/components/rt-text-input/rt-text-input.component';
-import {RtSingleFileInputComponent} from '../../../rt-forms/components/rt-single-file-input/rt-single-file-input.component';
+} from '../../../rt-inputs/symbols/rt-inputs-types.symbols';
+import {RtValidators} from '../../../rt-inputs/symbols/rt-inputs-validators.symbols';
+import {RtInputsInlineTextComponent} from '../../../rt-inputs/components/rt-inputs-inline-text/rt-inputs-inline-text.component';
+import {RtInputsSingleFileComponent} from '../../../rt-inputs/components/rt-inputs-single-file/rt-inputs-single-file.component';
 
 @Component({
   selector: 'app-dashboard-token-dialog-add-new',
   templateUrl: './dashboard-token-dialog-add-new.component.html',
   styleUrls: ['./dashboard-token-dialog-add-new.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ReactiveFormsModule, MatButton, RtTextInputComponent, RtSingleFileInputComponent],
+  imports: [ReactiveFormsModule, MatButton, RtInputsInlineTextComponent, RtInputsSingleFileComponent],
   standalone: true,
 })
 export class DashboardTokenDialogAddNewComponent {
