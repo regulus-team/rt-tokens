@@ -28,6 +28,21 @@
       [until]="false"
     >
       <mat-card-content class="token-details__card">
+        <div
+          class="token-details__card-freeze"
+          [@toggleOpacity]="extracted.tokenState === TokenItemState.Frozen"
+        >
+          <svg
+            [matTooltip]="'The token is frozen. Mint, burn, and transfer operations are disabled'"
+            class="token-details__card-freeze-icon"
+            height="48"
+            width="48"
+          >
+            <use xlink:href="#frozen"></use>
+          </svg>
+          <img class="token-details__card-freeze-image" ngSrc="/assets/images/token-item/frost-effect.png" alt="frost-effect" fill>
+        </div>
+
         <div class="token-details__item-general-data">
           <div class="token-details__item-image-wrap">
             @if (extracted.tokenMetadataJson?.jsonMetadata?.image; as image) {
@@ -129,13 +144,16 @@
                 <button
                   mat-raised-button
                   color="primary"
+                  [ngClass]="{'token-details__actions_disabled': extracted.tokenState === TokenItemState.Frozen}"
+                  [matTooltip]="'Frozen tokens cannot be minted. Thaw the token to enable minting'"
+                  [matTooltipDisabled]="extracted.tokenState !== TokenItemState.Frozen"
                   (click)="openMintTokenDialog({
                     tokenAccountPublicKey: extracted.tokenAccount,
                     associatedTokenAccountPublicKey: extracted.associatedTokenAccount,
                     mintAuthorityPublicKey: extracted.mintAuthority,
                     currentBalance: extracted.tokenAmount.uiAmountString,
                     tokenDecimals: extracted.tokenAmount.decimals,
-                  })"
+                  }, extracted.tokenState !== TokenItemState.Frozen)"
                 >
                   Mint token
                 </button>
@@ -173,6 +191,9 @@
                 <button
                   mat-raised-button
                   class="mat-primary token-details__actions_burn"
+                  [ngClass]="{'token-details__actions_disabled': extracted.tokenState === TokenItemState.Frozen}"
+                  [matTooltip]="'Frozen tokens cannot be burned. Thaw the token to enable burning'"
+                  [matTooltipDisabled]="extracted.tokenState !== TokenItemState.Frozen"
                   (click)="openBurnTokenDialog({
                     tokenAccountPublicKey: extracted.tokenAccount,
                     associatedTokenAccountPublicKey: extracted.associatedTokenAccount,
@@ -180,7 +201,7 @@
                     currentBalance: extracted.tokenAmount.uiAmountString,
                     currentBalanceWithoutDecimals: extracted.tokenAmount.amount,
                     tokenDecimals: extracted.tokenAmount.decimals,
-                  })"
+                  }, extracted.tokenState !== TokenItemState.Frozen)"
                 >
                   Burn tokens
                 </button>
@@ -192,11 +213,9 @@
     </rt-loading>
   </mat-card>
 
-    @if (
-      extracted.loadTokenDetailsProcess === progressStatuses.interrupted
-      || extracted.freezeTokenProcess === progressStatuses.interrupted
-      || extracted.thawTokenProcess === progressStatuses.interrupted
-    ) {
-      <p>Error occurred: {{ extracted.lastLoadTokenDetailsError || extracted.lastFreezeTokenError || extracted.lastThawTokenError }}</p>
-    }
+  @if (extracted.loadTokenDetailsProcess === progressStatuses.interrupted
+  || extracted.freezeTokenProcess === progressStatuses.interrupted
+  || extracted.thawTokenProcess === progressStatuses.interrupted) {
+    <p>Error occurred: {{ extracted.lastLoadTokenDetailsError || extracted.lastFreezeTokenError || extracted.lastThawTokenError }}</p>
+  }
 }

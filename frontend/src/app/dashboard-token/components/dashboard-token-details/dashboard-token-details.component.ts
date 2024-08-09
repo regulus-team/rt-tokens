@@ -8,8 +8,13 @@ import {
   DashboardTokenDialogMintTokenComponent,
   DialogMintTokenData,
 } from '../dashboard-token-dialog-mint-token/dashboard-token-dialog-mint-token.component';
+import {
+  DashboardTokenDialogBurnTokenComponent,
+  DialogBurnTokenData,
+} from '../dashboard-token-dialog-burn-token/dashboard-token-dialog-burn-token.component';
 import {LoadTokenDetails} from '../../states/dashboard-token-item/dashboard-token-item.actions';
 import {DashboardTokenItemState} from '../../states/dashboard-token-item/dashboard-token-item.state';
+import {DashboardTokenItemActionsState} from '../../states/dashboard-token-item-actions/dashboard-token-item-actions.state';
 import {TokenItemState} from '../../symbols/dashboard-token-general.symbols';
 import {FreezeOrThawTokenActionData} from '../../symbols/dashboard-token-action-data.symbols';
 import {FreezeToken, ThawToken} from '../../states/dashboard-token-item-actions/dashboard-token-item-actions.actions';
@@ -19,17 +24,14 @@ import {
   SharedConfirmDialogComponent,
 } from '../../../shared/components/shared-confirm-dialog/shared-confirm-dialog.component';
 import {progressStatuses} from '../../../shared/symbols/statuses.symbols';
-import {DashboardTokenItemActionsState} from '../../states/dashboard-token-item-actions/dashboard-token-item-actions.state';
-import {
-  DashboardTokenDialogBurnTokenComponent,
-  DialogBurnTokenData,
-} from '../dashboard-token-dialog-burn-token/dashboard-token-dialog-burn-token.component';
+import {toggleOpacityAnimation} from '../../../shared/animations/toggle-opacity.animation';
 
 @Component({
   selector: 'app-dashboard-token-details',
   templateUrl: './dashboard-token-details.component.html',
   styleUrls: ['./dashboard-token-details.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  animations: [toggleOpacityAnimation(1, 0)],
 })
 export class DashboardTokenDetailsComponent implements OnInit, OnDestroy {
   public readonly loadTokenDetailsProcess$ = this.store.select(DashboardTokenItemState.loadTokenDetailsProcess);
@@ -101,7 +103,12 @@ export class DashboardTokenDetailsComponent implements OnInit, OnDestroy {
   /**
    * Open the dialog window for minting new tokens.
    */
-  public openMintTokenDialog(dialogMintTokenData: DialogMintTokenData): void {
+  public openMintTokenDialog(dialogMintTokenData: DialogMintTokenData, isActive: boolean): void {
+    // If the dialog is not active, do nothing.
+    if (!isActive) {
+      return;
+    }
+
     // If any of the required public keys is not set, do nothing.
     if (
       !dialogMintTokenData?.tokenAccountPublicKey ||
@@ -122,7 +129,12 @@ export class DashboardTokenDetailsComponent implements OnInit, OnDestroy {
   /**
    * Open the dialog window for burning tokens.
    */
-  public openBurnTokenDialog(dialogBurnTokenData: DialogBurnTokenData): void {
+  public openBurnTokenDialog(dialogBurnTokenData: DialogBurnTokenData, isActive: boolean): void {
+    // If the dialog is not active, do nothing.
+    if (!isActive) {
+      return;
+    }
+
     // If any of the required public keys is not set, do nothing.
     if (
       !dialogBurnTokenData?.tokenAccountPublicKey ||

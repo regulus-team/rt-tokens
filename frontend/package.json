@@ -34,6 +34,7 @@
     "@solana/spl-token": "^0.4.6",
     "@solana/wallet-adapter-wallets": "^0.19.32",
     "@solana/web3.js": "^1.91.8",
+    "angular-animations": "^0.11.0",
     "browserify-zlib": "^0.2.0",
     "buffer": "^6.0.3",
     "crypto-browserify": "^3.12.0",

@@ -86,7 +86,7 @@
               }
             </div>
           }
-          <div [@opacityHalf]="showLoading" class="content__wrap-content">
+          <div [@toggleOpacity]="showLoading" class="content__wrap-content">
             <ng-container *ngTemplateOutlet="ngContent"></ng-container>
           </div>
         </div>

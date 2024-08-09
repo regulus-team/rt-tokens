@@ -10,6 +10,32 @@
   position: relative;
 }
 
+.token-details__card-freeze {
+  position: absolute;
+  height: 150px;
+  width: 800px;
+  top: 0;
+  right: 0;
+  z-index: 0;
+  opacity: 0;
+}
+
+.token-details__card-freeze_visible {
+  display: block;
+}
+
+.token-details__card-freeze-icon {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  color: var(--white);
+  z-index: 1;
+}
+
+.token-details__card-freeze-image {
+  opacity: 0.7;
+}
+
 .token-details__item-general-data {
   display: flex;
   justify-content: flex-start;
@@ -120,6 +146,42 @@
   background-color: red;
 }
 
+.token-details__actions_disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+@media screen and (max-width: 1199px) {
+  .token-details__card-freeze {
+    height: 125px;
+    width: 665px;
+  }
+}
+
+@media screen and (max-width: 991px) {
+  .token-details__card-freeze {
+    height: 100px;
+    width: 533px;
+  }
+
+  .token-details__card-freeze-icon {
+    top: 15px;
+    right: 15px;
+  }
+}
+
+@media screen and (max-width: 767px) {
+  .token-details__card-freeze {
+    height: 75px;
+    width: 400px;
+  }
+
+  .token-details__card-freeze-icon {
+    top: 10px;
+    right: 10px;
+  }
+}
+
 @media screen and (max-width: 580px) {
   .token-details__authority-item {
     align-items: flex-start;
@@ -130,5 +192,10 @@
 
   .token-details__authority-item-content {
     word-break: break-word;
+  }
+
+  .token-details__card-freeze {
+    height: 50px;
+    width: 267px;
   }
 }

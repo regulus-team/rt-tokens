@@ -1,8 +1,8 @@
 import {AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, HostBinding, Input, ViewChild} from '@angular/core';
 import {RtPlatformService} from '../../../rt-platform/services/rt-platform/rt-platform.service';
-import {opacityHalfAnimation} from '../../../shared/animations/opacity-half.animation';
 import {fadeOutAnimation} from '../../../shared/animations/fade-out.animation';
 import {fadeInAnimation} from '../../../shared/animations/fade-in.animation';
+import {toggleOpacityAnimation} from '../../../shared/animations/toggle-opacity.animation';
 
 /** Define in which way content should be transformed. */
 enum ContentTransformStrategy {
@@ -33,7 +33,7 @@ enum LoaderType {
   templateUrl: './rt-loading.component.html',
   styleUrls: ['./rt-loading.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  animations: [fadeInAnimation, fadeOutAnimation, opacityHalfAnimation],
+  animations: [fadeInAnimation, fadeOutAnimation, toggleOpacityAnimation(0.5, 1)],
 })
 export class RtLoadingComponent implements AfterViewInit {
   @ViewChild('content') content: ElementRef;
