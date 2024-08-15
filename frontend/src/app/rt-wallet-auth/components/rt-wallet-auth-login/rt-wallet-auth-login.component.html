@@ -3,18 +3,47 @@
   connectWalletError: connectWalletError$ | async,
 }; as extracted) {
 
+  <div class="auth-login">
+    <mat-card class="auth-login__card">
+      <mat-card-content class="auth-login__card-content">
+        <div class="auth-login__header">
+          Login
+        </div>
 
-  Login page
+        <div class="auth-login__text">
+          Oops! It seems like you have tried to access the action that requires your wallet to be connected.
+          Please connect your wallet to proceed.
+        </div>
 
-  <button (click)="loginWithWallet()">Login with wallet</button>
+        @if (extracted.connectWalletStatus === progressStatuses.interrupted) {
+          <div class="auth-login__errors">
+            @if (extracted.connectWalletError?.name === 'WalletNotReadyError') {
+              The wallet is not available on the current page. Please open the Phantom Wallet and try again.
+            } @else {
+              {{ extracted.connectWalletError }}
+            }
+          </div>
+        }
 
-  @if (extracted.connectWalletStatus === progressStatuses.interrupted) {
-    @if (extracted.connectWalletError?.name === 'WalletNotReadyError') {
-      The wallet is not available on the current page. Please open the Phantom Wallet and try again.
-    } @else {
-      {{ extracted.connectWalletError }}
-    }
-  }
+        <div class="auth-login__actions">
+          <button class="mat-primary auth-login__login" mat-raised-button (click)="loginWithWallet()">
+            <span class="auth-login__login-content">
+              <span class="auth-login__login-text">Login with Phantom</span>
+
+              <svg
+                class="auth-login__login-icon"
+                height="24"
+                width="24"
+              >
+                <use xlink:href="#phantom"></use>
+              </svg>
+            </span>
+          </button>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+  </div>
 }
 
 

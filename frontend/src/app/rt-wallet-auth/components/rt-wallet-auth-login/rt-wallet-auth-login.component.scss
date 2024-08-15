@@ -1,0 +1,51 @@
+.auth-login {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.auth-login__card {
+  max-width: 600px;
+}
+
+.auth-login__header {
+  text-align: center;
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 30px;
+}
+
+.auth-login__text {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.auth-login__errors {
+  color: var(--error-dark);
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.auth-login__actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.auth-login__login {
+  color: var(--white);
+  background-color: var(--phantom-wallet-violet);
+}
+
+.auth-login__login-content {
+  display: flex;
+  gap: 8px;
+}
+
+.auth-login__login-text {
+  line-height: 24px;
+}
+
+.auth-login__login-icon {
+  color: var(--white);
+}
