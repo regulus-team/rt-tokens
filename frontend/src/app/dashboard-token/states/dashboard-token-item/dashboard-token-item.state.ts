@@ -13,8 +13,9 @@ import {
 import {dashboardTokenItemStateId, DashboardTokenItemStateModel, defaultDashboardTokenItemState} from './dashboard-token-item.model';
 import {DashboardTokenItemService} from '../../services/dashboard-token-item/dashboard-token-item.service';
 import {JsonUrlTokenAccountPair, MetadataJsonFieldsTokenAccountPair} from '../../symbols/dashboard-token-metadata-retrieval.symbols';
+import {toUmiPublicKey} from '../../symbols/dashboard-token-resolve-non-compatible-types.symbols';
 import {RtSolanaService} from '../../../rt-solana/services/rt-solana/rt-solana.service';
-import {MetadataJsonFields, toUmiPublicKey} from '../../../rt-solana/symbols';
+import {MetadataJsonFields} from '../../../rt-solana/symbols';
 import {progressStatuses} from '../../../shared/symbols/statuses.symbols';
 
 @State<DashboardTokenItemStateModel>({

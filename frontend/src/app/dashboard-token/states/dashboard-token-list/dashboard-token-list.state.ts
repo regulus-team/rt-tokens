@@ -11,9 +11,10 @@ import {
 import {dashboardTokenListStateId, DashboardTokenListStateModel, defaultDashboardTokenState} from './dashboard-token-list.model';
 import {JsonUrlTokenAccountPair, MetadataJsonFieldsTokenAccountPair} from '../../symbols/dashboard-token-metadata-retrieval.symbols';
 import {DashboardTokenListService} from '../../services/dashboard-token-list/dashboard-token-list.service';
+import {toUmiPublicKey} from '../../symbols/dashboard-token-resolve-non-compatible-types.symbols';
 import {progressStatuses} from '../../../shared/symbols/statuses.symbols';
 import {RtSolanaService} from '../../../rt-solana/services/rt-solana/rt-solana.service';
-import {PiledTokenData, toUmiPublicKey} from '../../../rt-solana/symbols';
+import {PiledTokenData} from '../../../rt-solana/symbols';
 
 @State<DashboardTokenListStateModel>({
   name: dashboardTokenListStateId,

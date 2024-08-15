@@ -25,6 +25,7 @@ import {SharedCopyActionComponent} from '../shared/components/shared-copy-action
 import {settings} from '../../environments/environment.dev';
 import {DashboardTokenDialogBurnTokenComponent} from './components/dashboard-token-dialog-burn-token/dashboard-token-dialog-burn-token.component';
 import {RtInputsInlineTextComponent} from '../rt-inputs/components/rt-inputs-inline-text/rt-inputs-inline-text.component';
+import {DashboardTokenDialogTransferTokenComponent} from './components/dashboard-token-dialog-transfer-token/dashboard-token-dialog-transfer-token.component';
 
 @NgModule({
   declarations: [
@@ -33,6 +34,7 @@ import {RtInputsInlineTextComponent} from '../rt-inputs/components/rt-inputs-inl
     DashboardTokenDetailsComponent,
     DashboardTokenDialogMintTokenComponent,
     DashboardTokenDialogBurnTokenComponent,
+    DashboardTokenDialogTransferTokenComponent,
   ],
   imports: [
     CommonModule,

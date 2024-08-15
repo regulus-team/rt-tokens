@@ -142,6 +142,18 @@
   transform: skewX(-5deg);
 }
 
+.token-details__actions_thaw {
+  background-color: lightblue;
+}
+
+.token-details__actions_freeze {
+  background-color: blue;
+}
+
+.token-details__actions_transfer {
+  background-color: violet;
+}
+
 .token-details__actions_burn {
   background-color: red;
 }

@@ -6,10 +6,17 @@ import {
   createThawAccountInstruction,
 } from '@solana/spl-token';
 import {Transaction} from '@solana/web3.js';
-import {createAndMint, mplTokenMetadata, TokenStandard} from '@metaplex-foundation/mpl-token-metadata';
+import {createAndMint, mplTokenMetadata, TokenStandard, transferV1} from '@metaplex-foundation/mpl-token-metadata';
 import {walletAdapterIdentity} from '@metaplex-foundation/umi-signer-wallet-adapters';
-import {generateSigner, percentAmount, some} from '@metaplex-foundation/umi';
-import {BurnTokenActionData, FreezeOrThawTokenActionData, MintTokenActionData} from '../../symbols/dashboard-token-action-data.symbols';
+import {generateSigner, percentAmount, RpcConfirmTransactionResult, Signer, some, TransactionSignature} from '@metaplex-foundation/umi';
+import {
+  BurnTokenActionData,
+  FreezeOrThawTokenActionData,
+  MintTokenActionData,
+  TransferTokenActionData,
+} from '../../symbols/dashboard-token-action-data.symbols';
+import {UmiCompatibleSigner} from '../../symbols/dashboard-token-umi-compatible-signer.symbol';
+import {toUmiPublicKey, UmiPublicKey} from '../../symbols/dashboard-token-resolve-non-compatible-types.symbols';
 import {RtSolanaService} from '../../../rt-solana/services/rt-solana/rt-solana.service';
 
 @Injectable()
@@ -131,5 +138,39 @@ export class DashboardTokenItemActionsService {
 
     // Request the wallet to sign the transaction and send it to the cluster.
     return this.currentWalletAdapter.sendTransaction(transaction, this.currentClusterConnection);
+  }
+
+  /**
+   * Transfer a specific token.
+   * @param transferTokenActionData - Data required to transfer token.
+   */
+  public transferSpecificToken(transferTokenActionData: TransferTokenActionData): Promise<{
+    signature: TransactionSignature;
+    result: RpcConfirmTransactionResult;
+  }> {
+    // Create a new UMI instance with the current RPC URL and the Metaplex token metadata plugin.
+    const umi = this.rtSolana.getNewUmiInstance();
+    umi.use(mplTokenMetadata()).use(walletAdapterIdentity(this.currentWalletAdapter));
+
+    // Generate a signer for the UMI instance based on the current wallet adapter.
+    const umiSigner: Signer = new UmiCompatibleSigner(this.currentWalletAdapter);
+
+    // Convert the destination owner public key to a UMI-compatible public key.
+    let destinationOwnerPublicKey: UmiPublicKey;
+    try {
+      destinationOwnerPublicKey = toUmiPublicKey(transferTokenActionData.destinationOwner);
+    } catch (error) {
+      return Promise.reject(error);
+    }
+
+    // Use the UMI instance to transfer the token.
+    return transferV1(umi, {
+      mint: toUmiPublicKey(transferTokenActionData.mint),
+      authority: umiSigner,
+      tokenOwner: toUmiPublicKey(transferTokenActionData.tokenOwner),
+      destinationOwner: destinationOwnerPublicKey,
+      amount: transferTokenActionData.amount,
+      tokenStandard: TokenStandard.Fungible,
+    }).sendAndConfirm(umi);
   }
 }

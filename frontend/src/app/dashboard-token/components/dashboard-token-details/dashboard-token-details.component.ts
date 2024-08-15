@@ -25,6 +25,10 @@ import {
 } from '../../../shared/components/shared-confirm-dialog/shared-confirm-dialog.component';
 import {progressStatuses} from '../../../shared/symbols/statuses.symbols';
 import {toggleOpacityAnimation} from '../../../shared/animations/toggle-opacity.animation';
+import {
+  DashboardTokenDialogTransferTokenComponent,
+  DialogTransferTokenData,
+} from '../dashboard-token-dialog-transfer-token/dashboard-token-dialog-transfer-token.component';
 
 @Component({
   selector: 'app-dashboard-token-details',
@@ -121,6 +125,28 @@ export class DashboardTokenDetailsComponent implements OnInit, OnDestroy {
     // Open the dialog window.
     this.dialog.open<DashboardTokenDialogMintTokenComponent, DialogMintTokenData>(DashboardTokenDialogMintTokenComponent, {
       data: dialogMintTokenData as DialogMintTokenData,
+      backdropClass: ['rt-dialog'],
+      hasBackdrop: true,
+    });
+  }
+
+  /**
+   * Open the dialog window for transferring tokens.
+   */
+  public openTransferTokenDialog(dialogTransferTokenData: DialogTransferTokenData, isActive: boolean): void {
+    // If the dialog is not active, do nothing.
+    if (!isActive) {
+      return;
+    }
+
+    // If any of the required public keys is not set, do nothing.
+    if (!dialogTransferTokenData?.senderAccountPublicKey || !dialogTransferTokenData?.associatedTokenAccountPublicKey) {
+      return;
+    }
+
+    // Open the dialog window.
+    this.dialog.open<DashboardTokenDialogTransferTokenComponent, DialogTransferTokenData>(DashboardTokenDialogTransferTokenComponent, {
+      data: dialogTransferTokenData,
       backdropClass: ['rt-dialog'],
       hasBackdrop: true,
     });

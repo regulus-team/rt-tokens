@@ -36,7 +36,7 @@ export interface BurnTokenActionData {
 }
 
 /**
- * Data for the freeze token action.
+ * Data for the freeze (or thaw) token action.
  */
 export interface FreezeOrThawTokenActionData {
   /** Public key of the token account (holds tokens). */
@@ -47,6 +47,23 @@ export interface FreezeOrThawTokenActionData {
 
   /** Public key of the account with the freeze authority. */
   freezeAuthorityPublicKey: PublicKey;
+}
+
+/**
+ * Data for the transfer token action.
+ */
+export interface TransferTokenActionData {
+  /** Public key of the associated token account (holds token metadata). */
+  mint: PublicKey;
+
+  /** Public key of the token owner account (authority over the token account). */
+  tokenOwner: PublicKey;
+
+  /** Transfer a destination account owner (authority over the destination token account). */
+  destinationOwner: string;
+
+  /** Number of tokens to transfer. */
+  amount: number;
 }
 
 /**

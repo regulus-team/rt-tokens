@@ -163,6 +163,7 @@
                 @if (extracted.tokenState === TokenItemState.Frozen) {
                   <button
                     mat-raised-button
+                    class="mat-primary token-details__actions_thaw"
                     color="primary"
                     (click)="confirmThawToken({
                       tokenAccountPublicKey: extracted.tokenAccount,
@@ -175,6 +176,7 @@
                 } @else {
                   <button
                     mat-raised-button
+                    class="mat-primary token-details__actions_freeze"
                     color="primary"
                     (click)="confirmFreezeToken({
                       tokenAccountPublicKey: extracted.tokenAccount,
@@ -185,6 +187,22 @@
                     Freeze token
                   </button>
                 }
+              }
+
+              @if (extracted.tokenOwner && extracted.tokenAmount && extracted.tokenAmount.amount && !!+extracted.tokenAmount.amount) {
+                <button
+                  mat-raised-button
+                  class="mat-primary token-details__actions_transfer"
+                  [ngClass]="{'token-details__actions_disabled': extracted.tokenState === TokenItemState.Frozen}"
+                  [matTooltip]="'Frozen tokens cannot be transferred. Thaw the token to enable transferring'"
+                  [matTooltipDisabled]="extracted.tokenState !== TokenItemState.Frozen"
+                  (click)="openTransferTokenDialog({
+                  associatedTokenAccountPublicKey: extracted.associatedTokenAccount,
+                  senderAccountPublicKey: extracted.tokenOwner,
+                  currentBalance: extracted.tokenAmount.uiAmountString,
+                  currentBalanceWithoutDecimals: extracted.tokenAmount.amount,
+                  tokenDecimals: extracted.tokenAmount.decimals,
+                }, extracted.tokenState !== TokenItemState.Frozen)">Transfer token</button>
               }
 
               @if (extracted.tokenOwner && extracted.tokenAmount && extracted.tokenAmount.amount && !!+extracted.tokenAmount.amount) {

@@ -16,9 +16,13 @@ import {
   MintTokenSuccess,
   ResetBurnTokenProcess,
   ResetMintTokenProcess,
+  ResetTransferTokenProcess,
   ThawToken,
   ThawTokenFail,
   ThawTokenSuccess,
+  TransferToken,
+  TransferTokenFail,
+  TransferTokenSuccess,
 } from './dashboard-token-item-actions.actions';
 import {
   dashboardTokenItemActionsStateId,
@@ -53,6 +57,16 @@ export class DashboardTokenItemActionsState {
   @Selector()
   static lastMintTokenError(state: DashboardTokenItemActionsStateModel): DashboardTokenItemActionsStateModel['lastMintTokenError'] {
     return state.lastMintTokenError;
+  }
+
+  @Selector()
+  static transferTokenProcess(state: DashboardTokenItemActionsStateModel): DashboardTokenItemActionsStateModel['transferTokenProcess'] {
+    return state.transferTokenProcess;
+  }
+
+  @Selector()
+  static lastTransferTokenError(state: DashboardTokenItemActionsStateModel): DashboardTokenItemActionsStateModel['lastTransferTokenError'] {
+    return state.lastTransferTokenError;
   }
 
   @Selector()
@@ -166,6 +180,58 @@ export class DashboardTokenItemActionsState {
     ctx.patchState({
       mintTokenProcess: progressStatuses.notInitialized,
       lastMintTokenError: null,
+    });
+  }
+
+  @Action(TransferToken)
+  transferToken(ctx: StateContext<DashboardTokenItemActionsStateModel>, {transferTokenData}: TransferToken): void {
+    ctx.patchState({
+      transferTokenProcess: progressStatuses.inProgress,
+      lastTransferTokenError: null,
+    });
+
+    this.dashboardTokenItemActions
+      .transferSpecificToken(transferTokenData)
+      .then(result => {
+        ctx.dispatch(new TransferTokenSuccess(result.signature.toString(), transferTokenData));
+      })
+      .catch(error => ctx.dispatch(new TransferTokenFail(error)));
+  }
+
+  @Action(TransferTokenSuccess)
+  transferTokenSuccess(
+    ctx: StateContext<DashboardTokenItemActionsStateModel>,
+    {transactionSignature, transferTokenData}: TransferTokenSuccess,
+  ): void {
+    const associatedTokenAccount = this.store.selectSnapshot(DashboardTokenItemState.associatedTokenAccount);
+
+    // Reload current token details if the transferred token is the currently selected token.
+    if (associatedTokenAccount?.equals(transferTokenData.mint)) {
+      this.rtSolana.waitForTransactionBySignature(transactionSignature).then(isConfirmed => {
+        if (isConfirmed) {
+          ctx.dispatch(new ReloadCurrentTokenDetails());
+        }
+      });
+    }
+
+    ctx.patchState({
+      transferTokenProcess: progressStatuses.succeed,
+    });
+  }
+
+  @Action(TransferTokenFail)
+  transferTokenFail(ctx: StateContext<DashboardTokenItemActionsStateModel>, {error}: TransferTokenFail): void {
+    ctx.patchState({
+      transferTokenProcess: progressStatuses.interrupted,
+      lastTransferTokenError: error,
+    });
+  }
+
+  @Action(ResetTransferTokenProcess)
+  resetTransferTokenProcess(ctx: StateContext<DashboardTokenItemActionsStateModel>): void {
+    ctx.patchState({
+      transferTokenProcess: progressStatuses.notInitialized,
+      lastTransferTokenError: null,
     });
   }
 

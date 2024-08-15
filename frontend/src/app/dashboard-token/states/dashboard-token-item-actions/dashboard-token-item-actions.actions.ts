@@ -5,6 +5,7 @@ import {
   CreateFungibleTokenActionData,
   FreezeOrThawTokenActionData,
   MintTokenActionData,
+  TransferTokenActionData,
 } from '../../symbols/dashboard-token-action-data.symbols';
 import {UnknownError} from '../../../shared/symbols/errors.symbols';
 
@@ -49,6 +50,31 @@ export class MintTokenFail {
 
 export class ResetMintTokenProcess {
   static type = `${dashboardTokenItemActionsStateId} ${ResetMintTokenProcess.name}`;
+}
+
+export class TransferToken {
+  static type = `${dashboardTokenItemActionsStateId} ${TransferToken.name}`;
+
+  constructor(public transferTokenData: TransferTokenActionData) {}
+}
+
+export class TransferTokenSuccess {
+  static type = `${dashboardTokenItemActionsStateId} ${TransferTokenSuccess.name}`;
+
+  constructor(
+    public transactionSignature: TransactionSignature,
+    public transferTokenData: TransferTokenActionData,
+  ) {}
+}
+
+export class TransferTokenFail {
+  static type = `${dashboardTokenItemActionsStateId} ${TransferTokenFail.name}`;
+
+  constructor(public error: UnknownError) {}
+}
+
+export class ResetTransferTokenProcess {
+  static type = `${dashboardTokenItemActionsStateId} ${ResetTransferTokenProcess.name}`;
 }
 
 export class BurnToken {

@@ -7,9 +7,10 @@ import {mplTokenMetadata} from '@metaplex-foundation/mpl-token-metadata';
 import {walletAdapterIdentity} from '@metaplex-foundation/umi-signer-wallet-adapters';
 import {Metadata, safeFetchAllMetadata} from '@metaplex-foundation/mpl-token-metadata/dist/src/generated/accounts/metadata';
 import {RpcResponseTokenData} from '../../symbols/dashboard-token-rcp-responce.symbols';
+import {UmiPublicKey} from '../../symbols/dashboard-token-resolve-non-compatible-types.symbols';
 import {JsonUrlTokenAccountPair, MetadataJsonFieldsTokenAccountPair} from '../../symbols/dashboard-token-metadata-retrieval.symbols';
 import {RtSolanaService} from '../../../rt-solana/services/rt-solana/rt-solana.service';
-import {MetadataJsonFields, UmiPublicKey} from '../../../rt-solana/symbols';
+import {MetadataJsonFields} from '../../../rt-solana/symbols';
 
 @Injectable()
 export class DashboardTokenListService {

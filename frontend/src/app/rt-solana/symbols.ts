@@ -1,12 +1,3 @@
-import {Keypair as SolanaKeypair, PublicKey as PublicKeySolana} from '@solana/web3.js';
-import {
-  Context,
-  createSignerFromKeypair,
-  Keypair as UmiKeypair,
-  KeypairSigner,
-  publicKey,
-  PublicKey as PublicKeyUmi,
-} from '@metaplex-foundation/umi';
 import {RpcResponseTokenData} from '../dashboard-token/symbols/dashboard-token-rcp-responce.symbols';
 import {Metadata} from '@metaplex-foundation/mpl-token-metadata/dist/src/generated/accounts/metadata';
 
@@ -36,41 +27,6 @@ export type TransactionSignature = string;
  * Docs: https://docs.solanalabs.com/clusters
  */
 export type NetCluster = 'devnet' | 'testnet' | 'mainnet-beta';
-
-/**
- * Solana and UMI have the same type name for the keypair, but different implementations.
- * This function converts a Solana keypair to a UMI keypair.
- * @param solanaKeypair - The Solana keypair.
- */
-export const solanaKeypairToUmiKeypair = (solanaKeypair: SolanaKeypair): UmiKeypair => ({
-  publicKey: publicKey(solanaKeypair.publicKey.toBytes()),
-  secretKey: solanaKeypair.secretKey,
-});
-
-/**
- * Create a signer from a Solana keypair (instead of a UMI keypair).
- * @param context - The UMI context (usually a UMI instance created using `createUmi('rpcUrl')`).
- * @param keypair - The Solana keypair.
- */
-export const createSignerFromSolanaKeypair = (context: Pick<Context, 'eddsa'>, keypair: SolanaKeypair): KeypairSigner =>
-  createSignerFromKeypair(context, solanaKeypairToUmiKeypair(keypair));
-
-/**
- * Define the UMI public key type with different name.
- * Used to avoid conflicts with the Solana public key type.
- */
-export type UmiPublicKey = PublicKeyUmi;
-
-/**
- * Define the Solana public key type with different name.
- * Used to avoid conflicts with the Umi public key type.
- */
-export type SolPublicKey = PublicKeySolana;
-
-/**
- * Define the transform function for the Solana public key to the UMI public key with another name.
- */
-export const toUmiPublicKey = publicKey;
 
 /**
  * Define the piled data for the token.

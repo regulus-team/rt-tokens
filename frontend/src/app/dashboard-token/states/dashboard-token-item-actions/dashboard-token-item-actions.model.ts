@@ -24,6 +24,12 @@ export interface DashboardTokenItemActionsStateModel {
   /** Contain the last error that occurred during the burning token process. */
   lastBurnTokenError: Nullable<UnknownError>;
 
+  /** Contain current process status of the transfer token process. */
+  transferTokenProcess: progressStatuses;
+
+  /** Contain the last error that occurred during the transferring token process. */
+  lastTransferTokenError: Nullable<UnknownError>;
+
   /** Contain current process status of the freeze token process. */
   freezeTokenProcess: progressStatuses;
 
@@ -47,6 +53,9 @@ export const defaultDashboardTokenItemActionsState: DashboardTokenItemActionsSta
 
   burnTokenProcess: progressStatuses.notInitialized,
   lastBurnTokenError: null,
+
+  transferTokenProcess: progressStatuses.notInitialized,
+  lastTransferTokenError: null,
 
   freezeTokenProcess: progressStatuses.notInitialized,
   lastFreezeTokenError: null,

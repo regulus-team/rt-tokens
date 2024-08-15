@@ -4,11 +4,12 @@ import {clusterApiUrl, Connection, TransactionSignature} from '@solana/web3.js';
 import {PhantomWalletAdapter} from '@solana/wallet-adapter-wallets';
 import {createUmi} from '@metaplex-foundation/umi-bundle-defaults';
 import {Pda, Umi} from '@metaplex-foundation/umi';
-import {NetCluster, UmiPublicKey} from '../../symbols';
-import {Settings} from '../../../../conf/settings';
 import {mplTokenMetadata} from '@metaplex-foundation/mpl-token-metadata';
 import {walletAdapterIdentity} from '@metaplex-foundation/umi-signer-wallet-adapters';
 import {findMetadataPda} from '@metaplex-foundation/mpl-token-metadata/dist/src/generated/accounts/metadata';
+import {NetCluster} from '../../symbols';
+import {Settings} from '../../../../conf/settings';
+import {UmiPublicKey} from '../../../dashboard-token/symbols/dashboard-token-resolve-non-compatible-types.symbols';
 
 /**
  * The RT Solana service.
@@ -106,7 +107,7 @@ export class RtSolanaService {
             }
           },
 
-          // Unexpected error occurred => promise rejected.
+          // Unexpected error occurred ⇒ promise rejected.
           error: error => {
             subscription.unsubscribe();
             reject(error);

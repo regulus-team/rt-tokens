@@ -1,0 +1,78 @@
+@if ({
+  transferTokenProcess: transferTokenProcess$ | async,
+  estimatedBalanceAfterTransfer: estimatedBalanceAfterTransfer$ | async,
+  lastTransferTokenError: lastTransferTokenError$ | async,
+}; as extracted) {
+  <rt-loading
+    [while]="extracted.transferTokenProcess === progressStatuses.inProgress"
+    [until]="extracted.transferTokenProcess !== progressStatuses.inProgress"
+  >
+    <form
+      [formGroup]="transferTokenForm"
+      class="transfer-token-dialog"
+      (ngSubmit)="transferToken(
+      extracted.transferTokenProcess !== progressStatuses.inProgress,
+        transferTokenForm.controls.tokenAmount.value,
+        transferTokenForm.controls.destinationAddress.value
+      )"
+    >
+      <h2 class="transfer-token-dialog__title title">Token Transfer</h2>
+
+      <div class="transfer-token-dialog__input">
+        <div class="transfer-token-dialog__rt-form-label rt-form-label">
+          {{ labels.tokenAmount }}
+        </div>
+        <rt-inputs-inline-text
+          inputType="number"
+          [formControl]="transferTokenForm.controls.tokenAmount"
+          [validationMessages]="validationMessages.tokenAmount"
+        ></rt-inputs-inline-text>
+      </div>
+
+      <div class="transfer-token-dialog__input">
+        <div class="transfer-token-dialog__rt-form-label rt-form-label">
+          {{ labels.destinationAddress }}
+        </div>
+        <rt-inputs-inline-text
+          placeholder="Wallet address of the receiver"
+          [formControl]="transferTokenForm.controls.destinationAddress"
+          [validationMessages]="validationMessages.destinationAddress"
+        ></rt-inputs-inline-text>
+      </div>
+
+      <div class="transfer-token-dialog__meta">
+        <div class="transfer-token-dialog__meta-description">Balance:</div>
+        <div class="transfer-token-dialog__meta-value transfer-token-dialog__meta-value_balance">{{ injectedData.currentBalance }}</div>
+      </div>
+
+      <div class="transfer-token-dialog__meta">
+        <div class="transfer-token-dialog__meta-description">Token decimals:</div>
+        <div class="transfer-token-dialog__meta-value transfer-token-dialog__meta-value_decimals">{{ injectedData.tokenDecimals }}</div>
+      </div>
+
+      <div class="transfer-token-dialog__meta transfer-token-dialog__meta_last">
+        <div class="transfer-token-dialog__meta-description">Estimated balance after transfer:</div>
+        <div class="transfer-token-dialog__meta-value transfer-token-dialog__meta-value_estimated">{{ extracted.estimatedBalanceAfterTransfer }}</div>
+      </div>
+
+      @if (extracted.transferTokenProcess === progressStatuses.interrupted) {
+        <div class="transfer-token-dialog__error">
+          {{ extracted.lastTransferTokenError }}
+        </div>
+      }
+
+      <div class="transfer-token-dialog__action">
+        <button
+          mat-raised-button
+          class="mat-primary mat-background-primary"
+          type="submit"
+        >
+          Apply
+        </button>
+      </div>
+    </form>
+  </rt-loading>
+}
+
+
+
